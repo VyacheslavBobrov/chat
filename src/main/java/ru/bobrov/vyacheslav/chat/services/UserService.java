@@ -14,8 +14,7 @@ import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.UserNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.UserRepository;
 
 import javax.transaction.Transactional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
@@ -34,6 +33,12 @@ public class UserService {
 
     public User get(UUID uuid) {
         return repository.findById(uuid).orElseThrow(UserNotFoundException::new);
+    }
+
+    public List<User> get(Iterable<UUID> userUUIDs) {
+        ArrayList<User> users = new ArrayList<>();
+        repository.findAllById(userUUIDs).forEach(users::add);
+        return Collections.unmodifiableList(users);
     }
 
     public User create(String name, String login, String password) {
@@ -94,7 +99,7 @@ public class UserService {
         return setUserStatus(uuid, ACTIVE);
     }
 
-    private Set<Chat> getUserChats(UUID uuid) {
+    public Set<Chat> getUserChats(UUID uuid) {
         User user = get(uuid);
         return user.getChats();
     }

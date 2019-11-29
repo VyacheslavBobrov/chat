@@ -12,6 +12,8 @@ import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ChatNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.ChatRepository;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,20 +33,38 @@ public class ChatService {
         return repository.findById(uuid).orElseThrow(ChatNotFoundException::new);
     }
 
-    public Chat create(Chat chat) {
-        chat.setChatId(UUID.randomUUID());
+    public Chat create(
+            String name,
+            UUID creator
+    ) {
+        User user = userService.get(creator);
+
+        Chat chat = Chat.builder()
+                .chatId(UUID.randomUUID())
+                .name(name)
+                .status(ChatStatus.ACTIVE)
+                .creator(user)
+                .users(Collections.singleton(user))
+                .build();
+
         initTime(chat);
         validate(chat);
-        checkUsers(chat);
 
         return repository.save(chat);
     }
 
-    public void update(Chat chat) {
+    public Chat update(UUID chatId, String name) {
+        Chat chat = get(chatId);
+        chat.setName(name);
         updateTime(chat);
         validate(chat);
-        checkUsers(chat);
-        repository.save(chat);
+        return repository.save(chat);
+    }
+
+    public Chat addUsers(UUID chatId, Collection<UUID> userUUIDs) {
+        Chat chat = get(chatId);
+        chat.getUsers().addAll(userService.get(userUUIDs));
+        return repository.save(chat);
     }
 
     public Chat block(UUID uuid) {
@@ -69,10 +89,6 @@ public class ChatService {
 
     public Set<Message> getChatMessages(UUID uuid) {
         return get(uuid).getMessages();
-    }
-
-    private void checkUsers(Chat chat) {
-        chat.getUsers().stream().map(User::getUserId).forEach(userID -> userService.get(userID));
     }
 
     private void validate(Chat chat) {
