@@ -56,8 +56,8 @@ public class User implements EntityWithTimeInfo {
     )
     @JoinTable(
             name = "users_chats",
-            joinColumns = @JoinColumn(name = "chat_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "chat_id")
     )
     Set<Chat> chats;
 }
