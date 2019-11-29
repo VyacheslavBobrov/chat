@@ -9,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+import ru.bobrov.vyacheslav.chat.controllers.converters.ChatDataConverter;
 import ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter;
+import ru.bobrov.vyacheslav.chat.controllers.models.ChatApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.UserApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.UsersPagingApiModel;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
@@ -22,7 +24,6 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter.toApi;
-import static ru.bobrov.vyacheslav.chat.services.Utils.toDo;
 
 @Api("Chat users management system")
 @RestController
@@ -36,7 +37,7 @@ public class UsersController {
     @GetMapping("/{userId}")
     public UserApiModel get(
             @ApiParam(value = "User uuid", required = true)
-            @PathVariable(name = "userId") UUID userId,
+            @PathVariable UUID userId,
 
             @RequestHeader HttpHeaders header
     ) {
@@ -48,7 +49,7 @@ public class UsersController {
     @PutMapping("/{userId}")
     public UserApiModel update(
             @ApiParam(value = "User uuid", required = true)
-            @PathVariable(name = "userId") UUID userId,
+            @PathVariable UUID userId,
 
             @ApiParam("User name")
             @RequestParam(required = false) String name,
@@ -70,7 +71,7 @@ public class UsersController {
     @GetMapping("/{userId}/block")
     public UserApiModel block(
             @ApiParam(value = "User uuid", required = true)
-            @PathVariable(name = "userId") UUID userId,
+            @PathVariable UUID userId,
 
             @RequestHeader HttpHeaders header
     ) {
@@ -82,7 +83,7 @@ public class UsersController {
     @GetMapping("/{userId}/unblock")
     public UserApiModel unblock(
             @ApiParam(value = "User uuid", required = true)
-            @PathVariable(name = "userId") UUID userId,
+            @PathVariable UUID userId,
 
             @RequestHeader HttpHeaders header
     ) {
@@ -135,13 +136,13 @@ public class UsersController {
 
     @ApiOperation(value = "Get chats for user", response = List.class)
     @GetMapping("/{userId}/chats")
-    public UserApiModel getChats(
+    public List<ChatApiModel> getChats(
             @ApiParam(value = "User uuid", required = true)
             @PathVariable(name = "userId") UUID userId,
 
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("GET user chats request from %s, userId:%s ", header.getHost(), userId));
-        return toDo();
+        return ChatDataConverter.toApi(userService.getUserChats(userId));
     }
 }

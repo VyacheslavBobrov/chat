@@ -1,6 +1,7 @@
 package ru.bobrov.vyacheslav.chat.dataproviders.entities;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,6 +15,7 @@ import java.util.UUID;
 import static lombok.AccessLevel.PRIVATE;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = PRIVATE)
@@ -54,8 +56,8 @@ public class Chat implements EntityWithTimeInfo {
     )
     @JoinTable(
             name = "users_chats",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "chat_id")
+            joinColumns = @JoinColumn(name = "chat_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     Set<User> users;
 
@@ -68,8 +70,8 @@ public class Chat implements EntityWithTimeInfo {
     )
     @JoinTable(
             name = "messages_chats",
-            joinColumns = @JoinColumn(name = "message_id"),
-            inverseJoinColumns = @JoinColumn(name = "chat_id")
+            joinColumns = @JoinColumn(name = "chat_id"),
+            inverseJoinColumns = @JoinColumn(name = "message_id")
     )
     Set<Message> messages;
 }
