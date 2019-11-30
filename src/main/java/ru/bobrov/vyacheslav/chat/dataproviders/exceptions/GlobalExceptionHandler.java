@@ -12,41 +12,29 @@ import java.util.Date;
 public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
-        ErrorDetails errorDetails = ErrorDetails.builder()
-                .timestamp(new Date())
-                .message(ex.getMessage())
-                .details(request.getDescription(false))
-                .build();
-        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ResourceExistsException.class)
     public ResponseEntity<?> resourceExists(ResourceExistsException ex, WebRequest request) {
-        ErrorDetails errorDetails = ErrorDetails.builder()
-                .timestamp(new Date())
-                .message(ex.getMessage())
-                .details(request.getDescription(false))
-                .build();
-        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NotImplementedException.class)
     public ResponseEntity<?> notImplemented(NotImplementedException ex, WebRequest request) {
-        ErrorDetails errorDetails = ErrorDetails.builder()
-                .timestamp(new Date())
-                .message(ex.getMessage())
-                .details(request.getDescription(false))
-                .build();
-        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.NOT_IMPLEMENTED);
     }
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<?> globalExceptionHandler(Throwable ex, WebRequest request) {
-        ErrorDetails errorDetails = ErrorDetails.builder()
+        return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private ErrorDetails fillDetails(Throwable ex, WebRequest request) {
+        return ErrorDetails.builder()
                 .timestamp(new Date())
                 .message(ex.getMessage())
                 .details(request.getDescription(false))
                 .build();
-        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
