@@ -1,9 +1,6 @@
 package ru.bobrov.vyacheslav.chat.dataproviders.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
@@ -21,6 +18,8 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE)
 @Entity
 @Table(name = "chats")
+@EqualsAndHashCode(exclude = {"users", "messages"})
+@ToString(exclude = {"users", "messages"})
 public class Chat implements EntityWithTimeInfo {
     @Id
     UUID chatId;
@@ -43,7 +42,7 @@ public class Chat implements EntityWithTimeInfo {
     Timestamp updated;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "creator_id")
     User creator;
 
@@ -63,10 +62,7 @@ public class Chat implements EntityWithTimeInfo {
 
     @ManyToMany(
             fetch = FetchType.LAZY,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE
-            }
+            cascade = CascadeType.ALL
     )
     @JoinTable(
             name = "messages_chats",
