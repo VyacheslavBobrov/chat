@@ -6,13 +6,15 @@ import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConverter;
 import ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter;
 import ru.bobrov.vyacheslav.chat.controllers.models.ChatApiModel;
-import ru.bobrov.vyacheslav.chat.controllers.models.MessageApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.MessagesPagingApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.UserApiModel;
+import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.services.ChatService;
 
 import java.util.List;
@@ -111,7 +113,7 @@ public class ChatsController {
 
     @ApiOperation(value = "Put chat users", response = ChatApiModel.class)
     @PutMapping("/{chatId}/users")
-    public ChatApiModel addUsers(
+    public List<UserApiModel> addUsers(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
 
@@ -126,13 +128,25 @@ public class ChatsController {
 
     @ApiOperation(value = "Get chat messages", response = List.class)
     @GetMapping("/{chatId}/messages")
-    public List<MessageApiModel> getMessages(
+    public MessagesPagingApiModel getMessages(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
+
+            @RequestParam int page,
+            @RequestParam int size,
 
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("GET chat messages request from %s, chatId:%s ", header.getHost(), chatId));
-        return MessagesDataConverter.toApi(chatService.getChatMessages(chatId));
+
+        Page<Message> messagePage = chatService.getChatMessages(chatId, page, size);
+
+        return MessagesPagingApiModel.builder()
+                .ids(messagePage.get().map(Message::getMessageId).collect(Collectors.toUnmodifiableList()))
+                .items(messagePage.get().collect(Collectors.toUnmodifiableMap(Message::getMessageId, MessagesDataConverter::toApi)))
+                .page(page)
+                .pageLimit(messagePage.getTotalPages())
+                .totalItems(messagePage.getTotalElements())
+                .build();
     }
 }
