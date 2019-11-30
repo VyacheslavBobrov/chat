@@ -46,7 +46,7 @@ public class UsersController {
     }
 
     @ApiOperation(value = "Update user data", response = UserApiModel.class)
-    @PutMapping("/{userId}")
+    @PostMapping("/{userId}")
     public UserApiModel update(
             @ApiParam(value = "User uuid", required = true)
             @PathVariable UUID userId,
@@ -62,37 +62,37 @@ public class UsersController {
 
             @RequestHeader HttpHeaders header
     ) {
-        log.info(format("PUT request for update user, from %s, userId: %s, name: %s, login: %s",
+        log.info(format("POST request for update user, from %s, userId: %s, name: %s, login: %s",
                 header.getHost(), userId, name, login));
         return toApi(userService.update(userId, name, login, password));
     }
 
     @ApiOperation(value = "Block user by uuid", response = UserApiModel.class)
-    @GetMapping("/{userId}/block")
+    @PutMapping("/{userId}/block")
     public UserApiModel block(
             @ApiParam(value = "User uuid", required = true)
             @PathVariable UUID userId,
 
             @RequestHeader HttpHeaders header
     ) {
-        log.info(format("GET request to block user, from %s, userId: %s", header.getHost(), userId));
+        log.info(format("PUT request to block user, from %s, userId: %s", header.getHost(), userId));
         return toApi(userService.block(userId));
     }
 
     @ApiOperation(value = "Unblock user by uuid", response = UserApiModel.class)
-    @GetMapping("/{userId}/unblock")
+    @PutMapping("/{userId}/unblock")
     public UserApiModel unblock(
             @ApiParam(value = "User uuid", required = true)
             @PathVariable UUID userId,
 
             @RequestHeader HttpHeaders header
     ) {
-        log.info(format("GET request to unblock user, from %s, userId: %s", header.getHost(), userId));
+        log.info(format("PUT request to unblock user, from %s, userId: %s", header.getHost(), userId));
         return toApi(userService.unblock(userId));
     }
 
     @ApiOperation(value = "Create new chat user", response = UserApiModel.class)
-    @PutMapping
+    @PostMapping
     public UserApiModel create(
             @ApiParam(value = "User name", required = true)
             @RequestParam String name,
@@ -105,7 +105,7 @@ public class UsersController {
 
             @RequestHeader HttpHeaders header
     ) {
-        log.info(format("PUT request to create user, from: %s, name: %s, login: %s",
+        log.info(format("POST request to create user, from: %s, name: %s, login: %s",
                 header.getHost(), name, login));
         return toApi(userService.create(name, login, password));
     }
