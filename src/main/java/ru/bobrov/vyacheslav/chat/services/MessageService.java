@@ -29,16 +29,27 @@ public class MessageService {
         return repository.findById(uuid).orElseThrow(MessageNotFoundException::new);
     }
 
-    public Message create(Message message) {
+    public Message create(
+            UUID chatId,
+            UUID userId,
+            String text
+    ) {
+        Message message = Message.builder()
+                .messageId(UUID.randomUUID())
+                .chat(chatService.get(chatId))
+                .user(userService.get(userId))
+                .message(text)
+                .status(MessageStatus.ACTIVE)
+                .build();
+
         initTime(message);
-        message.setMessageId(UUID.randomUUID());
         validate(message);
-        message.setUser(userService.get(message.getUser().getUserId()));
-        message.setChat(chatService.get(message.getChat().getChatId()));
         return repository.save(message);
     }
 
-    public Message update(Message message) {
+    public Message update(UUID messageId, String text) {
+        Message message = get(messageId);
+        message.setMessage(text);
         updateTime(message);
         validate(message);
         return repository.save(message);
