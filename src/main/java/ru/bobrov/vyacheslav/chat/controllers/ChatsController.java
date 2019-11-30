@@ -126,7 +126,7 @@ public class ChatsController {
         return UserDataConverter.toApi(chatService.addUsers(chatId, userUUIDs));
     }
 
-    @ApiOperation(value = "Get chat messages", response = List.class)
+    @ApiOperation(value = "Get chat messages", response = MessagesPagingApiModel.class)
     @GetMapping("/{chatId}/messages")
     public MessagesPagingApiModel getMessages(
             @ApiParam(value = "Chat uuid", required = true)
