@@ -21,19 +21,20 @@ import java.io.IOException;
 
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
+import static ru.bobrov.vyacheslav.chat.services.Constants.AUTHORIZATION_HEADER;
+import static ru.bobrov.vyacheslav.chat.services.Constants.TOKEN_PREFIX;
 
 @Component
 @AllArgsConstructor(access = PUBLIC)
 @FieldDefaults(level = PRIVATE)
 public class JwtRequestFilter extends OncePerRequestFilter {
-    public static final String TOKEN_PREFIX = "Bearer ";
     @NonNull UserService userService;
     @NonNull JwtTokenUtil jwtTokenUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        final String requestTokenHeader = request.getHeader("Authorization");
+        final String requestTokenHeader = request.getHeader(AUTHORIZATION_HEADER);
         String username = null;
         String jwtToken = null;
 
