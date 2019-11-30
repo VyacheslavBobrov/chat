@@ -24,9 +24,12 @@ public class SwaggerConfig {
     }
 
     private ApiInfo apiEndPointsInfo() {
-        return new ApiInfoBuilder().title("Chats REST API")
+        return new ApiInfoBuilder()
+                .title("Chats REST API")
                 .description("Chats Management REST API")
-                .contact(new Contact("Vyacheslav Bobrov", "", "bobrov.vy@gmail.com"))
+                .contact(new Contact("Vyacheslav Bobrov",
+                        "https://github.com/VyacheslavBobrov/chat",
+                        "bobrov.vy@gmail.com"))
                 .license("Apache 2.0")
                 .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
                 .version("1.0.0")
