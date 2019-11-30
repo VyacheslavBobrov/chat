@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter.toApi;
 
@@ -29,6 +31,7 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter
 @RestController
 @AllArgsConstructor(access = PUBLIC)
 @RequestMapping("/api/v1/user")
+@FieldDefaults(level = PRIVATE)
 @Slf4j
 public class UsersController {
     @NonNull UserService userService;

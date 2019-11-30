@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import ru.bobrov.vyacheslav.chat.services.MessageService;
 import java.util.UUID;
 
 import static java.lang.String.format;
+import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConverter.toApi;
 
@@ -21,6 +23,7 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConve
 @RestController
 @AllArgsConstructor(access = PUBLIC)
 @RequestMapping("/api/v1/message")
+@FieldDefaults(level = PRIVATE)
 @Slf4j
 public class MessagesController {
     @NonNull MessageService messageService;
