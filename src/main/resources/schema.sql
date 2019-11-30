@@ -1,4 +1,4 @@
-create table users (
+create table if not exists users (
     user_id uuid primary key,
     user_name varchar(255) not null,
     user_login varchar(255) unique not null,
@@ -9,7 +9,7 @@ create table users (
     updated timestamp not null default now()
 );
 
-create table chats (
+create table if not exists chats (
     chat_id uuid primary key,
     chat_name varchar(255) not null,
     status varchar(50) not null,
@@ -18,13 +18,13 @@ create table chats (
     updated timestamp not null default now()
 );
 
-create table users_chats (
+create table if not exists users_chats (
     user_id uuid references users(user_id),
     chat_id uuid references chats(chat_id),
     primary key (user_id, chat_id)
 );
 
-create table messages (
+create table if not exists messages (
     message_id uuid primary key,
     chat_id uuid references chats(chat_id),
     user_id uuid references users(user_id),
@@ -34,7 +34,7 @@ create table messages (
     updated timestamp not null default now()
 );
 
-create table messages_chats (
+create table if not exists messages_chats (
     message_id uuid references messages(message_id),
     chat_id uuid  references chats(chat_id),
     primary key (message_id, chat_id)
