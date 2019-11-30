@@ -46,7 +46,7 @@ public class ChatsController {
     }
 
     @ApiOperation(value = "Update chat data", response = ChatApiModel.class)
-    @PutMapping("/{chatId}")
+    @PostMapping("/{chatId}")
     public ChatApiModel update(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
@@ -56,36 +56,36 @@ public class ChatsController {
 
             @RequestHeader HttpHeaders header
     ) {
-        log.info(format("PUT update chat request from %s, chatId:%s, name: %s ", header.getHost(), chatId, name));
+        log.info(format("POST update chat request from %s, chatId:%s, name: %s ", header.getHost(), chatId, name));
         return toApi(chatService.update(chatId, name));
     }
 
     @ApiOperation(value = "Block chat", response = ChatApiModel.class)
-    @GetMapping("/{chatId}/block")
+    @PutMapping("/{chatId}/block")
     public ChatApiModel block(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
 
             @RequestHeader HttpHeaders header
     ) {
-        log.info(format("GET block chat request from %s, chatId:%s ", header.getHost(), chatId));
+        log.info(format("PUT block chat request from %s, chatId:%s ", header.getHost(), chatId));
         return toApi(chatService.block(chatId));
     }
 
     @ApiOperation(value = "Unlock chat", response = ChatApiModel.class)
-    @GetMapping("/{chatId}/unblock")
+    @PutMapping("/{chatId}/unblock")
     public ChatApiModel unblock(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
 
             @RequestHeader HttpHeaders header
     ) {
-        log.info(format("GET unblock chat request from %s, chatId:%s ", header.getHost(), chatId));
+        log.info(format("PUT unblock chat request from %s, chatId:%s ", header.getHost(), chatId));
         return toApi(chatService.unblock(chatId));
     }
 
     @ApiOperation(value = "Create chat", response = ChatApiModel.class)
-    @PutMapping
+    @PostMapping
     public ChatApiModel create(
             @ApiParam(value = "User id", required = true)
             @RequestParam UUID userId,
@@ -95,7 +95,7 @@ public class ChatsController {
 
             @RequestHeader HttpHeaders header
     ) {
-        log.info(format("PUT create chat request from %s, name: %s, userId: %s ", header.getHost(), name, userId));
+        log.info(format("POST create chat request from %s, name: %s, userId: %s ", header.getHost(), name, userId));
         return toApi(chatService.create(name, userId));
     }
 
@@ -112,7 +112,7 @@ public class ChatsController {
     }
 
     @ApiOperation(value = "Put chat users", response = ChatApiModel.class)
-    @PutMapping("/{chatId}/users")
+    @PostMapping("/{chatId}/users")
     public List<UserApiModel> addUsers(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
