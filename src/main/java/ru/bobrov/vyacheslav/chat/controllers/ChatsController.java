@@ -123,7 +123,7 @@ public class ChatsController {
     ) {
         log.info(format("PUT chat users request from %s, chatId:%s,  userUUIDs: {%s}",
                 header.getHost(), chatId, userUUIDs.stream().map(UUID::toString).collect(Collectors.joining())));
-        return toApi(chatService.addUsers(chatId, userUUIDs));
+        return UserDataConverter.toApi(chatService.addUsers(chatId, userUUIDs));
     }
 
     @ApiOperation(value = "Get chat messages", response = List.class)
