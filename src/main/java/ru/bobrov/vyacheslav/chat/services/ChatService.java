@@ -61,6 +61,12 @@ public class ChatService {
         return repository.save(chat);
     }
 
+    public Chat update(UUID chatId) {
+        Chat chat = get(chatId);
+        updateTime(chat);
+        return repository.save(chat);
+    }
+
     public Set<User> addUsers(UUID chatId, Collection<UUID> userUUIDs) {
         Chat chat = get(chatId);
         chat.getUsers().addAll(userService.get(userUUIDs));
