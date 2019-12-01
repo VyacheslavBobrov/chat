@@ -1,4 +1,4 @@
-package ru.bobrov.vyacheslav.chat.controllers.models;
+package ru.bobrov.vyacheslav.chat.controllers.models.response;
 
 import lombok.Builder;
 import lombok.NonNull;

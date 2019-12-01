@@ -1,4 +1,4 @@
-package ru.bobrov.vyacheslav.chat.controllers.models;
+package ru.bobrov.vyacheslav.chat.controllers.models.response;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -11,9 +11,9 @@ import java.util.UUID;
 @Value
 @Builder
 @NonNull
-public class UsersPagingApiModel {
+public class MessagesPagingApiModel {
     List<UUID> ids;
-    Map<UUID, UserApiModel> items;
+    Map<UUID, MessageApiModel> items;
     Integer page;
     Integer pageLimit;
     Long totalItems;

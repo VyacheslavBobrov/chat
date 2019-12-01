@@ -34,14 +34,14 @@ public class ChatService {
     }
 
     public Chat create(
-            String name,
+            String title,
             UUID creator
     ) {
         User user = userService.get(creator);
 
         Chat chat = Chat.builder()
                 .chatId(UUID.randomUUID())
-                .name(name)
+                .title(title)
                 .status(ChatStatus.ACTIVE)
                 .creator(user)
                 .users(Collections.singleton(user))
@@ -53,11 +53,17 @@ public class ChatService {
         return repository.save(chat);
     }
 
-    public Chat update(UUID chatId, String name) {
+    public Chat update(UUID chatId, String title) {
         Chat chat = get(chatId);
-        chat.setName(name);
+        chat.setTitle(title);
         updateTime(chat);
         validate(chat);
+        return repository.save(chat);
+    }
+
+    public Chat update(UUID chatId) {
+        Chat chat = get(chatId);
+        updateTime(chat);
         return repository.save(chat);
     }
 
@@ -98,7 +104,7 @@ public class ChatService {
     private void validate(Chat chat) {
         assertNotNull(chat.getChatId(), "Chat id is null");
         assertNotNull(chat.getCreator(), "Chat creator is null");
-        assertNotBlank(chat.getName(), "Chat name is null or blank");
+        assertNotBlank(chat.getTitle(), "Chat title is null or blank");
         assertNotNull(chat.getStatus(), "Chat status is null");
         if (chat.getUsers() == null || chat.getUsers().isEmpty())
             throw new IllegalArgumentException("Chat users is null or empty");

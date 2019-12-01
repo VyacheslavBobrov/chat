@@ -44,6 +44,7 @@ public class MessageService {
 
         initTime(message);
         validate(message);
+        chatService.update(chatId);
         return repository.save(message);
     }
 

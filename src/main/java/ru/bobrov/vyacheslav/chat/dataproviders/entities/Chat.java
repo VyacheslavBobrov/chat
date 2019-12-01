@@ -26,7 +26,7 @@ public class Chat implements EntityWithTimeInfo {
 
     @NotNull
     @Column(name = "chat_name")
-    String name;
+    String title;
 
     @NotNull
     @Column()

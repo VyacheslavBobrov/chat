@@ -1,6 +1,6 @@
 package ru.bobrov.vyacheslav.chat.controllers.converters;
 
-import ru.bobrov.vyacheslav.chat.controllers.models.MessageApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.response.MessageApiModel;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 
 import java.util.Collection;

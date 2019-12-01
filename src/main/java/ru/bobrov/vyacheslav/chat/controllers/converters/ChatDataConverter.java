@@ -1,6 +1,6 @@
 package ru.bobrov.vyacheslav.chat.controllers.converters;
 
-import ru.bobrov.vyacheslav.chat.controllers.models.ChatApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.response.ChatApiModel;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
 
 import java.util.Collection;
@@ -11,7 +11,7 @@ public class ChatDataConverter {
     public static ChatApiModel toApi(Chat chat) {
         return ChatApiModel.builder()
                 .chatId(chat.getChatId())
-                .name(chat.getName())
+                .title(chat.getTitle())
                 .status(chat.getStatus().name())
                 .created(chat.getCreated().toString())
                 .updated(chat.getUpdated().toString())

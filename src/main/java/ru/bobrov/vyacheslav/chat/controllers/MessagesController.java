@@ -9,7 +9,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
-import ru.bobrov.vyacheslav.chat.controllers.models.MessageApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.request.CreateMessageApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.request.UpdateMessageApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.response.MessageApiModel;
 import ru.bobrov.vyacheslav.chat.services.MessageService;
 
 import java.util.UUID;
@@ -33,7 +35,6 @@ public class MessagesController {
     public MessageApiModel get(
             @ApiParam(value = "Message uuid", required = true)
             @PathVariable UUID messageId,
-
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("GET message request from %s, messageId:%s ", header.getHost(), messageId));
@@ -45,14 +46,12 @@ public class MessagesController {
     public MessageApiModel update(
             @ApiParam(value = "Message uuid", required = true)
             @PathVariable UUID messageId,
-
-            @RequestParam String message,
-
+            @RequestBody UpdateMessageApiModel request,
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("POST message update request from %s, messageId:%s, message: %s ",
-                header.getHost(), messageId, message));
-        return toApi(messageService.update(messageId, message));
+                header.getHost(), messageId, request.getMessage()));
+        return toApi(messageService.update(messageId, request.getMessage()));
     }
 
     @ApiOperation(value = "Block message by uuid", response = MessageApiModel.class)
@@ -60,7 +59,6 @@ public class MessagesController {
     public MessageApiModel block(
             @ApiParam(value = "Message uuid", required = true)
             @PathVariable UUID messageId,
-
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT block message request from %s, messageId:%s ", header.getHost(), messageId));
@@ -72,7 +70,6 @@ public class MessagesController {
     public MessageApiModel unblock(
             @ApiParam(value = "Message uuid", required = true)
             @PathVariable UUID messageId,
-
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT unblock message request from %s, messageId:%s ", header.getHost(), messageId));
@@ -82,14 +79,11 @@ public class MessagesController {
     @ApiOperation(value = "Create message", response = MessageApiModel.class)
     @PostMapping
     public MessageApiModel create(
-            @RequestParam UUID chatId,
-            @RequestParam UUID userId,
-            @RequestParam String message,
-
+            @RequestBody CreateMessageApiModel request,
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("POST create message request from %s, chatId: %s, userId: %s, message: %s ",
-                header.getHost(), chatId, userId, message));
-        return toApi(messageService.create(chatId, userId, message));
+                header.getHost(), request.getChatId(), request.getUserId(), request.getMessage()));
+        return toApi(messageService.create(request.getChatId(), request.getUserId(), request.getMessage()));
     }
 }

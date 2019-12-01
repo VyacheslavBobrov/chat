@@ -12,9 +12,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConverter;
 import ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter;
-import ru.bobrov.vyacheslav.chat.controllers.models.ChatApiModel;
-import ru.bobrov.vyacheslav.chat.controllers.models.MessagesPagingApiModel;
-import ru.bobrov.vyacheslav.chat.controllers.models.UserApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.request.AddChatUsersApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.request.CreateChatApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.request.UpdateChatApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.response.ChatApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.response.MessagesPagingApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.services.ChatService;
 
@@ -41,7 +44,6 @@ public class ChatsController {
     public ChatApiModel get(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
-
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("GET chat request from %s, chatId:%s ", header.getHost(), chatId));
@@ -53,14 +55,12 @@ public class ChatsController {
     public ChatApiModel update(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
-
-            @ApiParam(value = "Chat name", required = true)
-            @RequestParam String name,
-
+            @RequestBody UpdateChatApiModel request,
             @RequestHeader HttpHeaders header
     ) {
-        log.info(format("POST update chat request from %s, chatId:%s, name: %s ", header.getHost(), chatId, name));
-        return toApi(chatService.update(chatId, name));
+        log.info(format("POST update chat request from %s, chatId:%s, name: %s ",
+                header.getHost(), chatId, request.getTitle()));
+        return toApi(chatService.update(chatId, request.getTitle()));
     }
 
     @ApiOperation(value = "Block chat", response = ChatApiModel.class)
@@ -68,7 +68,6 @@ public class ChatsController {
     public ChatApiModel block(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
-
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT block chat request from %s, chatId:%s ", header.getHost(), chatId));
@@ -80,7 +79,6 @@ public class ChatsController {
     public ChatApiModel unblock(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
-
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT unblock chat request from %s, chatId:%s ", header.getHost(), chatId));
@@ -90,24 +88,19 @@ public class ChatsController {
     @ApiOperation(value = "Create chat", response = ChatApiModel.class)
     @PostMapping
     public ChatApiModel create(
-            @ApiParam(value = "User id", required = true)
-            @RequestParam UUID userId,
-
-            @ApiParam(value = "Chat name", required = true)
-            @RequestParam String name,
-
+            @RequestBody CreateChatApiModel request,
             @RequestHeader HttpHeaders header
     ) {
-        log.info(format("POST create chat request from %s, name: %s, userId: %s ", header.getHost(), name, userId));
-        return toApi(chatService.create(name, userId));
+        log.info(format("POST create chat request from %s, name: %s, userId: %s ",
+                header.getHost(), request.getTitle(), request.getUserId()));
+        return toApi(chatService.create(request.getTitle(), request.getUserId()));
     }
 
-    @ApiOperation(value = "Get chat users", response = List.class)
+    @ApiOperation(value = "Get chat users", response = UserApiModel.class, responseContainer = "List")
     @GetMapping("/{chatId}/users")
     public List<UserApiModel> getUsers(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
-
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("GET chat users request from %s, chatId:%s ", header.getHost(), chatId));
@@ -119,14 +112,12 @@ public class ChatsController {
     public List<UserApiModel> addUsers(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
-
-            @RequestParam List<UUID> userUUIDs,
-
+            @RequestBody AddChatUsersApiModel request,
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT chat users request from %s, chatId:%s,  userUUIDs: {%s}",
-                header.getHost(), chatId, userUUIDs.stream().map(UUID::toString).collect(Collectors.joining())));
-        return UserDataConverter.toApi(chatService.addUsers(chatId, userUUIDs));
+                header.getHost(), chatId, request.getUserUUIDs().stream().map(UUID::toString).collect(Collectors.joining())));
+        return UserDataConverter.toApi(chatService.addUsers(chatId, request.getUserUUIDs()));
     }
 
     @ApiOperation(value = "Get chat messages", response = MessagesPagingApiModel.class)
@@ -134,10 +125,8 @@ public class ChatsController {
     public MessagesPagingApiModel getMessages(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
-
             @RequestParam int page,
             @RequestParam int size,
-
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("GET chat messages request from %s, chatId:%s ", header.getHost(), chatId));
@@ -146,7 +135,8 @@ public class ChatsController {
 
         return MessagesPagingApiModel.builder()
                 .ids(messagePage.get().map(Message::getMessageId).collect(Collectors.toUnmodifiableList()))
-                .items(messagePage.get().collect(Collectors.toUnmodifiableMap(Message::getMessageId, MessagesDataConverter::toApi)))
+                .items(messagePage.get()
+                        .collect(Collectors.toUnmodifiableMap(Message::getMessageId, MessagesDataConverter::toApi)))
                 .page(page)
                 .pageLimit(messagePage.getTotalPages())
                 .totalItems(messagePage.getTotalElements())
