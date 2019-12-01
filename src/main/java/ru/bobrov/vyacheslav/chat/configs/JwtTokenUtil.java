@@ -3,7 +3,6 @@ package ru.bobrov.vyacheslav.chat.configs;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,10 +15,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import static lombok.AccessLevel.PRIVATE;
-import static lombok.AccessLevel.PUBLIC;
 
 @Component
-@AllArgsConstructor(access = PUBLIC)
 @FieldDefaults(level = PRIVATE)
 public class JwtTokenUtil {
     @Value("${jwt.secret}")
