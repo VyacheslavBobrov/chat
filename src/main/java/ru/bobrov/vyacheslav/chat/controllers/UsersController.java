@@ -115,7 +115,7 @@ public class UsersController {
                 .build();
     }
 
-    @ApiOperation(value = "Get chats for user", response = List.class)
+    @ApiOperation(value = "Get chats for user", response = ChatApiModel.class, responseContainer = "List")
     @GetMapping("/{userId}/chats")
     public List<ChatApiModel> getChats(
             @ApiParam(value = "User uuid", required = true)

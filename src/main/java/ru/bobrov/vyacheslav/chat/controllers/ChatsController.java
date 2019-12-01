@@ -93,7 +93,7 @@ public class ChatsController {
         return toApi(chatService.create(request.getTitle(), request.getUserId()));
     }
 
-    @ApiOperation(value = "Get chat users", response = List.class)
+    @ApiOperation(value = "Get chat users", response = UserApiModel.class, responseContainer = "List")
     @GetMapping("/{chatId}/users")
     public List<UserApiModel> getUsers(
             @ApiParam(value = "Chat uuid", required = true)
@@ -132,7 +132,8 @@ public class ChatsController {
 
         return MessagesPagingApiModel.builder()
                 .ids(messagePage.get().map(Message::getMessageId).collect(Collectors.toUnmodifiableList()))
-                .items(messagePage.get().collect(Collectors.toUnmodifiableMap(Message::getMessageId, MessagesDataConverter::toApi)))
+                .items(messagePage.get()
+                        .collect(Collectors.toUnmodifiableMap(Message::getMessageId, MessagesDataConverter::toApi)))
                 .page(page)
                 .pageLimit(messagePage.getTotalPages())
                 .totalItems(messagePage.getTotalElements())
