@@ -1,4 +1,4 @@
-package ru.bobrov.vyacheslav.chat.controllers.models;
+package ru.bobrov.vyacheslav.chat.controllers.models.response;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -9,12 +9,11 @@ import java.util.UUID;
 @Value
 @Builder
 @NonNull
-public class MessageApiModel {
-    UUID messageId;
-    ChatApiModel chat;
-    UserApiModel user;
-    String message;
+public class ChatApiModel {
+    UUID chatId;
+    String name;
     String status;
     String created;
     String updated;
+    UserApiModel creator;
 }

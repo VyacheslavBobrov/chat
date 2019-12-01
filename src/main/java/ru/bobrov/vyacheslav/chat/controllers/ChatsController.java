@@ -11,9 +11,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConverter;
 import ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter;
-import ru.bobrov.vyacheslav.chat.controllers.models.ChatApiModel;
-import ru.bobrov.vyacheslav.chat.controllers.models.MessagesPagingApiModel;
-import ru.bobrov.vyacheslav.chat.controllers.models.UserApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.response.ChatApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.response.MessagesPagingApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.services.ChatService;
 

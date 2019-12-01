@@ -1,7 +1,7 @@
 package ru.bobrov.vyacheslav.chat.controllers.converters;
 
 import org.springframework.stereotype.Service;
-import ru.bobrov.vyacheslav.chat.controllers.models.UserApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
 
 import java.util.Collection;

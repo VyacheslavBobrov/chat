@@ -8,7 +8,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
-import ru.bobrov.vyacheslav.chat.controllers.models.MessageApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.response.MessageApiModel;
 import ru.bobrov.vyacheslav.chat.services.MessageService;
 
 import java.util.UUID;
