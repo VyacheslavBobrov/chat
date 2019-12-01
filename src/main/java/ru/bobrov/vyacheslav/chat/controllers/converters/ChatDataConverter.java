@@ -11,7 +11,7 @@ public class ChatDataConverter {
     public static ChatApiModel toApi(Chat chat) {
         return ChatApiModel.builder()
                 .chatId(chat.getChatId())
-                .name(chat.getName())
+                .title(chat.getTitle())
                 .status(chat.getStatus().name())
                 .created(chat.getCreated().toString())
                 .updated(chat.getUpdated().toString())

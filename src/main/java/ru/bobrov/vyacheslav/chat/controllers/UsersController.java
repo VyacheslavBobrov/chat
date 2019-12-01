@@ -11,6 +11,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.controllers.converters.ChatDataConverter;
 import ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter;
+import ru.bobrov.vyacheslav.chat.controllers.models.request.CreateUserApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.request.UpdateUserApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.ChatApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UsersPagingApiModel;
@@ -38,7 +40,6 @@ public class UsersController {
     public UserApiModel get(
             @ApiParam(value = "User uuid", required = true)
             @PathVariable UUID userId,
-
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("GET user request from %s, userId:%s ", header.getHost(), userId));
@@ -50,21 +51,12 @@ public class UsersController {
     public UserApiModel update(
             @ApiParam(value = "User uuid", required = true)
             @PathVariable UUID userId,
-
-            @ApiParam("User name")
-            @RequestParam(required = false) String name,
-
-            @ApiParam("User login")
-            @RequestParam(required = false) String login,
-
-            @ApiParam("User password")
-            @RequestParam(required = false) String password,
-
+            @RequestBody UpdateUserApiModel request,
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("POST request for update user, from %s, userId: %s, name: %s, login: %s",
-                header.getHost(), userId, name, login));
-        return toApi(userService.update(userId, name, login, password));
+                header.getHost(), userId, request.getName(), request.getLogin()));
+        return toApi(userService.update(userId, request.getName(), request.getLogin(), request.getPassword()));
     }
 
     @ApiOperation(value = "Block user by uuid", response = UserApiModel.class)
@@ -72,7 +64,6 @@ public class UsersController {
     public UserApiModel block(
             @ApiParam(value = "User uuid", required = true)
             @PathVariable UUID userId,
-
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT request to block user, from %s, userId: %s", header.getHost(), userId));
@@ -84,7 +75,6 @@ public class UsersController {
     public UserApiModel unblock(
             @ApiParam(value = "User uuid", required = true)
             @PathVariable UUID userId,
-
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT request to unblock user, from %s, userId: %s", header.getHost(), userId));
@@ -94,20 +84,12 @@ public class UsersController {
     @ApiOperation(value = "Create new chat user", response = UserApiModel.class)
     @PostMapping
     public UserApiModel create(
-            @ApiParam(value = "User name", required = true)
-            @RequestParam String name,
-
-            @ApiParam(value = "User login", required = true)
-            @RequestParam String login,
-
-            @ApiParam(value = "User password", required = true)
-            @RequestParam String password,
-
+            @RequestBody CreateUserApiModel request,
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("POST request to create user, from: %s, name: %s, login: %s",
-                header.getHost(), name, login));
-        return toApi(userService.create(name, login, password));
+                header.getHost(), request.getName(), request.getLogin()));
+        return toApi(userService.create(request.getName(), request.getLogin(), request.getPassword()));
     }
 
     @ApiOperation(value = "Get all users", response = UsersPagingApiModel.class)
@@ -117,7 +99,6 @@ public class UsersController {
             @RequestParam Integer page,
             @ApiParam(value = "Users list page size", required = true)
             @RequestParam Integer size,
-
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("GET request to get all users, from: %s, page: %d, size: %d",
@@ -139,7 +120,6 @@ public class UsersController {
     public List<ChatApiModel> getChats(
             @ApiParam(value = "User uuid", required = true)
             @PathVariable(name = "userId") UUID userId,
-
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("GET user chats request from %s, userId:%s ", header.getHost(), userId));

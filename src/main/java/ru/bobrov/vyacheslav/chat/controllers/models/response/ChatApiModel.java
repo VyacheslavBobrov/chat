@@ -11,7 +11,7 @@ import java.util.UUID;
 @NonNull
 public class ChatApiModel {
     UUID chatId;
-    String name;
+    String title;
     String status;
     String created;
     String updated;
