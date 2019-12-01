@@ -127,7 +127,11 @@ public class UserService {
         checkTimeInfo(user);
     }
 
-    public Page<User> getAllUsers(int page, int size) {
+    public Page<User> getAllActiveUsers(int page, int size) {
         return repository.findAllByStatus(ACTIVE, PageRequest.of(page, size));
+    }
+
+    public List<User> getAllActiveUsers() {
+        return repository.findAllByStatus(ACTIVE);
     }
 }

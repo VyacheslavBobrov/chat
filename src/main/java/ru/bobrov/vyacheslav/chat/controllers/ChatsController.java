@@ -102,6 +102,17 @@ public class ChatsController {
         return UserDataConverter.toApi(chatService.getChatUsers(chatId));
     }
 
+    @ApiOperation(value = "Get users out of chat", response = UserApiModel.class, responseContainer = "List")
+    @GetMapping("/{chatId}/users-out")
+    public List<UserApiModel> getUsersOutChat(
+            @ApiParam(value = "Chat uuid", required = true)
+            @PathVariable UUID chatId,
+            @RequestHeader HttpHeaders header
+    ) {
+        log.info(format("GET chat users out of chat request from %s, chatId:%s ", header.getHost(), chatId));
+        return UserDataConverter.toApi(chatService.getUsersOutOfChat(chatId));
+    }
+
     @ApiOperation(value = "Put chat users", response = ChatApiModel.class)
     @PostMapping("/{chatId}/users")
     public List<UserApiModel> addUsers(

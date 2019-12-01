@@ -15,4 +15,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, UUID> {
     List<User> findAllByLogin(String login);
 
     Page<User> findAllByStatus(UserStatus status, Pageable pageable);
+
+    List<User> findAllByStatus(UserStatus status);
 }

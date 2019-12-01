@@ -61,10 +61,10 @@ public class ChatService {
         return repository.save(chat);
     }
 
-    public Chat update(UUID chatId) {
+    public void update(UUID chatId) {
         Chat chat = get(chatId);
         updateTime(chat);
-        return repository.save(chat);
+        repository.save(chat);
     }
 
     public Set<User> addUsers(UUID chatId, Collection<UUID> userUUIDs) {
@@ -109,5 +109,11 @@ public class ChatService {
         if (chat.getUsers() == null || chat.getUsers().isEmpty())
             throw new IllegalArgumentException("Chat users is null or empty");
         checkTimeInfo(chat);
+    }
+
+    public List<User> getUsersOutOfChat(UUID chatId) {
+        List<User> users = userService.getAllActiveUsers();
+        users.removeAll(getChatUsers(chatId));
+        return List.copyOf(users);
     }
 }
