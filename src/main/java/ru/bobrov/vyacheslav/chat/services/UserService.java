@@ -31,7 +31,7 @@ import static ru.bobrov.vyacheslav.chat.services.Utils.*;
 @Transactional
 public class UserService {
     @NonNull UserRepository repository;
-    //@NonNull PasswordEncoder bCryptEncoder;
+    @NonNull PasswordEncoder bCryptEncoder;
 
     public User get(UUID uuid) {
         return repository.findById(uuid).orElseThrow(UserNotFoundException::new);
@@ -48,7 +48,7 @@ public class UserService {
                 .userId(UUID.randomUUID())
                 .name(name)
                 .login(login)
-                .password(password)//bCryptEncoder.encode(password))
+                .password(bCryptEncoder.encode(password))
                 .role(USER)
                 .status(ACTIVE)
                 .build();
@@ -82,7 +82,7 @@ public class UserService {
 
         if (!isBlank(password)) {
             needToSave = true;
-            user.setPassword(password);//bCryptEncoder.encode(password));
+            user.setPassword(bCryptEncoder.encode(password));
         }
 
         if (!needToSave)
