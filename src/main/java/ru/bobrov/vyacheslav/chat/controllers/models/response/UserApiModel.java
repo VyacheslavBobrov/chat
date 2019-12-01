@@ -1,5 +1,7 @@
 package ru.bobrov.vyacheslav.chat.controllers.models.response;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -8,12 +10,21 @@ import java.util.UUID;
 
 @Value
 @Builder
+@NonNull
+@ApiModel
 public class UserApiModel {
-    @NonNull UUID userId;
-    @NonNull String name;
-    @NonNull String login;
-    @NonNull String status;
-    @NonNull String role;
-    @NonNull String created;
-    @NonNull String updated;
+    @ApiModelProperty
+    UUID userId;
+    @ApiModelProperty
+    String name;
+    @ApiModelProperty
+    String login;
+    @ApiModelProperty(allowableValues = "ACTIVE, DISABLED")
+    String status;
+    @ApiModelProperty(allowableValues = "ADMIN, USER, GUEST")
+    String role;
+    @ApiModelProperty
+    String created;
+    @ApiModelProperty
+    String updated;
 }
