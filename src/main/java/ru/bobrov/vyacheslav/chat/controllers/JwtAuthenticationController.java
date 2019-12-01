@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.configs.JwtTokenUtil;
 import ru.bobrov.vyacheslav.chat.controllers.models.JwtResponse;
-import ru.bobrov.vyacheslav.chat.services.UserService;
+import ru.bobrov.vyacheslav.chat.services.JwtUserDetailsService;
 
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
@@ -28,7 +28,7 @@ import static lombok.AccessLevel.PUBLIC;
 public class JwtAuthenticationController {
     AuthenticationManager authenticationManager;
     JwtTokenUtil jwtTokenUtil;
-    UserService userService;
+    JwtUserDetailsService jwtUserDetailsService;
 
     @ApiOperation(value = "Get chat by uuid", response = JwtResponse.class)
     @PostMapping
@@ -37,7 +37,7 @@ public class JwtAuthenticationController {
             @RequestParam String password
     ) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(name, password));
-        final UserDetails userDetails = userService.loadUserByUsername(name);
+        final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(name);
         final String token = jwtTokenUtil.generateToken(userDetails);
         return JwtResponse.builder().jwtToken(token).build();
     }

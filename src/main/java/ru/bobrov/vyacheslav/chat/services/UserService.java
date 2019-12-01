@@ -5,9 +5,6 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
@@ -32,9 +29,9 @@ import static ru.bobrov.vyacheslav.chat.services.Utils.*;
 @AllArgsConstructor(access = PUBLIC)
 @FieldDefaults(level = PRIVATE)
 @Transactional
-public class UserService implements UserDetailsService {
+public class UserService {
     @NonNull UserRepository repository;
-    @NonNull PasswordEncoder bCryptEncoder;
+    //@NonNull PasswordEncoder bCryptEncoder;
 
     public User get(UUID uuid) {
         return repository.findById(uuid).orElseThrow(UserNotFoundException::new);
@@ -51,7 +48,7 @@ public class UserService implements UserDetailsService {
                 .userId(UUID.randomUUID())
                 .name(name)
                 .login(login)
-                .password(bCryptEncoder.encode(password))
+                .password(password)//bCryptEncoder.encode(password))
                 .role(USER)
                 .status(ACTIVE)
                 .build();
@@ -85,7 +82,7 @@ public class UserService implements UserDetailsService {
 
         if (!isBlank(password)) {
             needToSave = true;
-            user.setPassword(bCryptEncoder.encode(password));
+            user.setPassword(password);//bCryptEncoder.encode(password));
         }
 
         if (!needToSave)
@@ -136,16 +133,8 @@ public class UserService implements UserDetailsService {
         return repository.findAllByStatus(ACTIVE, PageRequest.of(page, size));
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public User getUserByLogin(String username) {
         List<User> users = repository.findAllByLogin(username);
-        if (users.isEmpty())
-            throw new UserNotFoundException();
-        User user = users.get(0);
-
-        return new org.springframework.security.core.userdetails.User(user.getName(),
-                user.getPassword(),
-                new ArrayList<>()
-        );
+        return users.isEmpty() ? null : users.get(0);
     }
 }

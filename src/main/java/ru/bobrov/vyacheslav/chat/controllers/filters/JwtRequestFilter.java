@@ -11,7 +11,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.bobrov.vyacheslav.chat.configs.JwtTokenUtil;
-import ru.bobrov.vyacheslav.chat.services.UserService;
+import ru.bobrov.vyacheslav.chat.services.JwtUserDetailsService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -28,7 +28,7 @@ import static ru.bobrov.vyacheslav.chat.services.Constants.TOKEN_PREFIX;
 @AllArgsConstructor(access = PUBLIC)
 @FieldDefaults(level = PRIVATE)
 public class JwtRequestFilter extends OncePerRequestFilter {
-    @NonNull UserService userService;
+    @NonNull JwtUserDetailsService jwtUserDetailsService;
     @NonNull JwtTokenUtil jwtTokenUtil;
 
     @Override
@@ -55,13 +55,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         // Once we get the token validate it.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService.loadUserByUsername(username);
+            UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
             // if token is valid configure Spring Security to manually set
             // authentication
 
             if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+                        = new UsernamePasswordAuthenticationToken(userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
