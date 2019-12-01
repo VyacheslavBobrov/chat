@@ -11,8 +11,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.controllers.converters.ChatDataConverter;
 import ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter;
-import ru.bobrov.vyacheslav.chat.controllers.models.request.CreateUserApiModel;
-import ru.bobrov.vyacheslav.chat.controllers.models.request.UpdateUserApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.ChatApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UsersPagingApiModel;
@@ -51,12 +49,14 @@ public class UsersController {
     public UserApiModel update(
             @ApiParam(value = "User uuid", required = true)
             @PathVariable UUID userId,
-            @RequestBody UpdateUserApiModel request,
+            @RequestParam String name,
+            @RequestParam String login,
+            @RequestParam String password,
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("POST request for update user, from %s, userId: %s, name: %s, login: %s",
-                header.getHost(), userId, request.getName(), request.getLogin()));
-        return toApi(userService.update(userId, request.getName(), request.getLogin(), request.getPassword()));
+                header.getHost(), userId, name, login));
+        return toApi(userService.update(userId, name, login, password));
     }
 
     @ApiOperation(value = "Block user by uuid", response = UserApiModel.class)
@@ -84,12 +84,14 @@ public class UsersController {
     @ApiOperation(value = "Create new chat user", response = UserApiModel.class)
     @PostMapping
     public UserApiModel create(
-            @RequestBody CreateUserApiModel request,
+            @RequestParam String name,
+            @RequestParam String login,
+            @RequestParam String password,
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("POST request to create user, from: %s, name: %s, login: %s",
-                header.getHost(), request.getName(), request.getLogin()));
-        return toApi(userService.create(request.getName(), request.getLogin(), request.getPassword()));
+                header.getHost(), name, login));
+        return toApi(userService.create(name, login, password));
     }
 
     @ApiOperation(value = "Get all users", response = UsersPagingApiModel.class)

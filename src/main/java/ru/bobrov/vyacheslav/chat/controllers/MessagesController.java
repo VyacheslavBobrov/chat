@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.controllers.models.request.CreateMessageApiModel;
-import ru.bobrov.vyacheslav.chat.controllers.models.request.UpdateMessageApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.MessageApiModel;
 import ru.bobrov.vyacheslav.chat.services.MessageService;
 
@@ -43,12 +42,12 @@ public class MessagesController {
     public MessageApiModel update(
             @ApiParam(value = "Message uuid", required = true)
             @PathVariable UUID messageId,
-            @RequestBody UpdateMessageApiModel request,
+            @RequestParam String message,
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("POST message update request from %s, messageId:%s, message: %s ",
-                header.getHost(), messageId, request.getMessage()));
-        return toApi(messageService.update(messageId, request.getMessage()));
+                header.getHost(), messageId, message));
+        return toApi(messageService.update(messageId, message));
     }
 
     @ApiOperation(value = "Block message by uuid", response = MessageApiModel.class)
