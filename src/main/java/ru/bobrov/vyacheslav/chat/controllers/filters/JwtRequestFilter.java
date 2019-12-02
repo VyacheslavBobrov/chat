@@ -39,6 +39,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private void authenticate(HttpServletRequest request) {
         final String tokenHeader = request.getHeader(AUTHORIZATION_HEADER);
+        if (tokenHeader == null)
+            return;
+
         final String token = getTokenFromHeader(tokenHeader);
         if (token == null) {
             logger.warn("JWT Token does not begin with Bearer String");
