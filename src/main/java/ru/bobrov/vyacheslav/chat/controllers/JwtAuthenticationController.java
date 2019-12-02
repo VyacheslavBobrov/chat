@@ -30,7 +30,7 @@ public class JwtAuthenticationController {
     JwtTokenUtil jwtTokenUtil;
     JwtUserDetailsService jwtUserDetailsService;
 
-    @ApiOperation(value = "Get chat by uuid", response = JwtResponse.class)
+    @ApiOperation(value = "Authenticate user", response = JwtResponse.class)
     @PostMapping
     public JwtResponse createAuthenticationToken(
             @RequestParam String name,
