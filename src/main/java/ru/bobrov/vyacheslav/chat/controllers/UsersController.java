@@ -96,7 +96,7 @@ public class UsersController {
         log.info(format("GET request to get all users, from: %s, page: %d, size: %d",
                 header.getHost(), page, size));
 
-        Page<User> userPage = userService.getAllActiveUsersOutOfChat(page, size);
+        Page<User> userPage = userService.getAllActiveUsers(page, size);
 
         return UsersPagingApiModel.builder()
                 .ids(userPage.get().map(User::getUserId).collect(Collectors.toUnmodifiableList()))

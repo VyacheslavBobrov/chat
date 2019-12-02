@@ -29,6 +29,9 @@ import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus.ACTIVE
 import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus.DISABLED;
 import static ru.bobrov.vyacheslav.chat.services.Utils.*;
 
+/**
+ * Сервис для работы с пользователями чатов
+ */
 @Service
 @AllArgsConstructor(access = PUBLIC)
 @FieldDefaults(level = PRIVATE)
@@ -37,16 +40,40 @@ public class UserService {
     @NonNull UserRepository repository;
     @NonNull PasswordEncoder bCryptEncoder;
 
+    /**
+     * Получить пользователя по идентификатору
+     *
+     * @param uuid {@link UUID} идентификатор пользователя
+     * @return {@link User} найденный пользователь
+     * @throws UserNotFoundException пользователь с указанным идентификатором отсутствует
+     */
     public User get(UUID uuid) {
         return repository.findById(uuid).orElseThrow(UserNotFoundException::new);
     }
 
+    /**
+     * Получить пользователей с указанными идентификаторами
+     *
+     * @param userUUIDs {@link Iterable<UUID>} идентификаторы пользователей
+     * @return {@link List<User>} список найденных пользователей
+     * @throws UserNotFoundException пользователь с указанным идентификатором отсутствует
+     */
     public List<User> get(Iterable<UUID> userUUIDs) {
         return StreamSupport
                 .stream(repository.findAllById(userUUIDs).spliterator(), false)
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    /**
+     * Создать нового пользователя
+     *
+     * @param name     имя ползователя
+     * @param login    логин пользователя
+     * @param password пароль пользователя
+     * @return {@link User} созданный пользователь
+     * @throws ResourceExistsException  пользователь с указанным логином уе существует
+     * @throws IllegalArgumentException одно из переданных полей нулевое или пустое
+     */
     public User create(String name, String login, String password) {
         User user = User.builder()
                 .userId(UUID.randomUUID())
@@ -66,6 +93,16 @@ public class UserService {
         return repository.save(user);
     }
 
+    /**
+     * Обновить данные пользователя
+     *
+     * @param uuid     {@link UUID} идентификатор пользователя
+     * @param name     имя ползователя
+     * @param login    логин пользователя
+     * @param password пароль пользователя
+     * @return {@link User} обновленный пользователь
+     * @throws UserNotFoundException пользователь с указанным идентификатором отсутствует
+     */
     public User update(UUID uuid, String name, String login, String password) {
         User user = get(uuid);
 
@@ -97,17 +134,26 @@ public class UserService {
         return repository.save(user);
     }
 
+    /**
+     * Заблокировать пользователя
+     *
+     * @param uuid {@link UUID} идентификатор пользователя
+     * @return {@link User} заблокированный пользователь
+     * @throws UserNotFoundException пользователь с указанным идентификатором отсутствует
+     */
     public User block(UUID uuid) {
         return setUserStatus(uuid, DISABLED);
     }
 
+    /**
+     * Разблокировать пользователя
+     *
+     * @param uuid {@link UUID} идентификатор пользователя
+     * @return {@link User} разблокированный пользователь
+     * @throws UserNotFoundException пользователь с указанным идентификатором отсутствует
+     */
     public User unblock(UUID uuid) {
         return setUserStatus(uuid, ACTIVE);
-    }
-
-    public Set<Chat> getUserChats(UUID uuid) {
-        User user = get(uuid);
-        return user.getChats();
     }
 
     private User setUserStatus(UUID uuid, UserStatus status) {
@@ -119,6 +165,24 @@ public class UserService {
         return user;
     }
 
+    /**
+     * Получить все чаты пользователя
+     *
+     * @param uuid {@link UUID} идентификатор пользователя
+     * @return {@link Set<Chat>} список чатов пользователя
+     * @throws UserNotFoundException пользователь с указанным идентификатором отсутствует
+     */
+    public Set<Chat> getUserChats(UUID uuid) {
+        User user = get(uuid);
+        return user.getChats();
+    }
+
+    /**
+     * Проверка существования пользователя по логину
+     *
+     * @param login логин пользователя
+     * @return true, если пользователь существует
+     */
     public boolean exists(String login) {
         return !repository.findAllByLogin(login).isEmpty();
     }
@@ -133,10 +197,23 @@ public class UserService {
         checkTimeInfo(user);
     }
 
-    public Page<User> getAllActiveUsersOutOfChat(int page, int size) {
+    /**
+     * Получить список всех активных пользователей
+     *
+     * @param page номер страницы
+     * @param size размер страницы
+     * @return {@link Page<User>} активные пользователи
+     */
+    public Page<User> getAllActiveUsers(int page, int size) {
         return repository.findAllByStatus(ACTIVE, PageRequest.of(page, size));
     }
 
+    /**
+     * Получить список активных пользователей не участвующих в указанном чате
+     *
+     * @param chatId {@link UUID} идентификатор чата
+     * @return {@link List<User>} список найденных пользователей
+     */
     public List<User> getAllActiveUsersOutOfChat(UUID chatId) {
         return repository.findAllByUserOutOfChatAndStatus(chatId, ACTIVE);
     }
