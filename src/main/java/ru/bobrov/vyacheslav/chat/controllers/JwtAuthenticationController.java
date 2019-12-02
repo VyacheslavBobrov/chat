@@ -12,8 +12,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.configs.JwtTokenUtil;
-import ru.bobrov.vyacheslav.chat.controllers.models.response.JwtResponse;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.response.UserRegistrationApiModel;
 import ru.bobrov.vyacheslav.chat.services.JwtUserDetailsService;
 import ru.bobrov.vyacheslav.chat.services.UserService;
 
@@ -36,9 +36,9 @@ public class JwtAuthenticationController {
     JwtUserDetailsService jwtUserDetailsService;
     UserService userService;
 
-    @ApiOperation(value = "Authenticate user", response = JwtResponse.class)
+    @ApiOperation(value = "Authenticate user", response = UserRegistrationApiModel.class)
     @PostMapping
-    public JwtResponse createAuthenticationToken(
+    public UserRegistrationApiModel createAuthenticationToken(
             @RequestParam String login,
             @RequestParam String password,
             @RequestHeader HttpHeaders header
@@ -47,7 +47,7 @@ public class JwtAuthenticationController {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
         final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(login);
         final String token = jwtTokenUtil.generateToken(userDetails);
-        return JwtResponse.builder().jwtToken(token).build();
+        return toApi(userService.getUserByLogin(login), token);
     }
 
     @ApiOperation(value = "Create new chat user", response = UserApiModel.class)

@@ -2,6 +2,7 @@ package ru.bobrov.vyacheslav.chat.controllers.converters;
 
 import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
+import ru.bobrov.vyacheslav.chat.controllers.models.response.UserRegistrationApiModel;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
 
 import java.util.Collection;
@@ -19,6 +20,19 @@ public class UserDataConverter {
                 .status(user.getStatus().name())
                 .created(user.getCreated().toString())
                 .updated(user.getUpdated().toString())
+                .build();
+    }
+
+    static public UserRegistrationApiModel toApi(User user, String token) {
+        return UserRegistrationApiModel.builder()
+                .userId(user.getUserId())
+                .login(user.getLogin())
+                .name(user.getName())
+                .role(user.getRole().name())
+                .status(user.getStatus().name())
+                .created(user.getCreated().toString())
+                .updated(user.getUpdated().toString())
+                .jwtToken(token)
                 .build();
     }
 
