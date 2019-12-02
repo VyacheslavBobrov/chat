@@ -40,8 +40,10 @@ public class JwtAuthenticationController {
     @PostMapping
     public JwtResponse createAuthenticationToken(
             @RequestParam String login,
-            @RequestParam String password
+            @RequestParam String password,
+            @RequestHeader HttpHeaders header
     ) {
+        log.info(format("POST authentication request, from: %s, for login: %s", header.getHost(), login));
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
         final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(login);
         final String token = jwtTokenUtil.generateToken(userDetails);
