@@ -19,10 +19,14 @@ public interface UserRepository extends PagingAndSortingRepository<User, UUID> {
     Page<User> findAllByStatus(UserStatus status, Pageable pageable);
 
     @Query(
-            value = "SELECT u.* \n" +
-                    "FROM users u \n" +
-                    "LEFT JOIN users_chats uc ON u.user_id=uc.user_id \n" +
-                    "WHERE NOT uc.chat_id=:chatId AND u.status=:#{#userStatus.name()}",
+            value = "SELECT  u.*\n" +
+                    "FROM " +
+                    "   users u\n" +
+                    "WHERE\n" +
+                    "   NOT u.user_id in (SELECT uc.user_id FROM users_chats uc WHERE uc.chat_id=:chatId)\n" +
+                    "   AND u.status=:#{#userStatus.name()} \n" +
+                    "ORDER BY \n" +
+                    "   u.user_login",
             nativeQuery = true
     )
     List<User> findAllByUserOutOfChatAndStatus(@Param("chatId") UUID chatId, @Param("userStatus") UserStatus userStatus);
