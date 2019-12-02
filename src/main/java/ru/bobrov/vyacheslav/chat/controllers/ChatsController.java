@@ -12,14 +12,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConverter;
 import ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter;
-import ru.bobrov.vyacheslav.chat.controllers.models.request.AddChatUsersApiModel;
-import ru.bobrov.vyacheslav.chat.controllers.models.request.CreateChatApiModel;
-import ru.bobrov.vyacheslav.chat.controllers.models.request.UpdateChatApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.ChatApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.MessagesPagingApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.services.ChatService;
+import ru.bobrov.vyacheslav.chat.services.UserService;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,6 +36,7 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.ChatDataConverter
 @Slf4j
 public class ChatsController {
     @NonNull ChatService chatService;
+    @NonNull UserService userService;
 
     @ApiOperation(value = "Get chat by uuid", response = ChatApiModel.class)
     @GetMapping("/{chatId}")
@@ -55,12 +54,12 @@ public class ChatsController {
     public ChatApiModel update(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
-            @RequestBody UpdateChatApiModel request,
+            @RequestParam String title,
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("POST update chat request from %s, chatId:%s, name: %s ",
-                header.getHost(), chatId, request.getTitle()));
-        return toApi(chatService.update(chatId, request.getTitle()));
+                header.getHost(), chatId, title));
+        return toApi(chatService.update(chatId, title));
     }
 
     @ApiOperation(value = "Block chat", response = ChatApiModel.class)
@@ -88,12 +87,13 @@ public class ChatsController {
     @ApiOperation(value = "Create chat", response = ChatApiModel.class)
     @PostMapping
     public ChatApiModel create(
-            @RequestBody CreateChatApiModel request,
+            @RequestParam UUID userId,
+            @RequestParam String title,
             @RequestHeader HttpHeaders header
     ) {
-        log.info(format("POST create chat request from %s, name: %s, userId: %s ",
-                header.getHost(), request.getTitle(), request.getUserId()));
-        return toApi(chatService.create(request.getTitle(), request.getUserId()));
+        log.info(format("POST create chat request from %s, title: %s, userId: %s ",
+                header.getHost(), title, userId));
+        return toApi(chatService.create(title, userId));
     }
 
     @ApiOperation(value = "Get chat users", response = UserApiModel.class, responseContainer = "List")
@@ -107,17 +107,28 @@ public class ChatsController {
         return UserDataConverter.toApi(chatService.getChatUsers(chatId));
     }
 
+    @ApiOperation(value = "Get users out of chat", response = UserApiModel.class, responseContainer = "List")
+    @GetMapping("/{chatId}/users-out")
+    public List<UserApiModel> getUsersOutChat(
+            @ApiParam(value = "Chat uuid", required = true)
+            @PathVariable UUID chatId,
+            @RequestHeader HttpHeaders header
+    ) {
+        log.info(format("GET chat users out of chat request from %s, chatId:%s ", header.getHost(), chatId));
+        return UserDataConverter.toApi(userService.getAllActiveUsersOutOfChat(chatId));
+    }
+
     @ApiOperation(value = "Put chat users", response = ChatApiModel.class)
     @PostMapping("/{chatId}/users")
     public List<UserApiModel> addUsers(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
-            @RequestBody AddChatUsersApiModel request,
+            @RequestParam List<UUID> userUUIDs,
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT chat users request from %s, chatId:%s,  userUUIDs: {%s}",
-                header.getHost(), chatId, request.getUserUUIDs().stream().map(UUID::toString).collect(Collectors.joining())));
-        return UserDataConverter.toApi(chatService.addUsers(chatId, request.getUserUUIDs()));
+                header.getHost(), chatId, userUUIDs.stream().map(UUID::toString).collect(Collectors.joining())));
+        return UserDataConverter.toApi(chatService.addUsers(chatId, userUUIDs));
     }
 
     @ApiOperation(value = "Get chat messages", response = MessagesPagingApiModel.class)
