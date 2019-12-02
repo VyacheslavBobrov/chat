@@ -131,7 +131,7 @@ public class UserService {
         checkTimeInfo(user);
     }
 
-    public Page<User> getAllActiveUsersOutOfChat(int page, int size) {
+    public Page<User> getAllActiveUsers(int page, int size) {
         return repository.findAllByStatus(ACTIVE, PageRequest.of(page, size));
     }
 
