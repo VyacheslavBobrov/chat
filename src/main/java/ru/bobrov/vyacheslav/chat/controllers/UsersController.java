@@ -84,19 +84,6 @@ public class UsersController {
         return toApi(userService.unblock(userId));
     }
 
-    @ApiOperation(value = "Create new chat user", response = UserApiModel.class)
-    @PostMapping
-    public UserApiModel create(
-            @RequestParam String name,
-            @RequestParam String login,
-            @RequestParam String password,
-            @RequestHeader HttpHeaders header
-    ) {
-        log.info(format("POST request to create user, from: %s, name: %s, login: %s",
-                header.getHost(), name, login));
-        return toApi(userService.create(name, login, password));
-    }
-
     @ApiOperation(value = "Get all users", response = UsersPagingApiModel.class)
     @GetMapping
     public UsersPagingApiModel get(

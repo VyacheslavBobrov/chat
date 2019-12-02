@@ -17,8 +17,8 @@ public class UserDataConverter {
                 .name(user.getName())
                 .role(user.getRole().name())
                 .status(user.getStatus().name())
-                .created(user.getCreated().toString()) //TODO отформатировать
-                .updated(user.getUpdated().toString()) //TODO отформатировать
+                .created(user.getCreated().toString())
+                .updated(user.getUpdated().toString())
                 .build();
     }
 

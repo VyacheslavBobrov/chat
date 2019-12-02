@@ -4,6 +4,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +28,7 @@ import static ru.bobrov.vyacheslav.chat.services.Constants.TOKEN_PREFIX;
 @Component
 @AllArgsConstructor(access = PUBLIC)
 @FieldDefaults(level = PRIVATE)
+@Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
     @NonNull JwtUserDetailsService jwtUserDetailsService;
     @NonNull JwtTokenUtil jwtTokenUtil;
@@ -38,16 +40,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String username = null;
         String jwtToken = null;
 
-        // JWT Token is in the form "Bearer token". Remove Bearer word and get
-        // only the Token
         if (requestTokenHeader != null && requestTokenHeader.startsWith(TOKEN_PREFIX)) {
             jwtToken = requestTokenHeader.substring(TOKEN_PREFIX.length());
             try {
-                username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+                if (!jwtToken.isBlank())
+                    username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+                else
+                    log.warn("JWT token is blank");
             } catch (IllegalArgumentException e) {
-                System.out.println("Unable to get JWT Token");
+                log.error("Unable to get JWT Token", e);
             } catch (ExpiredJwtException e) {
-                System.out.println("JWT Token has expired");
+                log.error("JWT Token has expired", e);
             }
         } else {
             logger.warn("JWT Token does not begin with Bearer String");
