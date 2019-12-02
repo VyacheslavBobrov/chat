@@ -6,7 +6,9 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.MessageStatus;
+import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ChatNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.MessageNotFoundException;
+import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.UserNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.MessageRepository;
 
 import javax.transaction.Transactional;
@@ -25,10 +27,27 @@ public class MessageService {
     @NonNull UserService userService;
     @NonNull ChatService chatService;
 
+    /**
+     * Получить сообщение по идентификатору
+     *
+     * @param uuid {@link UUID} идентификатор сообщения
+     * @return {@link Message} найденное сообщение
+     * @throws MessageNotFoundException сообщение с указанным идентификатором не найдено
+     */
     public Message get(UUID uuid) {
         return repository.findById(uuid).orElseThrow(MessageNotFoundException::new);
     }
 
+    /**
+     * Создать новое сообщение
+     *
+     * @param chatId {@link UUID} идентификатор чата, в котором будет создано сообщение
+     * @param userId {@link UUID} идентификатор пользователя, от имени которого создается сообщение
+     * @param text   текст сообщения
+     * @return {@link Message} созданное сообщение
+     * @throws ChatNotFoundException чат с указа4нным идентификатором не найден
+     * @throws UserNotFoundException пользователь с указа4нным идентификатором не найден
+     */
     public Message create(
             UUID chatId,
             UUID userId,
@@ -48,6 +67,14 @@ public class MessageService {
         return repository.save(message);
     }
 
+    /**
+     * Обновить сообщение
+     *
+     * @param messageId {@link UUID} идентификатор сообщения
+     * @param text      текст сообщения
+     * @return {@link Message} измененное сообщение
+     * @throws MessageNotFoundException сообщение с указанным идентификатором не найдено
+     */
     public Message update(UUID messageId, String text) {
         Message message = get(messageId);
         message.setMessage(text);
@@ -56,10 +83,24 @@ public class MessageService {
         return repository.save(message);
     }
 
+    /**
+     * Блокировать сообщение
+     *
+     * @param uuid {@link UUID} идентификатор сообщения
+     * @return {@link Message} заблокированное сообщение
+     * @throws MessageNotFoundException сообщение с указанным идентификатором не найдено
+     */
     public Message block(UUID uuid) {
         return setMessageStatus(uuid, MessageStatus.DISABLED);
     }
 
+    /**
+     * Разлокировать сообщение
+     *
+     * @param uuid {@link UUID} идентификатор сообщения
+     * @return {@link Message} разблокированное сообщение
+     * @throws MessageNotFoundException сообщение с указанным идентификатором не найдено
+     */
     public Message unblock(UUID uuid) {
         return setMessageStatus(uuid, MessageStatus.ACTIVE);
     }
