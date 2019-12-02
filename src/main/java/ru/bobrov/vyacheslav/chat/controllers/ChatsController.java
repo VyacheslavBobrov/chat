@@ -16,6 +16,7 @@ import ru.bobrov.vyacheslav.chat.controllers.models.response.MessagesPagingApiMo
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.services.ChatService;
+import ru.bobrov.vyacheslav.chat.services.UserService;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,6 +33,7 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.ChatDataConverter
 @Slf4j
 public class ChatsController {
     @NonNull ChatService chatService;
+    @NonNull UserService userService;
 
     @ApiOperation(value = "Get chat by uuid", response = ChatApiModel.class)
     @GetMapping("/{chatId}")
@@ -110,7 +112,7 @@ public class ChatsController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("GET chat users out of chat request from %s, chatId:%s ", header.getHost(), chatId));
-        return UserDataConverter.toApi(chatService.getUsersOutOfChat(chatId));
+        return UserDataConverter.toApi(userService.getAllActiveUsersOutOfChat(chatId));
     }
 
     @ApiOperation(value = "Put chat users", response = ChatApiModel.class)

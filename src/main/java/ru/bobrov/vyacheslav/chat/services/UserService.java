@@ -131,11 +131,11 @@ public class UserService {
         checkTimeInfo(user);
     }
 
-    public Page<User> getAllActiveUsers(int page, int size) {
+    public Page<User> getAllActiveUsersOutOfChat(int page, int size) {
         return repository.findAllByStatus(ACTIVE, PageRequest.of(page, size));
     }
 
-    public List<User> getAllActiveUsers() {
-        return repository.findAllByStatus(ACTIVE);
+    public List<User> getAllActiveUsersOutOfChat(UUID chatId) {
+        return repository.findAllByUserOutOfChatAndStatus(chatId, ACTIVE);
     }
 }

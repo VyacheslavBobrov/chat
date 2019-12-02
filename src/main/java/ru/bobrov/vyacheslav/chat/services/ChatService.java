@@ -110,10 +110,4 @@ public class ChatService {
             throw new IllegalArgumentException("Chat users is null or empty");
         checkTimeInfo(chat);
     }
-
-    public List<User> getUsersOutOfChat(UUID chatId) {
-        List<User> users = userService.getAllActiveUsers();
-        users.removeAll(getChatUsers(chatId));
-        return List.copyOf(users);
-    }
 }
