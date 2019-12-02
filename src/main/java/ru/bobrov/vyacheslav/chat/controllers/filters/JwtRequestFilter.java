@@ -82,6 +82,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
+        if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
+            log.info("Pre-flight");
+            response.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+            response.setHeader("Access-Control-Allow-Headers", "Access-Control-Expose-Headers" + "Authorization, content-type," +
+                    "USERID" + "ROLE" +
+                    "access-control-request-headers,access-control-request-method,accept,origin,authorization,x-requested-with,responseType,observe");
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
         authenticate(request);
         chain.doFilter(request, response);
     }

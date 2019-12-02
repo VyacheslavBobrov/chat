@@ -5,6 +5,7 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
@@ -141,6 +142,7 @@ public class UserService {
      * @return {@link User} заблокированный пользователь
      * @throws UserNotFoundException пользователь с указанным идентификатором отсутствует
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public User block(UUID uuid) {
         return setUserStatus(uuid, DISABLED);
     }
@@ -152,6 +154,7 @@ public class UserService {
      * @return {@link User} разблокированный пользователь
      * @throws UserNotFoundException пользователь с указанным идентификатором отсутствует
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public User unblock(UUID uuid) {
         return setUserStatus(uuid, ACTIVE);
     }

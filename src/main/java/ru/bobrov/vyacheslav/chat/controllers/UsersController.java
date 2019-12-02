@@ -9,7 +9,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.controllers.converters.ChatDataConverter;
 import ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter;
@@ -34,7 +33,8 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter
 @RequestMapping("/api/v1/user")
 @FieldDefaults(level = PRIVATE)
 @Slf4j
-@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+//@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+@CrossOrigin
 public class UsersController {
     @NonNull UserService userService;
 
