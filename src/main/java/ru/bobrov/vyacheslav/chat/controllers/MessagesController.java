@@ -8,6 +8,7 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.controllers.models.request.CreateMessageApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.MessageApiModel;
@@ -26,6 +27,7 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConve
 @RequestMapping("/api/v1/message")
 @FieldDefaults(level = PRIVATE)
 @Slf4j
+@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 public class MessagesController {
     @NonNull MessageService messageService;
 

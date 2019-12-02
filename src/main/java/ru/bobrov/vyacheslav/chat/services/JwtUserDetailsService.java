@@ -9,8 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
 
-import java.util.ArrayList;
-
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
 
@@ -26,9 +24,10 @@ public class JwtUserDetailsService implements UserDetailsService {
         if (user == null)
             throw new UsernameNotFoundException("User not found with username: " + username);
 
-        return new org.springframework.security.core.userdetails.User(user.getLogin(),
-                user.getPassword(),
-                new ArrayList<>()
-        );
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getLogin())
+                .password(user.getPassword())
+                .roles(user.getRole().name())
+                .build();
     }
 }
