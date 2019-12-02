@@ -12,6 +12,7 @@ import ru.bobrov.vyacheslav.chat.dataproviders.entities.ChatStatus;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ChatNotFoundException;
+import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.UserNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.ChatRepository;
 
 import javax.transaction.Transactional;
@@ -37,6 +38,7 @@ public class ChatService {
      *
      * @param uuid уникальный идентификатор чата
      * @return {@link Chat} созданный чат
+     * @throws ChatNotFoundException чат с указанным идентификатором отсутствует
      */
     public Chat get(UUID uuid) {
         return repository.findById(uuid).orElseThrow(ChatNotFoundException::new);
@@ -75,6 +77,7 @@ public class ChatService {
      * @param chatId {@link UUID} идентификатор чата
      * @param title  Новый заголовок чата
      * @return {@link Chat} обновленный чат
+     * @throws ChatNotFoundException чат с указанным идентификатором отсутствует
      */
     public Chat update(UUID chatId, String title) {
         Chat chat = get(chatId);
@@ -88,6 +91,7 @@ public class ChatService {
      * Обновить время изменения чата (при добавлении нового сообщения)
      *
      * @param chatId {@link UUID} идентификатор чата
+     * @throws ChatNotFoundException чат с указанным идентификатором отсутствует
      */
     public void update(UUID chatId) {
         Chat chat = get(chatId);
@@ -101,6 +105,8 @@ public class ChatService {
      * @param chatId    {@link UUID} идентификатор чата
      * @param userUUIDs {@link List<UUID>} список идентификаторов пользователей
      * @return {@link Set<User>} пользователи, добавленные в чат
+     * @throws ChatNotFoundException чат с указанным идентификатором отсутствует
+     * @throws UserNotFoundException пользователь с переданным идентификатором, отсутствует
      */
     public Set<User> addUsers(UUID chatId, Collection<UUID> userUUIDs) {
         Chat chat = get(chatId);
@@ -114,6 +120,7 @@ public class ChatService {
      *
      * @param uuid {@link UUID} идентификатор чата
      * @return {@link Chat} заблокированный чат
+     * @throws ChatNotFoundException чат с указанным идентификатором отсутствует
      */
     public Chat block(UUID uuid) {
         return setChatStatus(uuid, ChatStatus.DISABLED);
@@ -124,6 +131,7 @@ public class ChatService {
      *
      * @param uuid {@link UUID} идентификатор чата
      * @return {@link Chat} разблокированный чат
+     * @throws ChatNotFoundException чат с указанным идентификатором отсутствует
      */
     public Chat unblock(UUID uuid) {
         return setChatStatus(uuid, ChatStatus.ACTIVE);
@@ -142,6 +150,7 @@ public class ChatService {
      *
      * @param uuid {@link UUID} идентификатор чата{@link UUID} идентификатор чата
      * @return {@link Set<User>} пользователи чата
+     * @throws ChatNotFoundException чат с указанным идентификатором отсутствует
      */
     public Set<User> getChatUsers(UUID uuid) {
         return get(uuid).getUsers();
@@ -154,6 +163,7 @@ public class ChatService {
      * @param page номер страницы
      * @param size размер страницы
      * @return {@link Page<Message>} порция сообщений чата
+     * @throws ChatNotFoundException чат с указанным идентификатором отсутствует
      */
     public Page<Message> getChatMessages(UUID uuid, int page, int size) {
         List<Message> messages = new ArrayList<>(get(uuid).getMessages());
