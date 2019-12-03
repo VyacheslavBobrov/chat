@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.bobrov.vyacheslav.chat.configs.JwtTokenUtil;
+import ru.bobrov.vyacheslav.chat.configurations.JwtTokenUtil;
 import ru.bobrov.vyacheslav.chat.services.JwtUserDetailsService;
 
 import javax.servlet.FilterChain;
@@ -66,6 +66,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         } catch (IllegalArgumentException e) {
             log.error("Unable to get JWT Token", e);
         } catch (ExpiredJwtException e) {
+            SecurityContextHolder.clearContext();
             log.error("JWT Token has expired", e);
         }
     }
