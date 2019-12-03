@@ -189,6 +189,13 @@ public class ChatService {
         checkTimeInfo(chat);
     }
 
+    /**
+     * Убрать пользователя из чата
+     *
+     * @param chatId {@link UUID} идентификатор чата
+     * @param userId {@link UUID} идентификатор пользователя
+     * @return {@link Set<User>} новый список пользователей
+     */
     public Set<User> kickUser(UUID chatId, UUID userId) {
         Chat chat = get(chatId);
         if (chat.getCreator().getUserId().equals(userId))
