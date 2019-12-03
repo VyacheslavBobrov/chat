@@ -34,7 +34,6 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.ChatDataConverter
 @RequestMapping("/api/v1/chat")
 @FieldDefaults(level = PRIVATE)
 @Slf4j
-//@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 @CrossOrigin
 public class ChatsController {
     @NonNull ChatService chatService;

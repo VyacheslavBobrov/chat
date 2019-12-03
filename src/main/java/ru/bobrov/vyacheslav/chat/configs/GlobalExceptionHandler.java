@@ -2,6 +2,7 @@ package ru.bobrov.vyacheslav.chat.configs;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,6 +34,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> badCredentials(BadCredentialsException ex, WebRequest request) {
         return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> accessDeniedException(AccessDeniedException ex, WebRequest request) {
+        return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Throwable.class)

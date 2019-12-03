@@ -27,7 +27,6 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConve
 @FieldDefaults(level = PRIVATE)
 @Slf4j
 @CrossOrigin
-//@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 public class MessagesController {
     @NonNull MessageService messageService;
 

@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.controllers.converters.ChatDataConverter;
 import ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter;
@@ -33,7 +34,6 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter
 @RequestMapping("/api/v1/user")
 @FieldDefaults(level = PRIVATE)
 @Slf4j
-//@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 @CrossOrigin
 public class UsersController {
     @NonNull UserService userService;
@@ -64,6 +64,7 @@ public class UsersController {
         return toApi(userService.update(userId, name, login, password));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "Block user by uuid", response = UserApiModel.class)
     @PutMapping("/{userId}/block")
     public UserApiModel block(
@@ -75,6 +76,7 @@ public class UsersController {
         return toApi(userService.block(userId));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "Unblock user by uuid", response = UserApiModel.class)
     @PutMapping("/{userId}/unblock")
     public UserApiModel unblock(
