@@ -10,6 +10,7 @@ import java.util.Date;
 @Builder
 public class ErrorDetails {
     @NonNull Date timestamp;
+    String title;
     String message;
     String details;
 }

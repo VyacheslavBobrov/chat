@@ -1,4 +1,4 @@
-package ru.bobrov.vyacheslav.chat.configs;
+package ru.bobrov.vyacheslav.chat.configurations;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

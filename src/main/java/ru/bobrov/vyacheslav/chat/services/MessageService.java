@@ -14,6 +14,7 @@ import ru.bobrov.vyacheslav.chat.dataproviders.repositories.MessageRepository;
 import javax.transaction.Transactional;
 import java.util.UUID;
 
+import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.services.Utils.*;
@@ -22,10 +23,12 @@ import static ru.bobrov.vyacheslav.chat.services.Utils.*;
 @AllArgsConstructor(access = PUBLIC)
 @FieldDefaults(level = PRIVATE)
 @Transactional
+@NonNull
 public class MessageService {
-    @NonNull MessageRepository repository;
-    @NonNull UserService userService;
-    @NonNull ChatService chatService;
+    MessageRepository repository;
+    UserService userService;
+    ChatService chatService;
+    Translator translator;
 
     /**
      * Получить сообщение по идентификатору
@@ -35,7 +38,10 @@ public class MessageService {
      * @throws MessageNotFoundException сообщение с указанным идентификатором не найдено
      */
     public Message get(UUID uuid) {
-        return repository.findById(uuid).orElseThrow(MessageNotFoundException::new);
+        return repository.findById(uuid).orElseThrow(() -> new MessageNotFoundException(
+                translator.translate("message-not-found-title"),
+                format(translator.translate("message-not-found"), uuid)
+        ));
     }
 
     /**

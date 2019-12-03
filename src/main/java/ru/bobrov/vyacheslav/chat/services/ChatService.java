@@ -19,6 +19,7 @@ import ru.bobrov.vyacheslav.chat.dataproviders.repositories.ChatRepository;
 import javax.transaction.Transactional;
 import java.util.*;
 
+import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.services.Utils.*;
@@ -30,9 +31,11 @@ import static ru.bobrov.vyacheslav.chat.services.Utils.*;
 @AllArgsConstructor(access = PUBLIC)
 @FieldDefaults(level = PRIVATE)
 @Transactional
+@NonNull
 public class ChatService {
-    @NonNull ChatRepository repository;
-    @NonNull UserService userService;
+    ChatRepository repository;
+    UserService userService;
+    Translator translator;
 
     /**
      * Получить чат по идентификатору
@@ -42,7 +45,10 @@ public class ChatService {
      * @throws ChatNotFoundException чат с указанным идентификатором отсутствует
      */
     public Chat get(UUID uuid) {
-        return repository.findById(uuid).orElseThrow(ChatNotFoundException::new);
+        return repository.findById(uuid).orElseThrow(() -> new ChatNotFoundException(
+                translator.translate("chat-not-found-title"),
+                format(translator.translate("chat-not-found"), uuid)
+        ));
     }
 
     /**
@@ -186,7 +192,13 @@ public class ChatService {
     public Set<User> kickUser(UUID chatId, UUID userId) {
         Chat chat = get(chatId);
         if (chat.getCreator().getUserId().equals(userId))
-            throw new IllegalOperationException("Wrong operation. Сan not be deleted from the chat of its creator");
+            throw new IllegalOperationException(
+                    translator.translate("wrong-kick-operation-title"),
+                    format(translator.translate("wrong-kick-operation"),
+                            chat.getCreator().getLogin(),
+                            chat.getTitle()
+                    )
+            );
 
         Set<User> users = chat.getUsers();
         User userToKick = users.stream().filter(user -> user.getUserId().equals(userId)).findFirst().orElse(null);

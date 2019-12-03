@@ -37,9 +37,11 @@ import static ru.bobrov.vyacheslav.chat.services.Utils.*;
 @AllArgsConstructor(access = PUBLIC)
 @FieldDefaults(level = PRIVATE)
 @Transactional
+@NonNull
 public class UserService {
-    @NonNull UserRepository repository;
-    @NonNull PasswordEncoder bCryptEncoder;
+    UserRepository repository;
+    PasswordEncoder bCryptEncoder;
+    Translator translator;
 
     /**
      * Получить пользователя по идентификатору
@@ -49,7 +51,10 @@ public class UserService {
      * @throws UserNotFoundException пользователь с указанным идентификатором отсутствует
      */
     public User get(UUID uuid) {
-        return repository.findById(uuid).orElseThrow(UserNotFoundException::new);
+        return repository.findById(uuid).orElseThrow(() -> new UserNotFoundException(
+                translator.translate("user-not-found-title"),
+                format(translator.translate("user-not-found"), uuid)
+        ));
     }
 
     /**
@@ -89,7 +94,10 @@ public class UserService {
         validate(user);
 
         if (exists(login))
-            throw new ResourceExistsException(format("User login: %s - is exists", login));
+            throw new ResourceExistsException(
+                    translator.translate("user-login-exists-title"),
+                    format(translator.translate("user-login-exists"), login)
+            );
 
         return repository.save(user);
     }

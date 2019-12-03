@@ -5,8 +5,6 @@ import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.NotImplementedExceptio
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 public class Utils {
     static public void assertNotNull(Object val, String message) {
@@ -38,10 +36,10 @@ public class Utils {
     }
 
     static public <T> T toDo() {
-        return toDo("Not implemented");
+        return toDo("method-not-implemented-title", "method-not-implemented");
     }
 
-    static public <T> T toDo(String message) {
-        throw new NotImplementedException(message);
+    static public <T> T toDo(String title, String message) {
+        throw new NotImplementedException(title, message);
     }
 }

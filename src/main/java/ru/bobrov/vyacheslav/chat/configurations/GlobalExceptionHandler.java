@@ -1,5 +1,6 @@
-package ru.bobrov.vyacheslav.chat.configs;
+package ru.bobrov.vyacheslav.chat.configurations;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -8,24 +9,28 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.*;
+import ru.bobrov.vyacheslav.chat.services.Translator;
 
 import java.util.Date;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    @Autowired
+    private Translator translator;
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> resourceNotFound(ResourceNotFoundException ex, WebRequest request) {
-        return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(fillChatExceptionDetails(ex, request), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ResourceExistsException.class)
     public ResponseEntity<?> resourceExists(ResourceExistsException ex, WebRequest request) {
-        return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(fillChatExceptionDetails(ex, request), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NotImplementedException.class)
     public ResponseEntity<?> notImplemented(NotImplementedException ex, WebRequest request) {
-        return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>(fillChatExceptionDetails(ex, request), HttpStatus.NOT_IMPLEMENTED);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -40,7 +45,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalOperationException.class)
     public ResponseEntity<?> illegalOperation(IllegalOperationException ex, WebRequest request) {
-        return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(fillChatExceptionDetails(ex, request), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Throwable.class)
@@ -48,9 +53,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    private ErrorDetails fillChatExceptionDetails(ChatExceptions ex, WebRequest request) {
+        return ErrorDetails.builder()
+                .timestamp(new Date())
+                .title(ex.getTitle())
+                .message(ex.getMessage())
+                .details(request.getDescription(false))
+                .build();
+    }
+
     private ErrorDetails fillDetails(Throwable ex, WebRequest request) {
         return ErrorDetails.builder()
                 .timestamp(new Date())
+                .title(translator.translate("internal-server-error"))
                 .message(ex.getMessage())
                 .details(request.getDescription(false))
                 .build();

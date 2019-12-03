@@ -11,7 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import ru.bobrov.vyacheslav.chat.configs.JwtTokenUtil;
+import ru.bobrov.vyacheslav.chat.configurations.JwtTokenUtil;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserRegistrationApiModel;
 import ru.bobrov.vyacheslav.chat.services.JwtUserDetailsService;

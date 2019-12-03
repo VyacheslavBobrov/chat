@@ -1,7 +1,16 @@
 package ru.bobrov.vyacheslav.chat.dataproviders.exceptions;
 
-public class NotImplementedException extends RuntimeException {
-    public NotImplementedException(String message) {
-        super(message);
-    }
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@EqualsAndHashCode(callSuper = true)
+public class NotImplementedException extends RuntimeException implements ChatExceptions {
+    String title;
+    String message;
 }
