@@ -36,9 +36,10 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.ChatDataConverter
 @FieldDefaults(level = PRIVATE)
 @Slf4j
 @CrossOrigin
+@NonNull
 public class ChatsController {
-    @NonNull ChatService chatService;
-    @NonNull UserService userService;
+    ChatService chatService;
+    UserService userService;
 
     @ApiOperation(value = "Get chat by uuid", response = ChatApiModel.class)
     @GetMapping("/{chatId}")
@@ -67,7 +68,7 @@ public class ChatsController {
 
     @PreAuthorize("@chatSecurityPolicy.canBlockOrUnblockChat(principal, #chatId)")
     @ApiOperation(value = "Block chat", response = ChatApiModel.class)
-    @PutMapping("/{chatId}/block")
+    @PostMapping("/{chatId}/block")
     public ChatApiModel block(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,
@@ -79,7 +80,7 @@ public class ChatsController {
 
     @PreAuthorize("@chatSecurityPolicy.canBlockOrUnblockChat(principal, #chatId)")
     @ApiOperation(value = "Unlock chat", response = ChatApiModel.class)
-    @PutMapping("/{chatId}/unblock")
+    @PostMapping("/{chatId}/unblock")
     public ChatApiModel unblock(
             @ApiParam(value = "Chat uuid", required = true)
             @PathVariable UUID chatId,

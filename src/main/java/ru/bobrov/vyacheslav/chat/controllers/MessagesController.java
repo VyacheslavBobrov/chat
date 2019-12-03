@@ -58,7 +58,7 @@ public class MessagesController {
 
     @PreAuthorize("@messageSecurityPolicy.canUpdateMessage(principal, #messageId)")
     @ApiOperation(value = "Block message by uuid", response = MessageApiModel.class)
-    @PutMapping("/{messageId}/block")
+    @PostMapping("/{messageId}/block")
     public MessageApiModel block(
             @ApiParam(value = "Message uuid", required = true)
             @PathVariable UUID messageId,
@@ -70,7 +70,7 @@ public class MessagesController {
 
     @PreAuthorize("@messageSecurityPolicy.canUpdateMessage(principal, #messageId)")
     @ApiOperation(value = "Unblock message by uuid", response = MessageApiModel.class)
-    @PutMapping("/{messageId}/unblock")
+    @PostMapping("/{messageId}/unblock")
     public MessageApiModel unblock(
             @ApiParam(value = "Message uuid", required = true)
             @PathVariable UUID messageId,

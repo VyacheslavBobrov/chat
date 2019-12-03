@@ -67,7 +67,7 @@ public class UsersController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "Block user by uuid", response = UserApiModel.class)
-    @PutMapping("/{userId}/block")
+    @PostMapping("/{userId}/block")
     public UserApiModel block(
             @ApiParam(value = "User uuid", required = true)
             @PathVariable UUID userId,
@@ -79,7 +79,7 @@ public class UsersController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "Unblock user by uuid", response = UserApiModel.class)
-    @PutMapping("/{userId}/unblock")
+    @PostMapping("/{userId}/unblock")
     public UserApiModel unblock(
             @ApiParam(value = "User uuid", required = true)
             @PathVariable UUID userId,
