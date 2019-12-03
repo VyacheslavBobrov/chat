@@ -34,6 +34,19 @@ import static ru.bobrov.vyacheslav.chat.services.Constants.TOKEN_PREFIX;
 @Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
     static final Pattern TOKEN_PATTERN = Pattern.compile(format("^%s\\s+(\\S*)$", TOKEN_PREFIX));
+    static final String[] ALLOW_HEADERS = {
+            "Access-Control-Expose-Headers",
+            "Authorization",
+            "accept",
+            "access-control-request-headers",
+            "access-control-request-method",
+            "content-type",
+            "observe",
+            "origin",
+            "responseType",
+            "x-requested-with"
+    };
+
     @NonNull JwtUserDetailsService jwtUserDetailsService;
     @NonNull JwtTokenUtil jwtTokenUtil;
 
@@ -85,9 +98,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
             log.info("Pre-flight");
             response.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
-            response.setHeader("Access-Control-Allow-Headers", "Access-Control-Expose-Headers" + "Authorization, content-type," +
-                    "USERID" + "ROLE" +
-                    "access-control-request-headers,access-control-request-method,accept,origin,authorization,x-requested-with,responseType,observe");
+            response.setHeader("Access-Control-Allow-Headers", String.join(",", ALLOW_HEADERS));
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setStatus(HttpServletResponse.SC_OK);
             return;
