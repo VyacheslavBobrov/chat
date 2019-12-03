@@ -49,7 +49,7 @@ public class UsersController {
         return toApi(userService.get(userId));
     }
 
-    @PreAuthorize("@userSecurityPolicy.mayEditUser(principal, #userId)")
+    @PreAuthorize("@userSecurityPolicy.canEditUser(principal, #userId)")
     @ApiOperation(value = "Update user data", response = UserApiModel.class)
     @PostMapping("/{userId}")
     public UserApiModel update(
@@ -112,7 +112,7 @@ public class UsersController {
                 .build();
     }
 
-    @PreAuthorize("@userSecurityPolicy.mayGetChats(principal, #userId)")
+    @PreAuthorize("@userSecurityPolicy.canGetChats(principal, #userId)")
     @ApiOperation(value = "Get chats for user", response = ChatApiModel.class, responseContainer = "List")
     @GetMapping("/{userId}/chats")
     public List<ChatApiModel> getChats(

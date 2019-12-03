@@ -23,17 +23,25 @@ import static ru.bobrov.vyacheslav.chat.controllers.policies.Util.isCurrentUserI
 public class ChatSecurityPolicy {
     ChatService chatService;
 
-    public boolean mayBlockOrUnblockChat(@NonNull UserDetails principal, @NonNull UUID chatId) {
+    public boolean canBlockOrUnblockChat(@NonNull UserDetails principal, @NonNull UUID chatId) {
+        //Заблокировать и разблокировать чат может админ и создатель чата
         return isAdmin(principal) || isChatCreator(principal, chatId);
     }
 
-    public boolean mayReadChat(@NonNull UserDetails principal, @NonNull UUID chatId) {
+    public boolean canReadChat(@NonNull UserDetails principal, @NonNull UUID chatId) {
+        //Данные чата может читать админ и участники чата
         return isAdmin(principal) || chatService.getChatUsers(chatId)
                 .stream().anyMatch(user -> isCurrentUserId(principal, user.getUserId()));
     }
 
-    public boolean mayUpdateChat(@NonNull UserDetails principal, @NonNull UUID chatId) {
+    public boolean canUpdateChat(@NonNull UserDetails principal, @NonNull UUID chatId) {
+        //Обновлять данные чата могут админ и создатель чата
         return isAdmin(principal) || isChatCreator(principal, chatId);
+    }
+
+    public boolean canKickUser(@NonNull UserDetails principal, @NonNull UUID chatId, @NonNull UUID userId) {
+        //Из чата могут выбросить пользователя: админ, создатель чата, и сам пользователь.
+        return isAdmin(principal) || isChatCreator(principal, chatId) || isCurrentUserId(principal, userId);
     }
 
     public boolean isChatCreator(UserDetails principal, UUID chatId) {

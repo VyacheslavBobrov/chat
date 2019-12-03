@@ -30,7 +30,7 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConve
 public class MessagesController {
     @NonNull MessageService messageService;
 
-    @PreAuthorize("@messageSecurityPolicy.mayReadMessage(principal, #messageId)")
+    @PreAuthorize("@messageSecurityPolicy.canReadMessage(principal, #messageId)")
     @ApiOperation(value = "Get message by uuid", response = MessageApiModel.class)
     @GetMapping("/{messageId}")
     public MessageApiModel get(
@@ -42,7 +42,7 @@ public class MessagesController {
         return toApi(messageService.get(messageId));
     }
 
-    @PreAuthorize("@messageSecurityPolicy.mayUpdateMessage(principal, #messageId)")
+    @PreAuthorize("@messageSecurityPolicy.canUpdateMessage(principal, #messageId)")
     @ApiOperation(value = "Update message data", response = MessageApiModel.class)
     @PostMapping("/{messageId}")
     public MessageApiModel update(
@@ -56,7 +56,7 @@ public class MessagesController {
         return toApi(messageService.update(messageId, message));
     }
 
-    @PreAuthorize("@messageSecurityPolicy.mayUpdateMessage(principal, #messageId)")
+    @PreAuthorize("@messageSecurityPolicy.canUpdateMessage(principal, #messageId)")
     @ApiOperation(value = "Block message by uuid", response = MessageApiModel.class)
     @PutMapping("/{messageId}/block")
     public MessageApiModel block(
@@ -68,7 +68,7 @@ public class MessagesController {
         return toApi(messageService.block(messageId));
     }
 
-    @PreAuthorize("@messageSecurityPolicy.mayUpdateMessage(principal, #messageId)")
+    @PreAuthorize("@messageSecurityPolicy.canUpdateMessage(principal, #messageId)")
     @ApiOperation(value = "Unblock message by uuid", response = MessageApiModel.class)
     @PutMapping("/{messageId}/unblock")
     public MessageApiModel unblock(
@@ -80,7 +80,7 @@ public class MessagesController {
         return toApi(messageService.unblock(messageId));
     }
 
-    @PreAuthorize("@messageSecurityPolicy.mayCreateMessage(principal, #chatId, #userId)")
+    @PreAuthorize("@messageSecurityPolicy.canCreateMessage(principal, #chatId, #userId)")
     @ApiOperation(value = "Create message", response = MessageApiModel.class)
     @PostMapping
     public MessageApiModel create(

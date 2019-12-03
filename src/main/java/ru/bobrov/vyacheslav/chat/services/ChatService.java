@@ -12,6 +12,7 @@ import ru.bobrov.vyacheslav.chat.dataproviders.entities.ChatStatus;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ChatNotFoundException;
+import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.IllegalOperationException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.UserNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.ChatRepository;
 
@@ -180,5 +181,20 @@ public class ChatService {
         if (chat.getUsers() == null || chat.getUsers().isEmpty())
             throw new IllegalArgumentException("Chat users is null or empty");
         checkTimeInfo(chat);
+    }
+
+    public Set<User> kickUser(UUID chatId, UUID userId) {
+        Chat chat = get(chatId);
+        if (chat.getCreator().getUserId().equals(userId))
+            throw new IllegalOperationException("Wrong operation. Сan not be deleted from the chat of its creator");
+
+        Set<User> users = chat.getUsers();
+        User userToKick = users.stream().filter(user -> user.getUserId().equals(userId)).findFirst().orElse(null);
+        if (userToKick == null)
+            return users;
+
+        users.remove(userToKick);
+        repository.save(chat);
+        return users;
     }
 }

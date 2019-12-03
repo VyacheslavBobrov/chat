@@ -51,7 +51,7 @@ public class ChatsController {
         return toApi(chatService.get(chatId));
     }
 
-    @PreAuthorize("@chatSecurityPolicy.mayUpdateChat(principal, #chatId)")
+    @PreAuthorize("@chatSecurityPolicy.canUpdateChat(principal, #chatId)")
     @ApiOperation(value = "Update chat data", response = ChatApiModel.class)
     @PostMapping("/{chatId}")
     public ChatApiModel update(
@@ -65,7 +65,7 @@ public class ChatsController {
         return toApi(chatService.update(chatId, title));
     }
 
-    @PreAuthorize("@chatSecurityPolicy.mayBlockOrUnblockChat(principal, #chatId)")
+    @PreAuthorize("@chatSecurityPolicy.canBlockOrUnblockChat(principal, #chatId)")
     @ApiOperation(value = "Block chat", response = ChatApiModel.class)
     @PutMapping("/{chatId}/block")
     public ChatApiModel block(
@@ -77,7 +77,7 @@ public class ChatsController {
         return toApi(chatService.block(chatId));
     }
 
-    @PreAuthorize("@chatSecurityPolicy.mayBlockOrUnblockChat(principal, #chatId)")
+    @PreAuthorize("@chatSecurityPolicy.canBlockOrUnblockChat(principal, #chatId)")
     @ApiOperation(value = "Unlock chat", response = ChatApiModel.class)
     @PutMapping("/{chatId}/unblock")
     public ChatApiModel unblock(
@@ -101,7 +101,7 @@ public class ChatsController {
         return toApi(chatService.create(title, userId));
     }
 
-    @PreAuthorize("@chatSecurityPolicy.mayReadChat(principal, #chatId)")
+    @PreAuthorize("@chatSecurityPolicy.canReadChat(principal, #chatId)")
     @ApiOperation(value = "Get chat users", response = UserApiModel.class, responseContainer = "List")
     @GetMapping("/{chatId}/users")
     public List<UserApiModel> getUsers(
@@ -113,7 +113,7 @@ public class ChatsController {
         return UserDataConverter.toApi(chatService.getChatUsers(chatId));
     }
 
-    @PreAuthorize("@chatSecurityPolicy.mayReadChat(principal, #chatId)")
+    @PreAuthorize("@chatSecurityPolicy.canReadChat(principal, #chatId)")
     @ApiOperation(value = "Get users out of chat", response = UserApiModel.class, responseContainer = "List")
     @GetMapping("/{chatId}/users-out")
     public List<UserApiModel> getUsersOutChat(
@@ -125,8 +125,8 @@ public class ChatsController {
         return UserDataConverter.toApi(userService.getAllActiveUsersOutOfChat(chatId));
     }
 
-    @PreAuthorize("@chatSecurityPolicy.mayUpdateChat(principal, #chatId)")
-    @ApiOperation(value = "Put chat users", response = ChatApiModel.class, responseContainer = "List")
+    @PreAuthorize("@chatSecurityPolicy.canUpdateChat(principal, #chatId)")
+    @ApiOperation(value = "Put chat users", response = UserApiModel.class, responseContainer = "List")
     @PostMapping("/{chatId}/users")
     public List<UserApiModel> addUsers(
             @ApiParam(value = "Chat uuid", required = true)
@@ -134,12 +134,26 @@ public class ChatsController {
             @RequestParam List<UUID> userUUIDs,
             @RequestHeader HttpHeaders header
     ) {
-        log.info(format("PUT chat users request from %s, chatId:%s,  userUUIDs: {%s}",
+        log.info(format("POST chat users request from %s, chatId:%s,  userUUIDs: {%s}",
                 header.getHost(), chatId, userUUIDs.stream().map(UUID::toString).collect(Collectors.joining())));
         return UserDataConverter.toApi(chatService.addUsers(chatId, userUUIDs));
     }
 
-    @PreAuthorize("@chatSecurityPolicy.mayReadChat(principal, #chatId)")
+    @PreAuthorize("@chatSecurityPolicy.canKickUser(principal, #chatId, #userId)")
+    @ApiOperation(value = "Kick user from chat", response = UserApiModel.class, responseContainer = "List")
+    @PostMapping("/{chatId}/kick")
+    public List<UserApiModel> kickUser(
+            @ApiParam(value = "Chat uuid", required = true)
+            @PathVariable UUID chatId,
+            @RequestParam UUID userId,
+            @RequestHeader HttpHeaders header
+    ) {
+        log.info(format("POST kick user chat user request from %s, chatId:%s,  userId: {%s}",
+                header.getHost(), chatId, userId));
+        return UserDataConverter.toApi(chatService.kickUser(chatId, userId));
+    }
+
+    @PreAuthorize("@chatSecurityPolicy.canReadChat(principal, #chatId)")
     @ApiOperation(value = "Get chat messages", response = MessagesPagingApiModel.class)
     @GetMapping("/{chatId}/messages")
     public MessagesPagingApiModel getMessages(

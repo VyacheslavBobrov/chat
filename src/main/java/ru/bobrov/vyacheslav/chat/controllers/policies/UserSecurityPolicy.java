@@ -12,11 +12,13 @@ import static ru.bobrov.vyacheslav.chat.controllers.policies.Util.isCurrentUserI
 @Component
 @SuppressWarnings("unused")
 public class UserSecurityPolicy {
-    public boolean mayEditUser(@NonNull UserDetails principal, @NonNull UUID userId) {
+    public boolean canEditUser(@NonNull UserDetails principal, @NonNull UUID userId) {
+        //Пользователя может редактировать админ и сам пользователь
         return isAdmin(principal) || isCurrentUserId(principal, userId);
     }
 
-    public boolean mayGetChats(@NonNull UserDetails principal, @NonNull UUID userId) {
+    public boolean canGetChats(@NonNull UserDetails principal, @NonNull UUID userId) {
+        //Чаты пользователя может читать админ и сам пользователь
         return isAdmin(principal) || isCurrentUserId(principal, userId);
     }
 }

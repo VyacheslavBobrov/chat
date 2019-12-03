@@ -7,17 +7,14 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
-import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ErrorDetails;
-import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.NotImplementedException;
-import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ResourceExistsException;
-import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ResourceNotFoundException;
+import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.*;
 
 import java.util.Date;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<?> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+    public ResponseEntity<?> resourceNotFound(ResourceNotFoundException ex, WebRequest request) {
         return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.NOT_FOUND);
     }
 
@@ -37,8 +34,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<?> accessDeniedException(AccessDeniedException ex, WebRequest request) {
+    public ResponseEntity<?> accessDenied(AccessDeniedException ex, WebRequest request) {
         return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(IllegalOperationException.class)
+    public ResponseEntity<?> illegalOperation(IllegalOperationException ex, WebRequest request) {
+        return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Throwable.class)

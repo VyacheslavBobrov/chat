@@ -25,16 +25,20 @@ public class MessageSecurityPolicy {
     MessageService messageService;
     ChatService chatService;
 
-    public boolean mayUpdateMessage(@NonNull UserDetails principal, @NonNull UUID messageId) {
+    public boolean canUpdateMessage(@NonNull UserDetails principal, @NonNull UUID messageId) {
+        //Сообщение может редактировать его создатель и админ
         return isAdmin(principal) || isMessageCreator(principal, messageId);
     }
 
-    public boolean mayCreateMessage(@NonNull UserDetails principal, @NonNull UUID chatId, @NonNull UUID userId) {
+    public boolean canCreateMessage(@NonNull UserDetails principal, @NonNull UUID chatId, @NonNull UUID userId) {
+        //Сообщение можно создавать только от своего имени, админ может создавать сообщения везде,
+        // пользователь только в том чате, в который он добавлен
         return isCurrentUserId(principal, userId) && (isAdmin(principal) || userInChat(principal, chatId));
     }
 
-    public boolean mayReadMessage(@NonNull UserDetails principal, @NonNull UUID messageId) {
+    public boolean canReadMessage(@NonNull UserDetails principal, @NonNull UUID messageId) {
         Message message = messageService.get(messageId);
+        //Сообщение может читать админ, и пользователь чата, которому принадлежит сообщение
         return isAdmin(principal) || userInChat(principal, message.getChat().getChatId());
     }
 
