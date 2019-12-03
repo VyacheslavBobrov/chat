@@ -1,10 +1,15 @@
-package ru.bobrov.vyacheslav.chat.dataproviders.exceptions;
+package ru.bobrov.vyacheslav.chat.configs;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ErrorDetails;
+import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.NotImplementedException;
+import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ResourceExistsException;
+import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ResourceNotFoundException;
 
 import java.util.Date;
 
@@ -23,6 +28,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotImplementedException.class)
     public ResponseEntity<?> notImplemented(NotImplementedException ex, WebRequest request) {
         return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<?> badCredentials(BadCredentialsException ex, WebRequest request) {
+        return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Throwable.class)
