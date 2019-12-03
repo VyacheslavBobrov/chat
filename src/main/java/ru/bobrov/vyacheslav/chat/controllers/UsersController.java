@@ -49,14 +49,15 @@ public class UsersController {
         return toApi(userService.get(userId));
     }
 
+    @PreAuthorize("@userSecurityPolicy.mayEditUser(principal, #userId)")
     @ApiOperation(value = "Update user data", response = UserApiModel.class)
     @PostMapping("/{userId}")
     public UserApiModel update(
             @ApiParam(value = "User uuid", required = true)
             @PathVariable UUID userId,
-            @RequestParam String name,
-            @RequestParam String login,
-            @RequestParam String password,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String login,
+            @RequestParam(required = false) String password,
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("POST request for update user, from %s, userId: %s, name: %s, login: %s",
@@ -111,6 +112,7 @@ public class UsersController {
                 .build();
     }
 
+    @PreAuthorize("@userSecurityPolicy.mayGetChats(principal, #userId)")
     @ApiOperation(value = "Get chats for user", response = ChatApiModel.class, responseContainer = "List")
     @GetMapping("/{userId}/chats")
     public List<ChatApiModel> getChats(

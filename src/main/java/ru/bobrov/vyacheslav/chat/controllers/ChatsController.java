@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConverter;
 import ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter;
@@ -50,6 +51,7 @@ public class ChatsController {
         return toApi(chatService.get(chatId));
     }
 
+    @PreAuthorize("@chatSecurityPolicy.mayUpdateChat(principal, #chatId)")
     @ApiOperation(value = "Update chat data", response = ChatApiModel.class)
     @PostMapping("/{chatId}")
     public ChatApiModel update(
@@ -63,6 +65,7 @@ public class ChatsController {
         return toApi(chatService.update(chatId, title));
     }
 
+    @PreAuthorize("@chatSecurityPolicy.mayBlockOrUnblockChat(principal, #chatId)")
     @ApiOperation(value = "Block chat", response = ChatApiModel.class)
     @PutMapping("/{chatId}/block")
     public ChatApiModel block(
@@ -74,6 +77,7 @@ public class ChatsController {
         return toApi(chatService.block(chatId));
     }
 
+    @PreAuthorize("@chatSecurityPolicy.mayBlockOrUnblockChat(principal, #chatId)")
     @ApiOperation(value = "Unlock chat", response = ChatApiModel.class)
     @PutMapping("/{chatId}/unblock")
     public ChatApiModel unblock(
@@ -97,6 +101,7 @@ public class ChatsController {
         return toApi(chatService.create(title, userId));
     }
 
+    @PreAuthorize("@chatSecurityPolicy.mayReadChat(principal, #chatId)")
     @ApiOperation(value = "Get chat users", response = UserApiModel.class, responseContainer = "List")
     @GetMapping("/{chatId}/users")
     public List<UserApiModel> getUsers(
@@ -108,6 +113,7 @@ public class ChatsController {
         return UserDataConverter.toApi(chatService.getChatUsers(chatId));
     }
 
+    @PreAuthorize("@chatSecurityPolicy.mayReadChat(principal, #chatId)")
     @ApiOperation(value = "Get users out of chat", response = UserApiModel.class, responseContainer = "List")
     @GetMapping("/{chatId}/users-out")
     public List<UserApiModel> getUsersOutChat(
@@ -119,7 +125,8 @@ public class ChatsController {
         return UserDataConverter.toApi(userService.getAllActiveUsersOutOfChat(chatId));
     }
 
-    @ApiOperation(value = "Put chat users", response = ChatApiModel.class)
+    @PreAuthorize("@chatSecurityPolicy.mayUpdateChat(principal, #chatId)")
+    @ApiOperation(value = "Put chat users", response = ChatApiModel.class, responseContainer = "List")
     @PostMapping("/{chatId}/users")
     public List<UserApiModel> addUsers(
             @ApiParam(value = "Chat uuid", required = true)
@@ -132,6 +139,7 @@ public class ChatsController {
         return UserDataConverter.toApi(chatService.addUsers(chatId, userUUIDs));
     }
 
+    @PreAuthorize("@chatSecurityPolicy.mayReadChat(principal, #chatId)")
     @ApiOperation(value = "Get chat messages", response = MessagesPagingApiModel.class)
     @GetMapping("/{chatId}/messages")
     public MessagesPagingApiModel getMessages(

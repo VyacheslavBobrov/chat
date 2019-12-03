@@ -8,8 +8,8 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ru.bobrov.vyacheslav.chat.controllers.models.request.CreateMessageApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.MessageApiModel;
 import ru.bobrov.vyacheslav.chat.services.MessageService;
 
@@ -30,6 +30,7 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConve
 public class MessagesController {
     @NonNull MessageService messageService;
 
+    @PreAuthorize("@messageSecurityPolicy.mayReadMessage(principal, #messageId)")
     @ApiOperation(value = "Get message by uuid", response = MessageApiModel.class)
     @GetMapping("/{messageId}")
     public MessageApiModel get(
@@ -41,6 +42,7 @@ public class MessagesController {
         return toApi(messageService.get(messageId));
     }
 
+    @PreAuthorize("@messageSecurityPolicy.mayUpdateMessage(principal, #messageId)")
     @ApiOperation(value = "Update message data", response = MessageApiModel.class)
     @PostMapping("/{messageId}")
     public MessageApiModel update(
@@ -54,6 +56,7 @@ public class MessagesController {
         return toApi(messageService.update(messageId, message));
     }
 
+    @PreAuthorize("@messageSecurityPolicy.mayUpdateMessage(principal, #messageId)")
     @ApiOperation(value = "Block message by uuid", response = MessageApiModel.class)
     @PutMapping("/{messageId}/block")
     public MessageApiModel block(
@@ -65,6 +68,7 @@ public class MessagesController {
         return toApi(messageService.block(messageId));
     }
 
+    @PreAuthorize("@messageSecurityPolicy.mayUpdateMessage(principal, #messageId)")
     @ApiOperation(value = "Unblock message by uuid", response = MessageApiModel.class)
     @PutMapping("/{messageId}/unblock")
     public MessageApiModel unblock(
@@ -76,14 +80,17 @@ public class MessagesController {
         return toApi(messageService.unblock(messageId));
     }
 
+    @PreAuthorize("@messageSecurityPolicy.mayCreateMessage(principal, #chatId, #userId)")
     @ApiOperation(value = "Create message", response = MessageApiModel.class)
     @PostMapping
     public MessageApiModel create(
-            @RequestBody CreateMessageApiModel request,
+            @RequestParam UUID chatId,
+            @RequestParam UUID userId,
+            @RequestParam String message,
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("POST create message request from %s, chatId: %s, userId: %s, message: %s ",
-                header.getHost(), request.getChatId(), request.getUserId(), request.getMessage()));
-        return toApi(messageService.create(request.getChatId(), request.getUserId(), request.getMessage()));
+                header.getHost(), chatId, userId, message));
+        return toApi(messageService.create(chatId, userId, message));
     }
 }
