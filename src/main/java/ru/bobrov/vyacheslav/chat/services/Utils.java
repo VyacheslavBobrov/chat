@@ -1,12 +1,25 @@
 package ru.bobrov.vyacheslav.chat.services;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.EntityWithTimeInfo;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.NotImplementedException;
 
 import java.sql.Timestamp;
 import java.util.Date;
 
+@Component
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Utils {
+    static Translator translator;
+
+    @Autowired
+    public Utils(Translator translator) {
+        Utils.translator = translator;
+    }
+
     static public void assertNotNull(Object val, String message) {
         if (val == null)
             throw new IllegalArgumentException(message);
@@ -36,7 +49,10 @@ public class Utils {
     }
 
     static public <T> T toDo() {
-        return toDo("method-not-implemented-title", "method-not-implemented");
+        return toDo(
+                translator.translate("method-not-implemented-title"),
+                translator.translate("method-not-implemented")
+        );
     }
 
     static public <T> T toDo(String title, String message) {
