@@ -20,54 +20,53 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> resourceNotFound(ResourceNotFoundException ex, WebRequest request) {
-        return new ResponseEntity<>(fillChatExceptionDetails(ex, request), HttpStatus.NOT_FOUND);
+        return createResponse(ex, request, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ResourceExistsException.class)
     public ResponseEntity<?> resourceExists(ResourceExistsException ex, WebRequest request) {
-        return new ResponseEntity<>(fillChatExceptionDetails(ex, request), HttpStatus.BAD_REQUEST);
+        return createResponse(ex, request, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NotImplementedException.class)
     public ResponseEntity<?> notImplemented(NotImplementedException ex, WebRequest request) {
-        return new ResponseEntity<>(fillChatExceptionDetails(ex, request), HttpStatus.NOT_IMPLEMENTED);
+        return createResponse(ex, request, HttpStatus.NOT_IMPLEMENTED);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> badCredentials(BadCredentialsException ex, WebRequest request) {
-        return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.UNAUTHORIZED);
+        return createResponse(ex, request, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> accessDenied(AccessDeniedException ex, WebRequest request) {
-        return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.FORBIDDEN);
+        return createResponse(ex, request, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(IllegalOperationException.class)
     public ResponseEntity<?> illegalOperation(IllegalOperationException ex, WebRequest request) {
-        return new ResponseEntity<>(fillChatExceptionDetails(ex, request), HttpStatus.BAD_REQUEST);
+        return createResponse(ex, request, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<?> globalExceptionHandler(Throwable ex, WebRequest request) {
-        return new ResponseEntity<>(fillDetails(ex, request), HttpStatus.INTERNAL_SERVER_ERROR);
+        return createResponse(ex, request, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private ErrorDetails fillChatExceptionDetails(ChatExceptions ex, WebRequest request) {
-        return ErrorDetails.builder()
+    private ResponseEntity<?> createResponse(Throwable ex, WebRequest request, HttpStatus httpStatus) {
+        final String title;
+        if (ex instanceof ChatExceptions)
+            title = ((ChatExceptions) ex).getTitle();
+        else
+            title = translator.translate("internal-server-error");
+
+        ErrorDetails details = ErrorDetails.builder()
                 .timestamp(new Date())
-                .title(ex.getTitle())
+                .title(title)
                 .message(ex.getMessage())
                 .details(request.getDescription(false))
                 .build();
-    }
 
-    private ErrorDetails fillDetails(Throwable ex, WebRequest request) {
-        return ErrorDetails.builder()
-                .timestamp(new Date())
-                .title(translator.translate("internal-server-error"))
-                .message(ex.getMessage())
-                .details(request.getDescription(false))
-                .build();
+        return new ResponseEntity<>(details, httpStatus);
     }
 }
