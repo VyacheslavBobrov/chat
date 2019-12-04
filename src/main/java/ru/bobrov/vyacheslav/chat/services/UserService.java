@@ -10,9 +10,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
+import ru.bobrov.vyacheslav.chat.dataproviders.entities.UserFile;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus;
+import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.FileNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ResourceExistsException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.UserNotFoundException;
+import ru.bobrov.vyacheslav.chat.dataproviders.repositories.UserFileRepository;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.UserRepository;
 
 import javax.transaction.Transactional;
@@ -40,6 +43,8 @@ import static ru.bobrov.vyacheslav.chat.services.Utils.*;
 @NonNull
 public class UserService {
     UserRepository repository;
+    UserFileRepository userFileRepository;
+
     PasswordEncoder bCryptEncoder;
     Translator translator;
 
@@ -238,5 +243,63 @@ public class UserService {
     public User getUserByLogin(String username) {
         List<User> users = repository.findAllByLogin(username);
         return users.isEmpty() ? null : users.get(0);
+    }
+
+    /**
+     * Получить список идентификаторов файлов, для пользователя
+     *
+     * @param userId {@link UUID} идентификатор пользователя
+     * @return {@link List<UUID>} список идентификаторов файлов
+     */
+    public List<UUID> getFilesIdsForUser(UUID userId) {
+        User user = get(userId);
+        return user.getUserFiles().stream().map(UserFile::getFileId).collect(Collectors.toUnmodifiableList());
+    }
+
+    /**
+     * Удалить файл пользователя
+     *
+     * @param fileId {@link UUID} идентификатор файла
+     */
+    public void deleteFile(UUID fileId) {
+        userFileRepository.deleteById(fileId);
+    }
+
+    /**
+     * Добавить файл для пользователя
+     *
+     * @param userId      {@link UUID} идентификатор пользователя
+     * @param contentType MIME тип файла
+     * @return {@link UUID} идентификатор созданного файла
+     */
+    public UUID addFileToUser(UUID userId, String contentType) {
+        User user = get(userId);
+
+        UUID fileId = UUID.randomUUID();
+        UserFile userFile = UserFile.builder().fileId(fileId).user(user).fileMimeType(contentType).build();
+        user.getUserFiles().add(userFile);
+        repository.save(user);
+
+        return fileId;
+    }
+
+    /**
+     * Найти идентификатор пользователя, которому принадлежит файл
+     *
+     * @param fileId {@link UUID} идентификатор файла
+     * @return {@link UUID} идентификатор пользователя
+     */
+    public User findUserIdByFileId(UUID fileId) {
+        return userFileRepository.findById(fileId).orElseThrow(() -> new FileNotFoundException(
+                translator.translate("file-not-found-title"),
+                format(translator.translate("file-not-found"), fileId)
+        )).getUser();
+    }
+
+    public UserFile findFileById(UUID fileId) {
+        return userFileRepository.findById(fileId).orElseThrow(() -> new FileNotFoundException(
+                translator.translate("file-not-found-title"),
+                format(translator.translate("file-not-found"), fileId)
+        ));
     }
 }

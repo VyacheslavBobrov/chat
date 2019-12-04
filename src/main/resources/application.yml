@@ -26,4 +26,4 @@ jwt:
   jwtTokenValidity: 5
 
 file-storage:
-  upload-dir: ~/chat_file_storage/
+  upload-dir: /home/vyacheslav/chat_file_storage/

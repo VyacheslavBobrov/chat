@@ -9,12 +9,16 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UploadFileApiModel;
+import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
+import ru.bobrov.vyacheslav.chat.dataproviders.entities.UserFile;
+import ru.bobrov.vyacheslav.chat.services.FileStorageService;
+import ru.bobrov.vyacheslav.chat.services.UserService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +27,6 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
-import static ru.bobrov.vyacheslav.chat.services.Utils.toDo;
 
 @Api("Files management system")
 @RestController
@@ -32,17 +35,29 @@ import static ru.bobrov.vyacheslav.chat.services.Utils.toDo;
 @FieldDefaults(level = PRIVATE)
 @Slf4j
 @CrossOrigin
+@Transactional
 public class FileController {
+    FileStorageService fileStorageService;
+    UserService userService;
+
     @ApiOperation(value = "Upload file to storage", response = UploadFileApiModel.class)
     @PostMapping("/upload")
     public UploadFileApiModel upload(
+            @RequestParam UUID userId,
             @RequestParam MultipartFile file,
             @RequestHeader HttpHeaders header
     ) {
-        log.info(format("POST file from %s, size: %d, type: %s",
-                header.getHost(), file.getSize(), file.getContentType()));
+        log.info(format("POST file from %s, userId: %s, size: %d, type: %s",
+                header.getHost(), userId, file.getSize(), file.getContentType()));
 
-        return toDo();
+        UUID fileId = fileStorageService.storeFile(userId, file);
+
+        return UploadFileApiModel.builder()
+                .fileUUID(fileId)
+                .fileDownloadUri("/api/v1/file/" + fileId.toString())
+                .fileType(file.getContentType())
+                .size(file.getSize())
+                .build();
     }
 
     @ApiOperation(
@@ -52,16 +67,17 @@ public class FileController {
     )
     @PostMapping("/uploadMultiple")
     public List<UploadFileApiModel> uploadMultiple(
-            @RequestParam MultipartFile[] files,
+            @RequestPart UUID userId,
+            @RequestPart MultipartFile[] files,
             @RequestHeader HttpHeaders header
     ) {
-        log.info(format("POST files from %s, number of files: %d",
-                header.getHost(), files.length));
+        log.info(format("POST files from %s, userId: %s, number of files: %d",
+                header.getHost(), userId, files.length));
 
-        return Arrays.stream(files).map(file -> upload(file, header)).collect(Collectors.toUnmodifiableList());
+        return Arrays.stream(files).map(file -> upload(userId, file, header)).collect(Collectors.toUnmodifiableList());
     }
 
-    @ApiOperation(value = "Download file from storage", response = Resource.class, responseContainer = "ResponseEntity")
+    @ApiOperation(value = "Download file from storage", response = Resource.class)
     @GetMapping("/{fileId}")
     ResponseEntity<Resource> download(
             @PathVariable UUID fileId,
@@ -69,18 +85,35 @@ public class FileController {
     ) {
         log.info(format("GET file from %s, fileId: %s", request.getRemoteHost(), fileId));
 
-        Resource resource = toDo();
-
-        String contentType = "application/octet-stream";
-        try {
-            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        } catch (IOException ex) {
-            log.info("Could not determine file type.");
-        }
+        Resource resource = fileStorageService.loadFile(fileId);
+        UserFile userFile = userService.findFileById(fileId);
 
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
+                .contentType(MediaType.parseMediaType(userFile.getFileMimeType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileId + "\"")
                 .body(resource);
+    }
+
+    @ApiOperation(value = "Get files ids for user", response = UUID.class, responseContainer = "List")
+    @GetMapping
+    List<UUID> getFilesIdsForUser(
+            @RequestParam UUID userId,
+            @RequestHeader HttpHeaders header
+    ) {
+        log.info(format("GET file ids for userId: %s, from %s", userId, header.getHost()));
+        return userService.getFilesIdsForUser(userId);
+    }
+
+    @ApiOperation(value = "Drop file from storage", response = UUID.class, responseContainer = "List")
+    @DeleteMapping("/{fileId}")
+    List<UUID> dropFileFromStorage(
+            @PathVariable UUID fileId,
+            @RequestHeader HttpHeaders header
+    ) {
+        log.info(format("DEL file from %s, fileId: %s", header.getHost(), fileId));
+        User user = userService.findUserIdByFileId(fileId);
+        fileStorageService.dropFile(fileId);
+
+        return userService.getFilesIdsForUser(user.getUserId());
     }
 }

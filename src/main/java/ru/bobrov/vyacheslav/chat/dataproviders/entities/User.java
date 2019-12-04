@@ -18,34 +18,42 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE)
 @Entity
 @Table(name = "users")
-@EqualsAndHashCode(exclude = "chats")
-@ToString(exclude = "chats")
+@EqualsAndHashCode(exclude = {"chats", "userFiles"})
+@ToString(exclude = {"chats", "userFiles"})
 public class User implements EntityWithTimeInfo {
     @Id
     UUID userId;
+
     @NotNull
     @Column(name = "user_name")
     String name;
+
     @NotNull
     @Column(unique = true, name = "user_login")
     String login;
+
     @NotNull
     @Column(name = "user_password")
     String password;
+
     @NotNull
     @Column
     @Enumerated(EnumType.STRING)
     UserStatus status;
+
     @NotNull
     @Column(name = "user_role")
     @Enumerated(EnumType.STRING)
     UserRole role;
+
     @NotNull
     @Column
     Timestamp created;
+
     @NotNull
     @Column
     Timestamp updated;
+
     @ManyToMany(
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL
@@ -56,4 +64,11 @@ public class User implements EntityWithTimeInfo {
             inverseJoinColumns = @JoinColumn(name = "chat_id")
     )
     Set<Chat> chats;
+
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "user_id")
+    Set<UserFile> userFiles;
 }

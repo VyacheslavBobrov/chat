@@ -1,5 +1,6 @@
 package ru.bobrov.vyacheslav.chat.configurations;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import ru.bobrov.vyacheslav.chat.services.Translator;
 import java.util.Date;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
     @Autowired
     private Translator translator;
@@ -35,7 +37,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> badCredentials(BadCredentialsException ex, WebRequest request) {
-        return createResponse(ex, request, HttpStatus.UNAUTHORIZED);
+        BadAuthenticationException badAuthenticationException = new BadAuthenticationException(
+                translator.translate("bad-authentication-exception-title"),
+                translator.translate("bad-authentication-exception")
+        );
+
+        return createResponse(badAuthenticationException, request, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -54,6 +61,7 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<?> createResponse(Throwable ex, WebRequest request, HttpStatus httpStatus) {
+        log.error(ex.getLocalizedMessage(), ex);
         final String title;
         if (ex instanceof ChatExceptions)
             title = ((ChatExceptions) ex).getTitle();
