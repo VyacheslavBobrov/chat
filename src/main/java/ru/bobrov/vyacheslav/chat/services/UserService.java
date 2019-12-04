@@ -289,7 +289,7 @@ public class UserService {
      * @param fileId {@link UUID} идентификатор файла
      * @return {@link UUID} идентификатор пользователя
      */
-    public User findUserIdByFileId(UUID fileId) {
+    public User findUserByFileId(UUID fileId) {
         return userFileRepository.findById(fileId).orElseThrow(() -> new FileNotFoundException(
                 translator.translate("file-not-found-title"),
                 format(translator.translate("file-not-found"), fileId)

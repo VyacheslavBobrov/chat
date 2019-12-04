@@ -111,7 +111,7 @@ public class FileController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("DEL file from %s, fileId: %s", header.getHost(), fileId));
-        User user = userService.findUserIdByFileId(fileId);
+        User user = userService.findUserByFileId(fileId);
         fileStorageService.dropFile(fileId);
 
         return userService.getFilesIdsForUser(user.getUserId());
