@@ -229,6 +229,12 @@ public class UserService {
         return repository.findAllByUserOutOfChatAndStatus(chatId, ACTIVE);
     }
 
+    /**
+     * Получить пользователя по его логину
+     *
+     * @param username логин
+     * @return {@link User} найденный пользователь
+     */
     public User getUserByLogin(String username) {
         List<User> users = repository.findAllByLogin(username);
         return users.isEmpty() ? null : users.get(0);
