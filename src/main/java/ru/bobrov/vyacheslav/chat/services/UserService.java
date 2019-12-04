@@ -296,6 +296,12 @@ public class UserService {
         )).getUser();
     }
 
+    /**
+     * Найти файл
+     *
+     * @param fileId {@link UUID} идентификатор файла
+     * @return {@link UserFile} найденный файл
+     */
     public UserFile findFileById(UUID fileId) {
         return userFileRepository.findById(fileId).orElseThrow(() -> new FileNotFoundException(
                 translator.translate("file-not-found-title"),
