@@ -47,7 +47,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> accessDenied(AccessDeniedException ex, WebRequest request) {
-        return createResponse(ex, request, HttpStatus.FORBIDDEN);
+        ForbiddenException forbiddenException = new ForbiddenException(
+                translator.translate("forbidden-exception-title"),
+                translator.translate("forbidden-exception")
+        );
+        return createResponse(forbiddenException, request, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(IllegalOperationException.class)
