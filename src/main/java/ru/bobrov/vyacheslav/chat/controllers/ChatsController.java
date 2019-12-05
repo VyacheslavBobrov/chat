@@ -169,7 +169,12 @@ public class ChatsController {
         Page<Message> messagePage = chatService.getChatMessages(chatId, page, size);
 
         return MessagesPagingApiModel.builder()
-                .messages(messagePage.get().map(MessagesDataConverter::toApi).collect(Collectors.toUnmodifiableList()))
+                .messages(
+                        messagePage.getContent().stream()
+                                .sorted(Comparator.comparing(Message::getCreated))
+                                .map(MessagesDataConverter::toApi)
+                                .collect(Collectors.toUnmodifiableList())
+                )
                 .page(page)
                 .pageLimit(messagePage.getTotalPages())
                 .totalItems(messagePage.getTotalElements())
