@@ -173,10 +173,18 @@ public class ChatService {
      * @throws ChatNotFoundException чат с указанным идентификатором отсутствует
      */
     public Page<Message> getChatMessages(UUID uuid, int page, int size) {
-        List<Message> messages = new ArrayList<>(get(uuid).getMessages());
-        messages.sort(Comparator.comparing(Message::getCreated).reversed());
+        List<Message> messages = get(uuid).getMessages().stream()
+                .sorted(Comparator.comparing(Message::getCreated).reversed())
+                .collect(Collectors.toUnmodifiableList());
 
-        return new PageImpl<>(messages, PageRequest.of(page, size), messages.size());
+        int bottom = page * size;
+        int top = bottom + size;
+        if (top > messages.size())
+            top = messages.size();
+        if (bottom >= top)
+            throw new IllegalArgumentException();
+
+        return new PageImpl<>(messages.subList(bottom, top), PageRequest.of(page, size), messages.size());
     }
 
     private void validate(Chat chat) {
