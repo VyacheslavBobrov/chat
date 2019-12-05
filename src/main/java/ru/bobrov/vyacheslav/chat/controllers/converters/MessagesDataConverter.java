@@ -4,6 +4,7 @@ import ru.bobrov.vyacheslav.chat.controllers.models.response.MessageApiModel;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,9 @@ public class MessagesDataConverter {
     }
 
     public static List<MessageApiModel> toApi(Collection<Message> messages) {
-        return messages.stream().map(MessagesDataConverter::toApi).collect(Collectors.toUnmodifiableList());
+        return messages.stream()
+                .sorted(Comparator.comparing(Message::getCreated).reversed())
+                .map(MessagesDataConverter::toApi)
+                .collect(Collectors.toUnmodifiableList());
     }
 }
