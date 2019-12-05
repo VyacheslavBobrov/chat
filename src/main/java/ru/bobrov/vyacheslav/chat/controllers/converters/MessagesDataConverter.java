@@ -16,8 +16,8 @@ public class MessagesDataConverter {
                 .user(UserDataConverter.toApi(message.getUser()))
                 .message(message.getMessage())
                 .status(message.getStatus().name())
-                .created(message.getCreated().toString())
-                .updated(message.getUpdated().toString())
+                .created(message.getCreated().getTime())
+                .updated(message.getUpdated().getTime())
                 .build();
     }
 

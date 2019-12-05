@@ -24,7 +24,7 @@ public class MessageApiModel {
     @ApiModelProperty(allowableValues = "ACTIVE, DISABLED")
     String status;
     @ApiModelProperty
-    String created;
+    Long created;
     @ApiModelProperty
-    String updated;
+    Long updated;
 }
