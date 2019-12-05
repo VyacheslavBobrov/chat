@@ -170,7 +170,7 @@ public class ChatService {
         int top = bottom + size;
         if (top > messages.size())
             top = messages.size();
-        if (bottom >= top)
+        if (bottom > top)
             throw new IllegalArgumentException();
 
         return new PageImpl<>(messages.subList(bottom, top), PageRequest.of(page, size), messages.size());
