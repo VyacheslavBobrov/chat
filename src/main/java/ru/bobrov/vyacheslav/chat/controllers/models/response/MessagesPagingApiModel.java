@@ -7,8 +7,6 @@ import lombok.NonNull;
 import lombok.Value;
 
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @Value
 @Builder
@@ -16,9 +14,7 @@ import java.util.UUID;
 @ApiModel
 public class MessagesPagingApiModel {
     @ApiModelProperty
-    List<UUID> ids;
-    @ApiModelProperty
-    Map<UUID, MessageApiModel> items;
+    List<MessageApiModel> messages;
     @ApiModelProperty
     Integer page;
     @ApiModelProperty

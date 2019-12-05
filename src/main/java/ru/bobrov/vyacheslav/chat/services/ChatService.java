@@ -216,4 +216,16 @@ public class ChatService {
         repository.save(chat);
         return users;
     }
+
+    /**
+     * Добавить сообщение в чат
+     *
+     * @param chatId  {@link UUID} идентификатор чата
+     * @param message {@link Message} Сообщение
+     */
+    public void addMessageToChat(UUID chatId, Message message) {
+        Chat chat = get(chatId);
+        chat.getMessages().add(message);
+        repository.save(chat);
+    }
 }
