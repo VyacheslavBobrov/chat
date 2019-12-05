@@ -223,6 +223,7 @@ public class ChatService {
     public void addMessageToChat(UUID chatId, Message message) {
         Chat chat = get(chatId);
         chat.getMessages().add(message);
+        updateTime(chat);
         repository.save(chat);
     }
 }
