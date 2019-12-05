@@ -8,18 +8,17 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.MessageApiModel;
 import ru.bobrov.vyacheslav.chat.services.MessageService;
+import ru.bobrov.vyacheslav.chat.services.NotifyService;
 
 import java.util.UUID;
 
 import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
-import static ru.bobrov.vyacheslav.chat.configurations.WebSocketConfiguration.CHAT_DESTINATION;
 import static ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConverter.toApi;
 
 @Api("Chats messages management system")
@@ -32,7 +31,7 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConve
 @NonNull
 public class MessagesController {
     MessageService messageService;
-    SimpMessagingTemplate messagingTemplate;
+    NotifyService notifyService;
 
     @PreAuthorize("@messageSecurityPolicy.canReadMessage(principal, #messageId)")
     @ApiOperation(value = "Get message by uuid", response = MessageApiModel.class)
@@ -57,7 +56,9 @@ public class MessagesController {
     ) {
         log.info(format("POST message update request from %s, messageId:%s, message: %s ",
                 header.getHost(), messageId, message));
-        return notifyUsers(toApi(messageService.update(messageId, message)));
+        MessageApiModel apiModel = toApi(messageService.update(messageId, message));
+        notifyService.notifyUsers(apiModel);
+        return apiModel;
     }
 
     @PreAuthorize("@messageSecurityPolicy.canUpdateMessage(principal, #messageId)")
@@ -69,7 +70,9 @@ public class MessagesController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT block message request from %s, messageId:%s ", header.getHost(), messageId));
-        return notifyUsers(toApi(messageService.block(messageId)));
+        MessageApiModel apiModel = toApi(messageService.block(messageId));
+        notifyService.notifyUsers(apiModel);
+        return apiModel;
     }
 
     @PreAuthorize("@messageSecurityPolicy.canUpdateMessage(principal, #messageId)")
@@ -81,7 +84,9 @@ public class MessagesController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT unblock message request from %s, messageId:%s ", header.getHost(), messageId));
-        return notifyUsers(toApi(messageService.unblock(messageId)));
+        MessageApiModel apiModel = toApi(messageService.unblock(messageId));
+        notifyService.notifyUsers(apiModel);
+        return apiModel;
     }
 
     @PreAuthorize("@messageSecurityPolicy.canCreateMessage(principal, #chatId, #userId)")
@@ -95,11 +100,8 @@ public class MessagesController {
     ) {
         log.info(format("POST create message request from %s, chatId: %s, userId: %s, message: %s ",
                 header.getHost(), chatId, userId, message));
-        return notifyUsers(toApi(messageService.create(chatId, userId, message)));
-    }
-
-    private MessageApiModel notifyUsers(MessageApiModel message) {
-        messagingTemplate.convertAndSend(CHAT_DESTINATION + message.getChat().getChatId(), message);
-        return message;
+        MessageApiModel apiModel = toApi(messageService.create(chatId, userId, message));
+        notifyService.notifyUsers(apiModel);
+        return apiModel;
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 import ru.bobrov.vyacheslav.chat.controllers.models.request.CreateMessageApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.MessageApiModel;
@@ -29,8 +30,14 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConve
 public class WebSocketController {
     MessageService messageService;
 
-    @MessageMapping("/chat/{chatId}/send")
-    @SendTo("/chat/{chatId}")
+    @MessageMapping("/chat/{chatId}")
+    @SubscribeMapping
+    void subscribe(@DestinationVariable UUID chatId, Principal user) {
+        log.info(format("User: %s, subscribed to /chat/%s channel", user.getName(), chatId));
+    }
+
+    @MessageMapping("/chat/{chatId}/message/send")
+    @SendTo("/chat/{chatId}/messages")
     MessageApiModel sendMessage(@DestinationVariable UUID chatId, @Payload CreateMessageApiModel message, Principal user) {
         log.info(format("POST create message request, chatId: %s, user: %s, message: %s ",
                 chatId, user.getName(), message.getMessage()));

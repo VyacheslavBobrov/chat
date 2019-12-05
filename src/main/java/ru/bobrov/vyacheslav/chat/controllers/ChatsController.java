@@ -18,8 +18,10 @@ import ru.bobrov.vyacheslav.chat.controllers.models.response.MessagesPagingApiMo
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.services.ChatService;
+import ru.bobrov.vyacheslav.chat.services.NotifyService;
 import ru.bobrov.vyacheslav.chat.services.UserService;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -40,6 +42,7 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.ChatDataConverter
 public class ChatsController {
     ChatService chatService;
     UserService userService;
+    NotifyService notifyService;
 
     @ApiOperation(value = "Get chat by uuid", response = ChatApiModel.class)
     @GetMapping("/{chatId}")
@@ -63,7 +66,9 @@ public class ChatsController {
     ) {
         log.info(format("POST update chat request from %s, chatId:%s, name: %s ",
                 header.getHost(), chatId, title));
-        return toApi(chatService.update(chatId, title));
+        ChatApiModel apiModel = toApi(chatService.update(chatId, title));
+        notifyService.notifyUsers(apiModel);
+        return apiModel;
     }
 
     @PreAuthorize("@chatSecurityPolicy.canBlockOrUnblockChat(principal, #chatId)")
@@ -75,7 +80,9 @@ public class ChatsController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT block chat request from %s, chatId:%s ", header.getHost(), chatId));
-        return toApi(chatService.block(chatId));
+        ChatApiModel apiModel = toApi(chatService.block(chatId));
+        notifyService.notifyUsers(apiModel);
+        return apiModel;
     }
 
     @PreAuthorize("@chatSecurityPolicy.canBlockOrUnblockChat(principal, #chatId)")
@@ -87,7 +94,9 @@ public class ChatsController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT unblock chat request from %s, chatId:%s ", header.getHost(), chatId));
-        return toApi(chatService.unblock(chatId));
+        ChatApiModel apiModel = toApi(chatService.unblock(chatId));
+        notifyService.notifyUsers(apiModel);
+        return apiModel;
     }
 
     @ApiOperation(value = "Create chat", response = ChatApiModel.class)
@@ -99,7 +108,9 @@ public class ChatsController {
     ) {
         log.info(format("POST create chat request from %s, title: %s, userId: %s ",
                 header.getHost(), title, userId));
-        return toApi(chatService.create(title, userId));
+        ChatApiModel apiModel = toApi(chatService.create(title, userId));
+        notifyService.notifyUsers(apiModel);
+        return apiModel;
     }
 
     @PreAuthorize("@chatSecurityPolicy.canReadChat(principal, #chatId)")
@@ -137,6 +148,8 @@ public class ChatsController {
     ) {
         log.info(format("POST chat users request from %s, chatId:%s,  userUUIDs: {%s}",
                 header.getHost(), chatId, userUUIDs.stream().map(UUID::toString).collect(Collectors.joining())));
+        ChatApiModel apiModel = toApi(chatService.get(chatId));
+        notifyService.notifyUsers(apiModel);
         return UserDataConverter.toApi(chatService.addUsers(chatId, userUUIDs));
     }
 
@@ -151,6 +164,8 @@ public class ChatsController {
     ) {
         log.info(format("POST kick user chat user request from %s, chatId:%s,  userId: {%s}",
                 header.getHost(), chatId, userId));
+        ChatApiModel apiModel = toApi(chatService.get(chatId));
+        notifyService.notifyUsers(apiModel);
         return UserDataConverter.toApi(chatService.kickUser(chatId, userId));
     }
 

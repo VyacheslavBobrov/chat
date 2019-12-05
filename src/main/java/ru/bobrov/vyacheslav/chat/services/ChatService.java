@@ -18,6 +18,7 @@ import ru.bobrov.vyacheslav.chat.dataproviders.repositories.ChatRepository;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
@@ -92,18 +93,6 @@ public class ChatService {
         updateTime(chat);
         validate(chat);
         return repository.save(chat);
-    }
-
-    /**
-     * Обновить время изменения чата (при добавлении нового сообщения)
-     *
-     * @param chatId {@link UUID} идентификатор чата
-     * @throws ChatNotFoundException чат с указанным идентификатором отсутствует
-     */
-    public void update(UUID chatId) {
-        Chat chat = get(chatId);
-        updateTime(chat);
-        repository.save(chat);
     }
 
     /**
