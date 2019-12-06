@@ -117,7 +117,7 @@ public class MessageService {
     /**
      * Получить сообщения чата (с пагинацией)
      *
-     * @param chatId {@link UUID} идентификатор чата{@link UUID} идентификатор чата
+     * @param chatId {@link UUID} идентификатор чата
      * @param page   номер страницы
      * @param size   размер страницы
      * @return {@link Page <Message>} порция сообщений чата
