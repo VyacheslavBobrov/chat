@@ -34,12 +34,6 @@ create table if not exists messages (
     updated timestamp not null default now()
 );
 
-create table if not exists messages_chats (
-    message_id uuid references messages(message_id),
-    chat_id uuid  references chats(chat_id),
-    primary key (message_id, chat_id)
-);
-
 create table if not exists user_files (
     file_id uuid primary key,
     user_id uuid references users(user_id),

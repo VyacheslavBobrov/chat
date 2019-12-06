@@ -6,7 +6,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.ChatStatus;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ChatNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.IllegalOperationException;
@@ -184,18 +183,5 @@ public class ChatService {
         users.remove(userToKick);
         repository.save(chat);
         return users;
-    }
-
-    /**
-     * Добавить сообщение в чат
-     *
-     * @param chatId  {@link UUID} идентификатор чата
-     * @param message {@link Message} Сообщение
-     */
-    public void addMessageToChat(UUID chatId, Message message) {
-        Chat chat = get(chatId);
-        chat.getMessages().add(message);
-        updateTime(chat);
-        repository.save(chat);
     }
 }

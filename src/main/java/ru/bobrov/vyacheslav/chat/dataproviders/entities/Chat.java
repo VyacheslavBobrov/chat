@@ -42,7 +42,7 @@ public class Chat implements EntityWithTimeInfo {
     Timestamp updated;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "creator_id")
     User creator;
 
@@ -60,14 +60,13 @@ public class Chat implements EntityWithTimeInfo {
     )
     Set<User> users;
 
-    @ManyToMany(
+    @OneToMany(
             fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            }
     )
-    @JoinTable(
-            name = "messages_chats",
-            joinColumns = @JoinColumn(name = "chat_id"),
-            inverseJoinColumns = @JoinColumn(name = "message_id")
-    )
+    @JoinColumn(name = "chat_id")
     Set<Message> messages;
 }

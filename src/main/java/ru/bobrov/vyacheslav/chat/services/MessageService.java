@@ -72,8 +72,7 @@ public class MessageService {
 
         initTime(message);
         validate(message);
-        chatService.addMessageToChat(chatId, message);
-        return message;
+        return repository.save(message);
     }
 
     /**
