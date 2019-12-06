@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.MessageStatus;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ChatNotFoundException;
@@ -120,9 +121,11 @@ public class MessageService {
      * @param page   номер страницы
      * @param size   размер страницы
      * @return {@link Page <Message>} порция сообщений чата
+     * @throws ChatNotFoundException чат с указанным идентификатором не найден
      */
     public Page<Message> getChatMessages(UUID chatId, int page, int size) {
-        return repository.findAllByChatIdOrderByCreatedDesc(chatId, PageRequest.of(page, size));
+        Chat chat = chatService.get(chatId);
+        return repository.findAllByChatOrderByCreatedDesc(chat, PageRequest.of(page, size));
     }
 
     private Message setMessageStatus(UUID uuid, MessageStatus status) {
