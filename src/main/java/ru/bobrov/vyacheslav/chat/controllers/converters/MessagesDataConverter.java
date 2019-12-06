@@ -23,6 +23,7 @@ public class MessagesDataConverter {
 
     public static List<MessageApiModel> toApi(Collection<Message> messages) {
         return messages.stream()
+                //внутри страницы нужно поменять порядок сообщений, как это принято в чатах (внизу самые свежие)
                 .sorted(Comparator.comparing(Message::getCreated).reversed())
                 .map(MessagesDataConverter::toApi)
                 .collect(Collectors.toUnmodifiableList());
