@@ -18,6 +18,7 @@ import ru.bobrov.vyacheslav.chat.controllers.models.response.MessagesPagingApiMo
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.services.ChatService;
+import ru.bobrov.vyacheslav.chat.services.MessageService;
 import ru.bobrov.vyacheslav.chat.services.NotifyService;
 import ru.bobrov.vyacheslav.chat.services.UserService;
 
@@ -43,6 +44,7 @@ public class ChatsController {
     ChatService chatService;
     UserService userService;
     NotifyService notifyService;
+    MessageService messageService;
 
     @ApiOperation(value = "Get chat by uuid", response = ChatApiModel.class)
     @GetMapping("/{chatId}")
@@ -181,7 +183,7 @@ public class ChatsController {
     ) {
         log.info(format("GET chat messages request from %s, chatId:%s ", header.getHost(), chatId));
 
-        Page<Message> messagePage = chatService.getChatMessages(chatId, page, size);
+        Page<Message> messagePage = messageService.getChatMessages(chatId, page, size);
 
         return MessagesPagingApiModel.builder()
                 .messages(

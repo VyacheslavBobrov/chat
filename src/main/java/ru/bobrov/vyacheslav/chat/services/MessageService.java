@@ -3,6 +3,8 @@ package ru.bobrov.vyacheslav.chat.services;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.MessageStatus;
@@ -109,6 +111,18 @@ public class MessageService {
      */
     public Message unblock(UUID uuid) {
         return setMessageStatus(uuid, MessageStatus.ACTIVE);
+    }
+
+    /**
+     * Получить сообщения чата (с пагинацией)
+     *
+     * @param chatId {@link UUID} идентификатор чата{@link UUID} идентификатор чата
+     * @param page   номер страницы
+     * @param size   размер страницы
+     * @return {@link Page <Message>} порция сообщений чата
+     */
+    public Page<Message> getChatMessages(UUID chatId, int page, int size) {
+        return repository.findAllByChatIdOrderByCreatedDesc(chatId, PageRequest.of(page, size));
     }
 
     private Message setMessageStatus(UUID uuid, MessageStatus status) {

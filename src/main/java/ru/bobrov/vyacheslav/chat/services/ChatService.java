@@ -3,9 +3,6 @@ package ru.bobrov.vyacheslav.chat.services;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.ChatStatus;
@@ -18,7 +15,6 @@ import ru.bobrov.vyacheslav.chat.dataproviders.repositories.ChatRepository;
 
 import javax.transaction.Transactional;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
@@ -150,30 +146,6 @@ public class ChatService {
      */
     public Set<User> getChatUsers(UUID uuid) {
         return get(uuid).getUsers();
-    }
-
-    /**
-     * Получить сообщения чата (с пагинацией)
-     *
-     * @param uuid {@link UUID} идентификатор чата{@link UUID} идентификатор чата
-     * @param page номер страницы
-     * @param size размер страницы
-     * @return {@link Page<Message>} порция сообщений чата
-     * @throws ChatNotFoundException чат с указанным идентификатором отсутствует
-     */
-    public Page<Message> getChatMessages(UUID uuid, int page, int size) {
-        List<Message> messages = get(uuid).getMessages().stream()
-                .sorted(Comparator.comparing(Message::getCreated).reversed())
-                .collect(Collectors.toUnmodifiableList());
-
-        int bottom = page * size;
-        int top = bottom + size;
-        if (top > messages.size())
-            top = messages.size();
-        if (bottom > top)
-            throw new IllegalArgumentException();
-
-        return new PageImpl<>(messages.subList(bottom, top), PageRequest.of(page, size), messages.size());
     }
 
     private void validate(Chat chat) {
