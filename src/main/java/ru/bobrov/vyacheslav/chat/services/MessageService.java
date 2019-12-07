@@ -124,7 +124,7 @@ public class MessageService {
      */
     public Page<Message> getChatMessages(UUID chatId, int page, int size) {
         Chat chat = chatService.get(chatId);
-        return repository.findAllByChatOrderByCreatedDesc(chat, PageRequest.of(page, size));
+        return repository.findAllByChatAndStatusOrderByCreatedDesc(chat, MessageStatus.ACTIVE, PageRequest.of(page, size));
     }
 
     private Message setMessageStatus(UUID uuid, MessageStatus status) {
