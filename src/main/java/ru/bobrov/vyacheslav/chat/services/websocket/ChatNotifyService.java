@@ -56,6 +56,6 @@ public class ChatNotifyService {
     }
 
     private void sendMessage(Type type, UUID uuid) {
-        messagingTemplate.convertAndSend(format(CHANNEL, ChatEvent.builder().type(type).uuid(uuid).build()));
+        messagingTemplate.convertAndSend(format(CHANNEL, uuid), ChatEvent.builder().type(type).uuid(uuid).build());
     }
 }
