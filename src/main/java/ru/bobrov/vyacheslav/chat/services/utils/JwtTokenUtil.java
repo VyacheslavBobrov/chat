@@ -1,4 +1,4 @@
-package ru.bobrov.vyacheslav.chat.configurations;
+package ru.bobrov.vyacheslav.chat.services.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

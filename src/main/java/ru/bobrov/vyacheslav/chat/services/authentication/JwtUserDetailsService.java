@@ -1,4 +1,4 @@
-package ru.bobrov.vyacheslav.chat.services.utils;
+package ru.bobrov.vyacheslav.chat.services.authentication;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;

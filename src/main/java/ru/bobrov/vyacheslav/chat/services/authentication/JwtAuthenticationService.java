@@ -1,4 +1,4 @@
-package ru.bobrov.vyacheslav.chat.services.utils;
+package ru.bobrov.vyacheslav.chat.services.authentication;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
-import ru.bobrov.vyacheslav.chat.configurations.JwtTokenUtil;
+import ru.bobrov.vyacheslav.chat.services.utils.JwtTokenUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.regex.Matcher;

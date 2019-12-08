@@ -17,7 +17,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.bobrov.vyacheslav.chat.controllers.filters.JwtRequestFilter;
-import ru.bobrov.vyacheslav.chat.services.utils.JwtUserDetailsService;
+import ru.bobrov.vyacheslav.chat.services.authentication.JwtAuthenticationEntryPoint;
+import ru.bobrov.vyacheslav.chat.services.authentication.JwtUserDetailsService;
 
 import static lombok.AccessLevel.PRIVATE;
 

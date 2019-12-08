@@ -11,11 +11,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import ru.bobrov.vyacheslav.chat.configurations.JwtTokenUtil;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserRegistrationApiModel;
 import ru.bobrov.vyacheslav.chat.services.UserService;
-import ru.bobrov.vyacheslav.chat.services.utils.JwtUserDetailsService;
+import ru.bobrov.vyacheslav.chat.services.authentication.JwtUserDetailsService;
+import ru.bobrov.vyacheslav.chat.services.utils.JwtTokenUtil;
 import ru.bobrov.vyacheslav.chat.services.websocket.UserScheduledNotifier;
 
 import static java.lang.String.format;

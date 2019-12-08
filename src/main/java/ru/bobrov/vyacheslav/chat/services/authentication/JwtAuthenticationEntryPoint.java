@@ -1,4 +1,4 @@
-package ru.bobrov.vyacheslav.chat.configurations;
+package ru.bobrov.vyacheslav.chat.services.authentication;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;

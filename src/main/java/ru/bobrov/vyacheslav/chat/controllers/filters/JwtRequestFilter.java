@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.bobrov.vyacheslav.chat.services.utils.JwtAuthenticationService;
+import ru.bobrov.vyacheslav.chat.services.authentication.JwtAuthenticationService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
