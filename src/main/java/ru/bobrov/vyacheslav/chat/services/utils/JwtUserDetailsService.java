@@ -1,4 +1,4 @@
-package ru.bobrov.vyacheslav.chat.services;
+package ru.bobrov.vyacheslav.chat.services.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus;
+import ru.bobrov.vyacheslav.chat.services.UserService;
 import ru.bobrov.vyacheslav.chat.services.dto.ChatUser;
 
 import static lombok.AccessLevel.PRIVATE;

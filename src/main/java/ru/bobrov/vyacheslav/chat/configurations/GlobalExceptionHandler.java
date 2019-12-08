@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.*;
-import ru.bobrov.vyacheslav.chat.services.Translator;
+import ru.bobrov.vyacheslav.chat.services.utils.Translator;
 
 import java.util.Date;
 

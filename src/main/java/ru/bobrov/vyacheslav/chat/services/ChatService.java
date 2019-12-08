@@ -11,6 +11,7 @@ import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ChatNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.IllegalOperationException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.UserNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.ChatRepository;
+import ru.bobrov.vyacheslav.chat.services.utils.Translator;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -18,7 +19,7 @@ import java.util.*;
 import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
-import static ru.bobrov.vyacheslav.chat.services.Utils.*;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.*;
 
 /**
  * Сервис для работы с сущностью Chat

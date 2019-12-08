@@ -30,8 +30,15 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConve
 public class WebSocketController {
     MessageService messageService;
 
+    @MessageMapping("/chat/")
+    @SubscribeMapping("/chat")
+    @SendTo("/chat")
+    String subscribeChat() {
+        return "Ыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыы";
+    }
+
     @MessageMapping("/chat/{chatId}")
-    @SubscribeMapping
+    @SubscribeMapping("/chat/{chatId}")
     void subscribe(@DestinationVariable UUID chatId, Principal user) {
         log.info(format("User: %s, subscribed to /chat/%s channel", user.getName(), chatId));
     }

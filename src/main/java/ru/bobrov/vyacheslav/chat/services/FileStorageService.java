@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.FileNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.FileStorageException;
+import ru.bobrov.vyacheslav.chat.services.utils.Translator;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

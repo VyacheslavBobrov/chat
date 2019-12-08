@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.configurations.JwtTokenUtil;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserRegistrationApiModel;
-import ru.bobrov.vyacheslav.chat.services.JwtUserDetailsService;
 import ru.bobrov.vyacheslav.chat.services.UserService;
+import ru.bobrov.vyacheslav.chat.services.utils.JwtUserDetailsService;
 
 import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;

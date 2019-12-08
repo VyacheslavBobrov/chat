@@ -33,11 +33,11 @@ public class CORSFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
 
-        String origin = request.getHeader("Origin");
+        String allowedOrigin = request.getHeader("Origin"); //TODO: на время разработки, в проде заменить на адрес фронта
 
         if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
-            log.info("Pre-flight: " + origin);
-            response.setHeader("Access-Control-Allow-Origin", origin);
+            log.info("Pre-flight: " + allowedOrigin);
+            response.setHeader("Access-Control-Allow-Origin", allowedOrigin);
             response.setHeader("Vary", "Origin");
             response.setHeader("Access-Control-Allow-Headers", String.join(",", ALLOW_HEADERS));
             response.setHeader("Access-Control-Allow-Credentials", "true");
@@ -45,8 +45,8 @@ public class CORSFilter implements Filter {
             return;
         }
 
-        log.info("CORS: " + origin);
-        response.setHeader("Access-Control-Allow-Origin", origin); //"http://127.0.0.1:8080");//"http://localhost:8081");
+        log.info("CORS: " + allowedOrigin);
+        response.setHeader("Access-Control-Allow-Origin", allowedOrigin); //"http://127.0.0.1:8080");//"http://localhost:8081");
         response.setHeader("Vary", "Origin");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");

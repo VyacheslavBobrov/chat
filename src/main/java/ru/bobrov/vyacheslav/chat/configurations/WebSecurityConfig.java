@@ -1,5 +1,6 @@
 package ru.bobrov.vyacheslav.chat.configurations;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
@@ -16,25 +17,25 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.bobrov.vyacheslav.chat.controllers.filters.JwtRequestFilter;
-import ru.bobrov.vyacheslav.chat.services.JwtUserDetailsService;
+import ru.bobrov.vyacheslav.chat.services.utils.JwtUserDetailsService;
 
 import static lombok.AccessLevel.PRIVATE;
-import static lombok.AccessLevel.PUBLIC;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@AllArgsConstructor(access = PUBLIC)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @FieldDefaults(level = PRIVATE)
 @NonNull
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    static final String[] MATCHERS = {
+    static final String[] PUBLIC = {
             "/api/v1/authentication/registration",
             "/api/v1/authentication",
             "/webjars/**",
             "/swagger*/**",
             "/h2-console/**",
-            "/v2/api-docs"
+            "/v2/api-docs",
+            "/chat-messaging/**"
     };
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     JwtUserDetailsService jwtUserDetailsService;
@@ -57,7 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .headers().frameOptions().sameOrigin().and()
                 .csrf().disable()
-                .authorizeRequests().antMatchers(MATCHERS).permitAll()
+                .authorizeRequests().antMatchers(PUBLIC).permitAll()
                 .anyRequest().authenticated().and().
 
                 exceptionHandling()

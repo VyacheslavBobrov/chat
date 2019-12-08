@@ -1,4 +1,4 @@
-package ru.bobrov.vyacheslav.chat.services;
+package ru.bobrov.vyacheslav.chat.services.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;

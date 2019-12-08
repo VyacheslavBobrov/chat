@@ -13,6 +13,7 @@ import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ChatNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.MessageNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.UserNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.MessageRepository;
+import ru.bobrov.vyacheslav.chat.services.utils.Translator;
 
 import javax.transaction.Transactional;
 import java.util.UUID;
@@ -20,7 +21,7 @@ import java.util.UUID;
 import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
-import static ru.bobrov.vyacheslav.chat.services.Utils.*;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.*;
 
 @Service
 @AllArgsConstructor(access = PUBLIC)

@@ -12,7 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.MessageApiModel;
 import ru.bobrov.vyacheslav.chat.services.MessageService;
-import ru.bobrov.vyacheslav.chat.services.NotifyService;
+import ru.bobrov.vyacheslav.chat.services.websocket.ChatListNotifyService;
 
 import java.util.UUID;
 
@@ -31,7 +31,7 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConve
 @NonNull
 public class MessagesController {
     MessageService messageService;
-    NotifyService notifyService;
+    ChatListNotifyService chatListNotifyService;
 
     @PreAuthorize("@messageSecurityPolicy.canReadMessage(principal, #messageId)")
     @ApiOperation(value = "Get message by uuid", response = MessageApiModel.class)
@@ -56,9 +56,7 @@ public class MessagesController {
     ) {
         log.info(format("POST message update request from %s, messageId:%s, message: %s ",
                 header.getHost(), messageId, message));
-        MessageApiModel apiModel = toApi(messageService.update(messageId, message));
-        notifyService.notifyUsers(apiModel);
-        return apiModel;
+        return toApi(messageService.update(messageId, message));
     }
 
     @PreAuthorize("@messageSecurityPolicy.canUpdateMessage(principal, #messageId)")
@@ -70,9 +68,7 @@ public class MessagesController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT block message request from %s, messageId:%s ", header.getHost(), messageId));
-        MessageApiModel apiModel = toApi(messageService.block(messageId));
-        notifyService.notifyUsers(apiModel);
-        return apiModel;
+        return toApi(messageService.block(messageId));
     }
 
     @PreAuthorize("@messageSecurityPolicy.canUpdateMessage(principal, #messageId)")
@@ -84,9 +80,7 @@ public class MessagesController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT unblock message request from %s, messageId:%s ", header.getHost(), messageId));
-        MessageApiModel apiModel = toApi(messageService.unblock(messageId));
-        notifyService.notifyUsers(apiModel);
-        return apiModel;
+        return toApi(messageService.unblock(messageId));
     }
 
     @PreAuthorize("@messageSecurityPolicy.canCreateMessage(principal, #chatId, #userId)")
@@ -100,8 +94,7 @@ public class MessagesController {
     ) {
         log.info(format("POST create message request from %s, chatId: %s, userId: %s, message: %s ",
                 header.getHost(), chatId, userId, message));
-        MessageApiModel apiModel = toApi(messageService.create(chatId, userId, message));
-        notifyService.notifyUsers(apiModel);
-        return apiModel;
+        chatListNotifyService.newMessageInChat(chatId);
+        return toApi(messageService.create(chatId, userId, message));
     }
 }

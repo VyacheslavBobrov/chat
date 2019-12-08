@@ -17,6 +17,7 @@ import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ResourceExistsExceptio
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.UserNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.UserFileRepository;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.UserRepository;
+import ru.bobrov.vyacheslav.chat.services.utils.Translator;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -31,7 +32,7 @@ import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserRole.USER;
 import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus.ACTIVE;
 import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus.DISABLED;
-import static ru.bobrov.vyacheslav.chat.services.Utils.*;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.*;
 
 /**
  * Сервис для работы с пользователями чатов
