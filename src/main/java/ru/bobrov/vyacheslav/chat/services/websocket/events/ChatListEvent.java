@@ -14,7 +14,7 @@ public class ChatListEvent {
     public static final String CHANNEL = "/chat";
     UUID uuid;
     Type type;
-    Date timestamp;
+    Date timestamp = new Date();
 
     public enum Type {
         NEW_CHAT,

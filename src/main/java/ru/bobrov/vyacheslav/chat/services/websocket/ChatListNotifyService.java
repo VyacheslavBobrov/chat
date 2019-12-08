@@ -5,10 +5,10 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import ru.bobrov.vyacheslav.chat.services.ChatService;
 import ru.bobrov.vyacheslav.chat.services.websocket.events.ChatListEvent;
 import ru.bobrov.vyacheslav.chat.services.websocket.events.ChatListEvent.Type;
 
-import java.util.Date;
 import java.util.UUID;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -22,31 +22,33 @@ import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatListEvent.
 @NonNull
 public class ChatListNotifyService {
     SimpMessagingTemplate messagingTemplate;
+    ChatService chatService;
 
     public void newChat(UUID chatId) {
-        sendMessage(NEW_CHAT, chatId);
+        chatService.applyForChatUsers(chatId, user -> sendMessage(user.getLogin(), NEW_CHAT, chatId));
     }
 
     public void chatBlocked(UUID chatId) {
-        sendMessage(BLOCKED_CHAT, chatId);
+        chatService.applyForChatUsers(chatId, user -> sendMessage(user.getLogin(), BLOCKED_CHAT, chatId));
     }
 
     public void chatUnblocked(UUID chatId) {
-        sendMessage(UNBLOCKED_CHAT, chatId);
+        chatService.applyForChatUsers(chatId, user -> sendMessage(user.getLogin(), UNBLOCKED_CHAT, chatId));
     }
 
-    public void chatRenamed(UUID chatId) {
-        sendMessage(RENAMED_CHAT, chatId);
+    public void nameChanged(UUID chatId) {
+        chatService.applyForChatUsers(chatId, user -> sendMessage(user.getLogin(), RENAMED_CHAT, chatId));
     }
 
     public void newMessageInChat(UUID chatId) {
-        sendMessage(NEW_MESSAGE, chatId);
+        chatService.applyForChatUsers(chatId, user -> sendMessage(user.getLogin(), NEW_MESSAGE, chatId));
     }
 
-    private void sendMessage(Type type, UUID uuid) {
-        messagingTemplate.convertAndSend(
+    private void sendMessage(String login, Type type, UUID uuid) {
+        messagingTemplate.convertAndSendToUser(
+                login,
                 CHANNEL,
-                ChatListEvent.builder().uuid(uuid).type(type).timestamp(new Date()).build()
+                ChatListEvent.builder().uuid(uuid).type(type).build()
         );
     }
 }

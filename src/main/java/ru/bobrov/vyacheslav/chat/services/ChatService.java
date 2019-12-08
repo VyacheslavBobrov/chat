@@ -15,6 +15,7 @@ import ru.bobrov.vyacheslav.chat.services.utils.Translator;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
@@ -184,5 +185,15 @@ public class ChatService {
         users.remove(userToKick);
         repository.save(chat);
         return users;
+    }
+
+    /**
+     * Применить функцию ко всем пользователям чата
+     *
+     * @param chatId   {@link UUID} идентификатор чата
+     * @param function {@link Consumer<User>} функция, которая будет применена к пользователям
+     */
+    public void applyForChatUsers(UUID chatId, Consumer<User> function) {
+        get(chatId).getUsers().forEach(function);
     }
 }

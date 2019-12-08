@@ -16,6 +16,7 @@ import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserRegistrationApiModel;
 import ru.bobrov.vyacheslav.chat.services.UserService;
 import ru.bobrov.vyacheslav.chat.services.utils.JwtUserDetailsService;
+import ru.bobrov.vyacheslav.chat.services.websocket.UserScheduledNotifier;
 
 import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
@@ -35,6 +36,7 @@ public class JwtAuthenticationController {
     JwtTokenUtil jwtTokenUtil;
     JwtUserDetailsService jwtUserDetailsService;
     UserService userService;
+    UserScheduledNotifier userScheduledNotifier;
 
     @ApiOperation(value = "Authenticate user", response = UserRegistrationApiModel.class)
     @PostMapping
@@ -45,8 +47,9 @@ public class JwtAuthenticationController {
     ) {
         log.info(format("POST authentication request, from: %s, for login: %s", header.getHost(), login));
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
-        final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(login);
-        final String token = jwtTokenUtil.generateToken(userDetails);
+        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(login);
+        String token = jwtTokenUtil.generateToken(userDetails);
+        userScheduledNotifier.tokenExpired(login);
         return toApi(userService.getUserByLogin(login), token);
     }
 

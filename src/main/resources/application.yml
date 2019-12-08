@@ -23,7 +23,7 @@ spring:
 
 jwt:
   secret: iojfquiohvavn848948646489djdijsjfvnaeuihfoanvnawkviwejgq34iojgir0JBIYGUGFTYFrof03
-  jwtTokenValidity: 5
+  jwtTokenValidity: 300
 
 file-storage:
   upload-dir: /home/vyacheslav/chat_file_storage/

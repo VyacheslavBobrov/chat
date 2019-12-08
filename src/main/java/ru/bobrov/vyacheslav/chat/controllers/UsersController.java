@@ -18,6 +18,7 @@ import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UsersPagingApiModel;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
 import ru.bobrov.vyacheslav.chat.services.UserService;
+import ru.bobrov.vyacheslav.chat.services.websocket.UserNotifyService;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,8 +36,10 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter
 @FieldDefaults(level = PRIVATE)
 @Slf4j
 @CrossOrigin
+@NonNull
 public class UsersController {
-    @NonNull UserService userService;
+    UserService userService;
+    UserNotifyService userNotifyService;
 
     @ApiOperation(value = "Get user by uuid", response = UserApiModel.class)
     @GetMapping("/{userId}")
@@ -74,7 +77,9 @@ public class UsersController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT request to block user, from %s, userId: %s", header.getHost(), userId));
-        return toApi(userService.block(userId));
+        UserApiModel blockedUser = toApi(userService.block(userId));
+        userNotifyService.blocked(userId);
+        return blockedUser;
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -86,7 +91,9 @@ public class UsersController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT request to unblock user, from %s, userId: %s", header.getHost(), userId));
-        return toApi(userService.unblock(userId));
+        UserApiModel unblockedUser = toApi(userService.unblock(userId));
+        userNotifyService.unblocked(userId);
+        return unblockedUser;
     }
 
     @ApiOperation(value = "Get all users", response = UsersPagingApiModel.class)

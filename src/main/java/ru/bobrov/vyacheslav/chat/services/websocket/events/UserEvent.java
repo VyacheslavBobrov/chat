@@ -10,9 +10,9 @@ import java.util.Date;
 @Builder
 @NonNull
 public class UserEvent {
-    public static final String CHANNEL = "/user/%s";
+    public static final String CHANNEL = "/user";
     Type type;
-    Date timestamp;
+    Date timestamp = new Date();
 
     public enum Type {
         BLOCKED,
