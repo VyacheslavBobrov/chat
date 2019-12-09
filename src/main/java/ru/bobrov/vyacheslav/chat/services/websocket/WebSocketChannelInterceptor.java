@@ -1,5 +1,6 @@
 package ru.bobrov.vyacheslav.chat.services.websocket;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -11,7 +12,6 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import ru.bobrov.vyacheslav.chat.services.authentication.JwtAuthenticationService;
@@ -39,27 +39,39 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
         }
 
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-            String authToken = accessor.getFirstNativeHeader(AUTHORIZATION_HEADER);
-            log.info("Header auth token: " + authToken);
-            if (isNull(authToken)) {
+            String authHeader = accessor.getFirstNativeHeader(AUTHORIZATION_HEADER);
+            log.info("Header auth token: " + authHeader);
+            if (isNull(authHeader)) {
                 log.info("Token is null");
                 return null;
             }
-            authenticationService.authenticate(authToken);
-            Principal principal = SecurityContextHolder.getContext().getAuthentication();
+            Principal principal = extractPrincipalFromHeader(authHeader);
 
             if (isNull(principal))
                 return null;
 
             accessor.setUser(principal);
         } else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Principal user = accessor.getUser();
 
-            if (nonNull(authentication))
-                log.info("Disconnected Auth : " + authentication.getName());
+            if (nonNull(user))
+                log.info("Disconnected Auth : " + user.getName());
             else
                 log.info("Disconnected Sess : " + accessor.getSessionId());
         }
         return message;
+    }
+
+    private Principal extractPrincipalFromHeader(String header) {
+        try {
+            return authenticationService.createPrincipalFromToken(authenticationService.extractTokenFromHeader(header));
+        } catch (IllegalArgumentException e) {
+            log.error("Unable to create principal from token", e);
+        } catch (ExpiredJwtException e) {
+            SecurityContextHolder.clearContext();
+            log.error("JWT Token has expired", e);
+        }
+
+        return null;
     }
 }

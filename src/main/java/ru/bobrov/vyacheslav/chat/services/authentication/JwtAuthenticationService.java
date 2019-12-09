@@ -13,10 +13,12 @@ import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.services.utils.JwtTokenUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
+import static java.util.Objects.isNull;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.services.Constants.AUTHORIZATION_HEADER;
@@ -34,54 +36,54 @@ public class JwtAuthenticationService {
     JwtTokenUtil jwtTokenUtil;
 
     public void authenticate(HttpServletRequest request) {
-        authenticate(request, request.getHeader(AUTHORIZATION_HEADER));
-    }
-
-    public void authenticate(@NonNull String tokenHeader) {
-        authenticate(null, tokenHeader);
-    }
-
-    private void authenticate(HttpServletRequest request, String tokenHeader) {
-        if (tokenHeader == null)
-            return;
-
-        final String token = getTokenFromHeader(tokenHeader);
-        if (token == null) {
-            log.warn("JWT Token does not begin with Bearer String");
-            return;
-        }
-
+        final String tokenHeader = request.getHeader(AUTHORIZATION_HEADER);
         try {
+            if (isNull(tokenHeader)) {
+                log.error("Token header not find in request");
+                return;
+            }
+
+
+            final String token = extractTokenFromHeader(tokenHeader);
             setContext(request, token);
         } catch (IllegalArgumentException e) {
-            log.error("Unable to get JWT Token", e);
+            log.error("Unable to set security context", e);
         } catch (ExpiredJwtException e) {
             SecurityContextHolder.clearContext();
             log.error("JWT Token has expired", e);
         }
     }
 
-    private void setContext(final HttpServletRequest request, final String token) {
+    public Principal createPrincipalFromToken(String token) {
         final String username = jwtTokenUtil.getUsernameFromToken(token);
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
+        if (isNull(username))
+            throw new IllegalArgumentException(format("User for token: %s not found!", token));
 
-            if (jwtTokenUtil.validateToken(token, userDetails)) {
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                if (request != null)
-                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                log.info(format("User: %s - login to system, token: %s", userDetails.getUsername(), token));
-            }
-        }
+        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
+        if (!jwtTokenUtil.validateToken(token, userDetails))
+            throw new IllegalArgumentException("Invalid token: " + token);
+
+        return new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
     }
 
-    private String getTokenFromHeader(String header) {
+    private void setContext(final HttpServletRequest request, final String token) {
+        final UsernamePasswordAuthenticationToken authenticationToken
+                = (UsernamePasswordAuthenticationToken) createPrincipalFromToken(token);
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        log.info(format("User: %s - authenticated, token: %s", authenticationToken.getName(), token));
+    }
+
+    public String extractTokenFromHeader(String header) {
         Matcher matcher = TOKEN_PATTERN.matcher(header);
-        return matcher.find() && matcher.groupCount() == 1 ? matcher.group(1) : null;
+        String token = matcher.find() && matcher.groupCount() == 1 ? matcher.group(1) : null;
+        if (isNull(token)) {
+            throw new IllegalArgumentException("Illegal JWT Token header: " + header);
+        }
+        return token;
     }
 }
