@@ -1,5 +1,6 @@
 package ru.bobrov.vyacheslav.chat.controllers.integration;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,13 +21,16 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static java.lang.String.format;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpHeaders.ORIGIN;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserRole.ADMIN;
 import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserRole.USER;
 import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus.ACTIVE;
-import static ru.bobrov.vyacheslav.chat.services.Constants.AUTHORIZATION_HEADER;
+import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus.DISABLED;
 import static ru.bobrov.vyacheslav.chat.services.Constants.TOKEN_PREFIX;
 
 @SpringBootTest(classes = ChatApplication.class)
@@ -56,32 +60,92 @@ public class UserControllerTest {
             .build();
 
     private static final String API_PATH = "/api/v1/user";
+    private static final String ORIGIN_VAL = "localhost:8080";
     @Autowired
     UserRepository userRepository;
     @Autowired
     JwtTokenUtil jwtTokenUtil;
     @Autowired
     JwtUserDetailsService jwtUserDetailsService;
-    private String adminToken;
     @Autowired
     private MockMvc mvc;
+    private String authorizationHeader;
 
     @PostConstruct
     public void setUp() {
         userRepository.save(TEST_ADMIN);
+        String adminToken = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(TEST_ADMIN.getLogin()));
+        authorizationHeader = format("%s %s", TOKEN_PREFIX, adminToken);
+    }
+
+    @BeforeEach
+    public void setUpTest() {
         userRepository.save(TEST_USER);
-        adminToken = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(TEST_ADMIN.getLogin()));
     }
 
     @Test
     public void givenUser_getUserByUUID_returnUser() throws Exception {
-        mvc.perform(get(API_PATH + "/" + TEST_USER.getUserId())
-                .header(AUTHORIZATION_HEADER, format("%s %s", TOKEN_PREFIX, adminToken))
-                .header("Origin", "localhost:8080")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+        mvc.perform(
+                get(API_PATH + "/" + TEST_USER.getUserId())
+                        .header(AUTHORIZATION, authorizationHeader)
+                        .header(ORIGIN, ORIGIN_VAL)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value(TEST_USER.getUserId().toString()));
+                .andExpect(jsonPath("$.userId").value(TEST_USER.getUserId().toString()))
+                .andExpect(jsonPath("$.name").value(TEST_USER.getName()))
+                .andExpect(jsonPath("$.login").value(TEST_USER.getLogin()))
+                .andExpect(jsonPath("$.status").value(TEST_USER.getStatus().name()))
+                .andExpect(jsonPath("$.created").value(TEST_USER.getCreated().toString()))
+                .andExpect(jsonPath("$.updated").value(TEST_USER.getUpdated().toString()));
+    }
+
+    @Test
+    public void giveUser_postUpdateUser_returnUpdated() throws Exception {
+        mvc.perform(
+                post(API_PATH + "/" + TEST_USER.getUserId())
+                        .header(AUTHORIZATION, authorizationHeader)
+                        .header(ORIGIN, ORIGIN_VAL)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .param("name", "changed_user_name")
+                        .param("login", "changed user login")
+                        .param("password", "changed_user_password")
+                        .accept(MediaType.APPLICATION_JSON)
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(TEST_USER.getUserId().toString()))
+                .andExpect(jsonPath("$.name").value("changed_user_name"))
+                .andExpect(jsonPath("$.login").value("changed user login"))
+                .andExpect(jsonPath("$.status").value(TEST_USER.getStatus().name()))
+                .andExpect(jsonPath("$.created").value(TEST_USER.getCreated().toString()));
+    }
+
+    @Test
+    public void giveActiveUser_blockUser_returnBlocked() throws Exception {
+        mvc.perform(
+                post(format("%s/%s/block", API_PATH, TEST_USER.getUserId()))
+                        .header(AUTHORIZATION, authorizationHeader)
+                        .header(ORIGIN, ORIGIN_VAL)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON)
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(TEST_USER.getUserId().toString()))
+                .andExpect(jsonPath("$.status").value(DISABLED.name()));
+    }
+
+    @Test
+    public void giveActiveUser_unblockUser_returnUnblocked() throws Exception {
+        mvc.perform(
+                post(format("%s/%s/unblock", API_PATH, TEST_USER.getUserId()))
+                        .header(AUTHORIZATION, authorizationHeader)
+                        .header(ORIGIN, ORIGIN_VAL)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON)
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(TEST_USER.getUserId().toString()))
+                .andExpect(jsonPath("$.status").value(ACTIVE.name()));
     }
 }
