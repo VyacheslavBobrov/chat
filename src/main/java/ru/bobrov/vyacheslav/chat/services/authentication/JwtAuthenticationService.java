@@ -21,7 +21,7 @@ import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
-import static ru.bobrov.vyacheslav.chat.services.Constants.AUTHORIZATION_HEADER;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static ru.bobrov.vyacheslav.chat.services.Constants.TOKEN_PREFIX;
 
 @Service
@@ -36,7 +36,7 @@ public class JwtAuthenticationService {
     JwtTokenUtil jwtTokenUtil;
 
     public void authenticate(HttpServletRequest request) {
-        final String tokenHeader = request.getHeader(AUTHORIZATION_HEADER);
+        final String tokenHeader = request.getHeader(AUTHORIZATION);
         try {
             if (isNull(tokenHeader)) {
                 log.error("Token header not find in request");

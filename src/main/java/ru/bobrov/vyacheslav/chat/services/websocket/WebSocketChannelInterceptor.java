@@ -20,7 +20,7 @@ import java.security.Principal;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static ru.bobrov.vyacheslav.chat.services.Constants.AUTHORIZATION_HEADER;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -39,7 +39,7 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
         }
 
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-            String authHeader = accessor.getFirstNativeHeader(AUTHORIZATION_HEADER);
+            String authHeader = accessor.getFirstNativeHeader(AUTHORIZATION);
             log.info("Header auth token: " + authHeader);
             if (isNull(authHeader)) {
                 log.info("Token is null");

@@ -15,7 +15,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.List;
 
-import static ru.bobrov.vyacheslav.chat.services.Constants.AUTHORIZATION_HEADER;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static ru.bobrov.vyacheslav.chat.services.Constants.TOKEN_PREFIX;
 
 @Configuration
@@ -27,7 +27,7 @@ public class SwaggerConfig {
                 .globalOperationParameters(
                         List.of(
                                 (new ParameterBuilder())
-                                        .name(AUTHORIZATION_HEADER)
+                                        .name(AUTHORIZATION)
                                         .defaultValue(TOKEN_PREFIX + " <token>")
                                         .description("Authorization header. Need in all apis exclude /common/auth/** or /mobile/auth/**")
                                         .modelRef(new ModelRef("string"))
