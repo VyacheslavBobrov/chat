@@ -19,8 +19,8 @@
             stompClient = Stomp.over(socket);
             stompClient.connect(
                 {
-                    'Access-Control-Request-Headers': 'authorization',
-                    Authorization: "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTU3NTgxNTIzOCwiaWF0IjoxNTc1Nzk3MjM4fQ.7Fg139aUMz5yyAhaX7dxs0_EoZonA0B2N5IGqDVdXeJ_Z8NshHL2JVzmt_PVuxDPC-EHU7LRbOY3Vr5KgEXO_w"
+                    //'Access-Control-Request-Headers': 'authorization',
+                    Authorization: "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzY2htdWwiLCJleHAiOjE1NzU5MDQ3NjAsImlhdCI6MTU3NTg4Njc2MH0.QJrVgy36LQYSm6Odc7Fwt3D6YAHalGU5NvNLbApSvE1ZfJbS8gCijeDLYhnMLWH9noKw0a61gxRKgakpscNq-A"
                 },
                 function(frame) {
                 setConnected(true);
@@ -49,6 +49,7 @@
             p.appendChild(document.createTextNode(message));
             response.appendChild(p);
         }
+
 
     </script>
 </head>

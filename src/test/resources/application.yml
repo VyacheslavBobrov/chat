@@ -1,0 +1,29 @@
+spring:
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:chat_db
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+
+jwt:
+  secret: iojfquiohvavn848948646489djdijsjfvnaeuihfoanvnawkviwejgq34iojgir0JBIYGUGFTYFrof03
+  jwtTokenValidity: 300
+
+file-storage:
+  upload-dir: /home/vyacheslav/chat_file_storage/
