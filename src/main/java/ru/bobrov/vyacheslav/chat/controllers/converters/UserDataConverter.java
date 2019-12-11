@@ -18,8 +18,8 @@ public class UserDataConverter {
                 .name(user.getName())
                 .role(user.getRole().name())
                 .status(user.getStatus().name())
-                .created(user.getCreated().toString())
-                .updated(user.getUpdated().toString())
+                .created(user.getCreated().toLocalDateTime().toString())
+                .updated(user.getUpdated().toLocalDateTime().toString())
                 .build();
     }
 
@@ -30,8 +30,8 @@ public class UserDataConverter {
                 .name(user.getName())
                 .role(user.getRole().name())
                 .status(user.getStatus().name())
-                .created(user.getCreated().toString())
-                .updated(user.getUpdated().toString())
+                .created(user.getCreated().toLocalDateTime().toString())
+                .updated(user.getUpdated().toLocalDateTime().toString())
                 .jwtToken(token)
                 .build();
     }

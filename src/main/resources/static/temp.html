@@ -20,12 +20,12 @@
             stompClient.connect(
                 {
                     //'Access-Control-Request-Headers': 'authorization',
-                    Authorization: "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzY2htdWwiLCJleHAiOjE1NzU5MDQ3NjAsImlhdCI6MTU3NTg4Njc2MH0.QJrVgy36LQYSm6Odc7Fwt3D6YAHalGU5NvNLbApSvE1ZfJbS8gCijeDLYhnMLWH9noKw0a61gxRKgakpscNq-A"
+                    Authorization: "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLQkNGC0LXRhSIsImV4cCI6MTU3NjEwMjY4MiwiaWF0IjoxNTc2MDg0NjgyfQ.3Ss6ITIBLNI69chDaf9PgmH30u3ckw5qNdrPlg4pjxMVrjCY7ettn1ZqjhXpBJlyZhVFoQ5m8sunT_8NxQ1JAA"
                 },
                 function(frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
-                stompClient.subscribe('/chat', function(greeting){
+                stompClient.subscribe('/user/7b881c58-64b1-4742-8f29-de8a14f3457a/chat', function(greeting){
                     showGreeting(JSON.parse(greeting.body).content);
                 });
             });

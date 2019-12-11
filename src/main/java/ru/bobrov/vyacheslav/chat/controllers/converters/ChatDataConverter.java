@@ -13,8 +13,8 @@ public class ChatDataConverter {
                 .chatId(chat.getChatId())
                 .title(chat.getTitle())
                 .status(chat.getStatus().name())
-                .created(chat.getCreated().toString())
-                .updated(chat.getUpdated().toString())
+                .created(chat.getCreated().toLocalDateTime().toString())
+                .updated(chat.getUpdated().toLocalDateTime().toString())
                 .creator(UserDataConverter.toApi(chat.getCreator()))
                 .build();
     }

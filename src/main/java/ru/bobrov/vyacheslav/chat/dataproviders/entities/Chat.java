@@ -48,10 +48,8 @@ public class Chat implements EntityWithTimeInfo {
 
     @ManyToMany(
             fetch = FetchType.LAZY,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE
-            }
+            cascade = CascadeType.ALL
+
     )
     @JoinTable(
             name = "users_chats",
@@ -62,10 +60,7 @@ public class Chat implements EntityWithTimeInfo {
 
     @OneToMany(
             fetch = FetchType.LAZY,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE
-            }
+            cascade = CascadeType.ALL
     )
     @JoinColumn(name = "chat_id")
     Set<Message> messages;
