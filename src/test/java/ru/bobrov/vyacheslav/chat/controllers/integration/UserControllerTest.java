@@ -2,6 +2,7 @@ package ru.bobrov.vyacheslav.chat.controllers.integration;
 
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,11 +26,13 @@ import ru.bobrov.vyacheslav.chat.utils.DateUtils;
 import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.ORIGIN;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,12 +43,14 @@ import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus.ACTIVE
 import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus.DISABLED;
 import static ru.bobrov.vyacheslav.chat.services.Constants.TOKEN_PREFIX;
 import static ru.bobrov.vyacheslav.chat.testdata.Chats.CHATS;
+import static ru.bobrov.vyacheslav.chat.testdata.Chats.CHAT_IDS_MAP;
 import static ru.bobrov.vyacheslav.chat.testdata.Users.*;
 
 @SpringBootTest(classes = ChatApplication.class)
 @AutoConfigureMockMvc
 @WebAppConfiguration
 @TestPropertySource(locations = "classpath:application.yml")
+@Slf4j
 public class UserControllerTest {
     private static final String USERS_API_PATH = "/api/v1/user";
     private static final String CHATS_API_PATH = "/api/v1/chat";
@@ -61,24 +66,27 @@ public class UserControllerTest {
     JwtUserDetailsService jwtUserDetailsService;
     @Autowired
     private MockMvc mvc;
-    private String authorizationHeader;
+    private String adminAuthorizationHeader;
+    private String userAuthorizationHeader;
 
     @PostConstruct
     public void setUp() {
         String adminToken = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(TEST_ADMIN.getLogin()));
-        authorizationHeader = format("%s %s", TOKEN_PREFIX, adminToken);
+        adminAuthorizationHeader = format("%s %s", TOKEN_PREFIX, adminToken);
     }
 
     @BeforeEach
     public void setUpTest() {
         userRepository.save(TEST_USER);
+        String userToken = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(TEST_ADMIN.getLogin()));
+        userAuthorizationHeader = format("%s %s", TOKEN_PREFIX, userToken);
     }
 
     @Test
     public void givenUser_getUserByUUID_returnUser() throws Exception {
         mvc.perform(
                 get(USERS_API_PATH + "/" + TEST_USER.getUserId())
-                        .header(AUTHORIZATION, authorizationHeader)
+                        .header(AUTHORIZATION, adminAuthorizationHeader)
                         .header(ORIGIN, ORIGIN_VAL)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON)
@@ -97,7 +105,7 @@ public class UserControllerTest {
     public void giveUser_postUpdateUser_returnUpdated() throws Exception {
         MvcResult result = mvc.perform(
                 post(USERS_API_PATH + "/" + TEST_USER.getUserId())
-                        .header(AUTHORIZATION, authorizationHeader)
+                        .header(AUTHORIZATION, adminAuthorizationHeader)
                         .header(ORIGIN, ORIGIN_VAL)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .param("name", "changed_user_name")
@@ -123,7 +131,7 @@ public class UserControllerTest {
     public void giveActiveUser_blockUser_returnBlocked() throws Exception {
         mvc.perform(
                 post(format("%s/%s/block", USERS_API_PATH, TEST_USER.getUserId()))
-                        .header(AUTHORIZATION, authorizationHeader)
+                        .header(AUTHORIZATION, adminAuthorizationHeader)
                         .header(ORIGIN, ORIGIN_VAL)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON)
@@ -137,7 +145,7 @@ public class UserControllerTest {
     public void giveActiveUser_unblockUser_returnUnblocked() throws Exception {
         mvc.perform(
                 post(format("%s/%s/unblock", USERS_API_PATH, TEST_USER.getUserId()))
-                        .header(AUTHORIZATION, authorizationHeader)
+                        .header(AUTHORIZATION, adminAuthorizationHeader)
                         .header(ORIGIN, ORIGIN_VAL)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON)
@@ -163,7 +171,7 @@ public class UserControllerTest {
 
         mvc.perform(
                 get(USERS_API_PATH)
-                        .header(AUTHORIZATION, authorizationHeader)
+                        .header(AUTHORIZATION, adminAuthorizationHeader)
                         .header(ORIGIN, ORIGIN_VAL)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .param("page", "0")
@@ -177,37 +185,109 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$..userId", containsInAnyOrder(activeUserIds.toArray())));
     }
 
-//    @Test
-//    public void giveNoChats_createChat_returnCreated() throws Exception {
-//        mvc.perform(
-//                post(CHATS_API_PATH)
-//                        .header(AUTHORIZATION, authorizationHeader)
-//                        .header(ORIGIN, ORIGIN_VAL)
-//                        .param("chatId", )
-//                        .contentType(MediaType.MULTIPART_FORM_DATA)
-//        )
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.chatId").value("0"))
-//                .andExpect(jsonPath("$.pageLimit").value("1"));
-//    }
+    private void giveNoChats_createChats_returnCreatedChats() {
+        CHATS.forEach(chat -> {
+                    try {
+                        MvcResult result = mvc.perform(
+                                post(CHATS_API_PATH)
+                                        .header(AUTHORIZATION, chat.getCreator() == TEST_ADMIN
+                                                ? adminAuthorizationHeader
+                                                : userAuthorizationHeader
+                                        )
+                                        .header(ORIGIN, ORIGIN_VAL)
+                                        .param("userId", chat.getCreator().getUserId().toString())
+                                        .param("title", chat.getTitle())
+                                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        )
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.title").value(chat.getTitle()))
+                                .andExpect(jsonPath("$.creator.userId")
+                                        .value(chat.getCreator().getUserId().toString()))
+                                .andExpect(jsonPath("$.status").value(ChatStatus.ACTIVE.name()))
+                                .andReturn();
+                        Object document = Configuration.defaultConfiguration().jsonProvider()
+                                .parse(result.getResponse().getContentAsString());
+                        CHAT_IDS_MAP.put(chat, UUID.fromString(JsonPath.read(document, "$.chatId")));
+                    } catch (Exception e) {
+                        log.error(e.getLocalizedMessage(), e);
+                        fail(e.getMessage());
+                    }
+                }
+        );
+    }
 
-    //@Test
-    public void giveUserChats_getAllChats_returnChats() throws Exception {
-        final Set<Chat> activeChatsForUser = CHATS.stream()
-                .filter(chat -> chat.getUsers().contains(TEST_USER) && chat.getStatus() == ChatStatus.ACTIVE)
+    private void giveChats_addUsersToChats_usersAdded() {
+        CHATS.forEach(chat -> {
+            final Set<String> userIdsToAdd = chat.getUsers().stream()
+                    .filter(user -> user != chat.getCreator())
+                    .map(user -> user.getUserId().toString())
+                    .collect(Collectors.toUnmodifiableSet());
+
+            try {
+                mvc.perform(
+                        post(format("%s/%s/users", CHATS_API_PATH, CHAT_IDS_MAP.get(chat)))
+                                .header(AUTHORIZATION, chat.getCreator() == TEST_ADMIN
+                                        ? adminAuthorizationHeader
+                                        : userAuthorizationHeader
+                                )
+                                .header(ORIGIN, ORIGIN_VAL)
+                                .param("chatId", chat.getCreator().getUserId().toString())
+                                .param("userUUIDs", String.join(",", userIdsToAdd))
+                                .contentType(MediaType.MULTIPART_FORM_DATA)
+                )
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$..userId",
+                                containsInAnyOrder(chat.getUsers().stream()
+                                        .map(user -> user.getUserId().toString()).toArray())));
+            } catch (Exception e) {
+                log.error(e.getLocalizedMessage(), e);
+                fail(e.getMessage());
+            }
+        });
+    }
+
+    private void giveChats_blockChats_chatsBlocked() {
+        CHATS.stream().filter(chat -> chat.getStatus() == ChatStatus.DISABLED).forEach(chat -> {
+            try {
+                mvc.perform(
+                        post(format("%s/%s/block", CHATS_API_PATH, CHAT_IDS_MAP.get(chat)))
+                                .header(AUTHORIZATION, chat.getCreator() == TEST_ADMIN
+                                        ? adminAuthorizationHeader
+                                        : userAuthorizationHeader
+                                )
+                                .header(ORIGIN, ORIGIN_VAL)
+                                .contentType(MediaType.MULTIPART_FORM_DATA)
+                )
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.chatId").value(CHAT_IDS_MAP.get(chat).toString()))
+                        .andExpect(jsonPath("$.status").value(chat.getStatus().name()));
+            } catch (Exception e) {
+                log.error(e.getLocalizedMessage(), e);
+                fail(e.getMessage());
+            }
+        });
+    }
+
+    @Test
+    public void giveUserChats_getAllChatsForUser_returnChats() throws Exception {
+        giveNoChats_createChats_returnCreatedChats();
+        giveChats_addUsersToChats_usersAdded();
+        giveChats_blockChats_chatsBlocked();
+
+        final Set<Chat> chatsForUser = CHATS.stream()
+                .filter(chat -> chat.getUsers().contains(TEST_USER))
                 .collect(Collectors.toUnmodifiableSet());
-        CHATS.forEach(chat -> chatRepository.save(chat));
 
         mvc.perform(
                 get(format("%s/%s/chats", USERS_API_PATH, TEST_USER.getUserId()))
-                        .header(AUTHORIZATION, authorizationHeader)
+                        .header(AUTHORIZATION, adminAuthorizationHeader)
                         .header(ORIGIN, ORIGIN_VAL)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
         )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(activeChatsForUser.size())))
-                .andExpect(jsonPath("$..chatId",
-                        containsInAnyOrder(activeChatsForUser.stream().map(Chat::getChatId).toArray())));
-
+                .andExpect(jsonPath("$", hasSize(chatsForUser.size())))
+                .andExpect(jsonPath("$.[*].chatId",
+                        containsInAnyOrder(chatsForUser.stream()
+                                .map(chat -> CHAT_IDS_MAP.get(chat).toString()).toArray())));
     }
 }
