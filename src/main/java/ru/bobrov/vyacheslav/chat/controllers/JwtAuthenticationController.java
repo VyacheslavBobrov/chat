@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.controllers.models.response.UserRegistrationApiModel;
+import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
 import ru.bobrov.vyacheslav.chat.services.UserService;
 import ru.bobrov.vyacheslav.chat.services.authentication.JwtUserDetailsService;
 import ru.bobrov.vyacheslav.chat.services.utils.JwtTokenUtil;
@@ -49,8 +50,9 @@ public class JwtAuthenticationController {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
         UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(login);
         String token = jwtTokenUtil.generateToken(userDetails);
-        userScheduledNotifier.tokenExpired(login);
-        return toApi(userService.getUserByLogin(login), token);
+        User user = userService.getUserByLogin(login);
+        userScheduledNotifier.tokenExpired(user.getUserId());
+        return toApi(user, token);
     }
 
     @ApiOperation(value = "Create new chat user", response = UserApiModel.class)

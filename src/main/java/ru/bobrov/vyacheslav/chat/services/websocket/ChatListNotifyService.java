@@ -26,7 +26,7 @@ public class ChatListNotifyService {
     SimpMessagingTemplate messagingTemplate;
     ChatService chatService;
 
-    public void newChat(UUID chatId) {
+    public void newChatUser(UUID chatId) {
         chatService.applyForChatUsers(chatId, user -> sendMessage(user.getUserId(), NEW_CHAT, chatId));
     }
 

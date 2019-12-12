@@ -118,7 +118,6 @@ public class ChatsController {
         log.info(format("POST create chat request from %s, title: %s, userId: %s ",
                 header.getHost(), title, userId));
         Chat chat = chatService.create(title, userId);
-        chatListNotifyService.newChat(chat.getChatId());
         return toApi(chat);
     }
 
@@ -158,6 +157,7 @@ public class ChatsController {
         log.info(format("POST chat users request from %s, chatId:%s,  userUUIDs: {%s}",
                 header.getHost(), chatId, userUUIDs.stream().map(UUID::toString).collect(Collectors.joining())));
         List<UserApiModel> updatedChatUsersList = UserDataConverter.toApi(chatService.addUsers(chatId, userUUIDs));
+        chatListNotifyService.newChatUser(chatId);
         chatNotifyService.addUser(chatId);
         return updatedChatUsersList;
     }
