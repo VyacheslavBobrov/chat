@@ -9,10 +9,72 @@ import java.util.UUID;
 
 import static ru.bobrov.vyacheslav.chat.dataproviders.entities.ChatStatus.ACTIVE;
 import static ru.bobrov.vyacheslav.chat.dataproviders.entities.ChatStatus.DISABLED;
-import static ru.bobrov.vyacheslav.chat.testdata.Users.TEST_ADMIN;
-import static ru.bobrov.vyacheslav.chat.testdata.Users.TEST_USER;
+import static ru.bobrov.vyacheslav.chat.testdata.Users.*;
 
 public class Chats {
+    public static final Chat TEST_FOR_CREATE_CHAT = Chat.builder()
+            .title("Уютный чат")
+            .creator(TEST_USER)
+            .users(Set.of(TEST_USER, TEST_ADMIN))
+            .status(ACTIVE)
+            .build();
+
+    public static final Chat TEST_FOR_GET_CHAT = Chat.builder()
+            .title("Чат")
+            .creator(TEST_ADMIN)
+            .users(Set.of(TEST_USER, TEST_ADMIN))
+            .status(ACTIVE)
+            .build();
+
+    public static final Chat TEST_FOR_UPDATE_CHAT = Chat.builder()
+            .title("Какое-то не особо удачное имя чата")
+            .creator(TEST_ADMIN)
+            .users(Set.of(TEST_USER, TEST_ADMIN))
+            .status(ACTIVE)
+            .build();
+
+    public static final Chat TEST_FOR_ADD_USERS_CHAT = Chat.builder()
+            .title("Шумный чат")
+            .creator(TEST_ADMIN)
+            .users(ALL_USERS)
+            .status(ACTIVE)
+            .build();
+
+    public static final Chat TEST_FOR_GET_USERS_CHAT = Chat.builder()
+            .title("Очень тихий чат")
+            .creator(TEST_ADMIN)
+            .users(ALL_USERS)
+            .status(ACTIVE)
+            .build();
+
+    public static final Chat TEST_FOR_GET_USERS_OUT_OF_CHAT = Chat.builder()
+            .title("Очень шумный чат")
+            .creator(TEST_ADMIN)
+            .users(Set.of(TEST_USER, TEST_ADMIN))
+            .status(ACTIVE)
+            .build();
+
+    public static final Chat TEST_FOR_KICK_USER_OUT_OF_CHAT = Chat.builder()
+            .title("Чат с лишними людьми")
+            .creator(TEST_ADMIN)
+            .users(ALL_USERS)
+            .status(ACTIVE)
+            .build();
+
+    public static final Chat TEST_FOR_BLOCK_CHAT = Chat.builder()
+            .title("Лишний чат")
+            .creator(TEST_ADMIN)
+            .users(Set.of(TEST_USER, TEST_ADMIN))
+            .status(ACTIVE)
+            .build();
+
+    public static final Chat TEST_FOR_UNBLOCK_CHAT = Chat.builder()
+            .title("Чат, который смог")
+            .creator(TEST_ADMIN)
+            .users(Set.of(TEST_USER, TEST_ADMIN))
+            .status(ACTIVE)
+            .build();
+
     public static final Set<Chat> CHATS = Set.of(
             Chat.builder()
                     .title("Уютный чат")

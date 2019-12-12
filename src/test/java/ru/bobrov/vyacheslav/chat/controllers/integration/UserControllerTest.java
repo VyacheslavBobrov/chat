@@ -2,6 +2,8 @@ package ru.bobrov.vyacheslav.chat.controllers.integration;
 
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +19,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import ru.bobrov.vyacheslav.chat.ChatApplication;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.ChatStatus;
-import ru.bobrov.vyacheslav.chat.dataproviders.repositories.ChatRepository;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.UserRepository;
 import ru.bobrov.vyacheslav.chat.services.authentication.JwtUserDetailsService;
 import ru.bobrov.vyacheslav.chat.services.utils.JwtTokenUtil;
@@ -51,6 +52,7 @@ import static ru.bobrov.vyacheslav.chat.testdata.Users.*;
 @WebAppConfiguration
 @TestPropertySource(locations = "classpath:application.yml")
 @Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserControllerTest {
     private static final String USERS_API_PATH = "/api/v1/user";
     private static final String CHATS_API_PATH = "/api/v1/chat";
@@ -59,15 +61,13 @@ public class UserControllerTest {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    ChatRepository chatRepository;
-    @Autowired
     JwtTokenUtil jwtTokenUtil;
     @Autowired
     JwtUserDetailsService jwtUserDetailsService;
     @Autowired
-    private MockMvc mvc;
-    private String adminAuthorizationHeader;
-    private String userAuthorizationHeader;
+    MockMvc mvc;
+    String adminAuthorizationHeader;
+    String userAuthorizationHeader;
 
     @PostConstruct
     public void setUp() {
@@ -185,38 +185,35 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$..userId", containsInAnyOrder(activeUserIds.toArray())));
     }
 
-    private void giveNoChats_createChats_returnCreatedChats() {
+    private void createChats() {
         CHATS.forEach(chat -> {
-                    try {
-                        MvcResult result = mvc.perform(
-                                post(CHATS_API_PATH)
-                                        .header(AUTHORIZATION, chat.getCreator() == TEST_ADMIN
-                                                ? adminAuthorizationHeader
-                                                : userAuthorizationHeader
-                                        )
-                                        .header(ORIGIN, ORIGIN_VAL)
-                                        .param("userId", chat.getCreator().getUserId().toString())
-                                        .param("title", chat.getTitle())
-                                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                        )
-                                .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.title").value(chat.getTitle()))
-                                .andExpect(jsonPath("$.creator.userId")
-                                        .value(chat.getCreator().getUserId().toString()))
-                                .andExpect(jsonPath("$.status").value(ChatStatus.ACTIVE.name()))
-                                .andReturn();
-                        Object document = Configuration.defaultConfiguration().jsonProvider()
-                                .parse(result.getResponse().getContentAsString());
-                        CHAT_IDS_MAP.put(chat, UUID.fromString(JsonPath.read(document, "$.chatId")));
-                    } catch (Exception e) {
-                        log.error(e.getLocalizedMessage(), e);
-                        fail(e.getMessage());
-                    }
+            try {
+                MvcResult result = mvc.perform(
+                        post(CHATS_API_PATH)
+                                .header(AUTHORIZATION, chat.getCreator() == TEST_ADMIN
+                                        ? adminAuthorizationHeader
+                                        : userAuthorizationHeader
+                                )
+                                .header(ORIGIN, ORIGIN_VAL)
+                                .param("userId", chat.getCreator().getUserId().toString())
+                                .param("title", chat.getTitle())
+                                .contentType(MediaType.MULTIPART_FORM_DATA)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                        .andExpect(status().isOk())
+                        .andReturn();
+                Object document = Configuration.defaultConfiguration().jsonProvider()
+                        .parse(result.getResponse().getContentAsString());
+                CHAT_IDS_MAP.put(chat, UUID.fromString(JsonPath.read(document, "$.chatId")));
+            } catch (Exception e) {
+                log.error(e.getLocalizedMessage(), e);
+                fail(e.getMessage());
+            }
                 }
         );
     }
 
-    private void giveChats_addUsersToChats_usersAdded() {
+    private void addUsersToChats() {
         CHATS.forEach(chat -> {
             final Set<String> userIdsToAdd = chat.getUsers().stream()
                     .filter(user -> user != chat.getCreator())
@@ -234,11 +231,9 @@ public class UserControllerTest {
                                 .param("chatId", chat.getCreator().getUserId().toString())
                                 .param("userUUIDs", String.join(",", userIdsToAdd))
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
+                                .accept(MediaType.APPLICATION_JSON)
                 )
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$..userId",
-                                containsInAnyOrder(chat.getUsers().stream()
-                                        .map(user -> user.getUserId().toString()).toArray())));
+                        .andExpect(status().isOk());
             } catch (Exception e) {
                 log.error(e.getLocalizedMessage(), e);
                 fail(e.getMessage());
@@ -246,7 +241,7 @@ public class UserControllerTest {
         });
     }
 
-    private void giveChats_blockChats_chatsBlocked() {
+    private void blockChatsIfNeeded() {
         CHATS.stream().filter(chat -> chat.getStatus() == ChatStatus.DISABLED).forEach(chat -> {
             try {
                 mvc.perform(
@@ -257,10 +252,9 @@ public class UserControllerTest {
                                 )
                                 .header(ORIGIN, ORIGIN_VAL)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
+                                .accept(MediaType.APPLICATION_JSON)
                 )
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.chatId").value(CHAT_IDS_MAP.get(chat).toString()))
-                        .andExpect(jsonPath("$.status").value(chat.getStatus().name()));
+                        .andExpect(status().isOk());
             } catch (Exception e) {
                 log.error(e.getLocalizedMessage(), e);
                 fail(e.getMessage());
@@ -270,9 +264,9 @@ public class UserControllerTest {
 
     @Test
     public void giveUserChats_getAllChatsForUser_returnChats() throws Exception {
-        giveNoChats_createChats_returnCreatedChats();
-        giveChats_addUsersToChats_usersAdded();
-        giveChats_blockChats_chatsBlocked();
+        createChats();
+        addUsersToChats();
+        blockChatsIfNeeded();
 
         final Set<Chat> chatsForUser = CHATS.stream()
                 .filter(chat -> chat.getUsers().contains(TEST_USER))
@@ -283,6 +277,7 @@ public class UserControllerTest {
                         .header(AUTHORIZATION, adminAuthorizationHeader)
                         .header(ORIGIN, ORIGIN_VAL)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(chatsForUser.size())))
