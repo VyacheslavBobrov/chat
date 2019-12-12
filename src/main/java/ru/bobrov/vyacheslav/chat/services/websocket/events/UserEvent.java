@@ -14,6 +14,8 @@ public class UserEvent {
     Type type;
     Date timestamp = new Date();
 
+    final String name = "UserEvent";
+
     public enum Type {
         BLOCKED,
         UNBLOCKED,

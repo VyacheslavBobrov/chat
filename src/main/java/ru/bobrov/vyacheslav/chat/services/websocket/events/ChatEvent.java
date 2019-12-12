@@ -16,6 +16,8 @@ public class ChatEvent {
     Type type;
     Date timestamp = new Date();
 
+    final String name = "ChatEvent";
+
     public enum Type {
         NEW_MESSAGE,
         EDIT_MESSAGE,
