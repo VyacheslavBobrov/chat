@@ -77,34 +77,34 @@ public class UserControllerTest {
 
     @BeforeEach
     public void setUpTest() {
-        userRepository.save(TEST_USER);
-        String userToken = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(TEST_ADMIN.getLogin()));
+        userRepository.save(TEST_USER_1);
+        String userToken = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(TEST_USER_1.getLogin()));
         userAuthorizationHeader = format("%s %s", TOKEN_PREFIX, userToken);
     }
 
     @Test
     public void givenUser_getUserByUUID_returnUser() throws Exception {
         mvc.perform(
-                get(USERS_API_PATH + "/" + TEST_USER.getUserId())
+                get(USERS_API_PATH + "/" + TEST_USER_1.getUserId())
                         .header(AUTHORIZATION, adminAuthorizationHeader)
                         .header(ORIGIN, ORIGIN_VAL)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value(TEST_USER.getUserId().toString()))
-                .andExpect(jsonPath("$.name").value(TEST_USER.getName()))
-                .andExpect(jsonPath("$.login").value(TEST_USER.getLogin()))
-                .andExpect(jsonPath("$.status").value(TEST_USER.getStatus().name()))
-                .andExpect(jsonPath("$.role").value(TEST_USER.getRole().name()))
-                .andExpect(jsonPath("$.created").value(TEST_USER.getCreated().toLocalDateTime().toString()))
-                .andExpect(jsonPath("$.updated").value(TEST_USER.getUpdated().toLocalDateTime().toString()));
+                .andExpect(jsonPath("$.userId").value(TEST_USER_1.getUserId().toString()))
+                .andExpect(jsonPath("$.name").value(TEST_USER_1.getName()))
+                .andExpect(jsonPath("$.login").value(TEST_USER_1.getLogin()))
+                .andExpect(jsonPath("$.status").value(TEST_USER_1.getStatus().name()))
+                .andExpect(jsonPath("$.role").value(TEST_USER_1.getRole().name()))
+                .andExpect(jsonPath("$.created").value(TEST_USER_1.getCreated().toLocalDateTime().toString()))
+                .andExpect(jsonPath("$.updated").value(TEST_USER_1.getUpdated().toLocalDateTime().toString()));
     }
 
     @Test
     public void giveUser_postUpdateUser_returnUpdated() throws Exception {
         MvcResult result = mvc.perform(
-                post(USERS_API_PATH + "/" + TEST_USER.getUserId())
+                post(USERS_API_PATH + "/" + TEST_USER_1.getUserId())
                         .header(AUTHORIZATION, adminAuthorizationHeader)
                         .header(ORIGIN, ORIGIN_VAL)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -114,50 +114,50 @@ public class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value(TEST_USER.getUserId().toString()))
+                .andExpect(jsonPath("$.userId").value(TEST_USER_1.getUserId().toString()))
                 .andExpect(jsonPath("$.name").value("changed_user_name"))
                 .andExpect(jsonPath("$.login").value("changed user login"))
-                .andExpect(jsonPath("$.status").value(TEST_USER.getStatus().name()))
-                .andExpect(jsonPath("$.created").value(TEST_USER.getCreated().toLocalDateTime().toString()))
+                .andExpect(jsonPath("$.status").value(TEST_USER_1.getStatus().name()))
+                .andExpect(jsonPath("$.created").value(TEST_USER_1.getCreated().toLocalDateTime().toString()))
                 .andReturn();
 
         Object document = Configuration.defaultConfiguration().jsonProvider()
                 .parse(result.getResponse().getContentAsString());
         Timestamp updated = DateUtils.parse(JsonPath.read(document, "$.updated"));
-        Assertions.assertTrue(updated.after(TEST_USER.getUpdated()));
+        Assertions.assertTrue(updated.after(TEST_USER_1.getUpdated()));
     }
 
     @Test
     public void giveActiveUser_blockUser_returnBlocked() throws Exception {
         mvc.perform(
-                post(format("%s/%s/block", USERS_API_PATH, TEST_USER.getUserId()))
+                post(format("%s/%s/block", USERS_API_PATH, TEST_USER_1.getUserId()))
                         .header(AUTHORIZATION, adminAuthorizationHeader)
                         .header(ORIGIN, ORIGIN_VAL)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value(TEST_USER.getUserId().toString()))
+                .andExpect(jsonPath("$.userId").value(TEST_USER_1.getUserId().toString()))
                 .andExpect(jsonPath("$.status").value(DISABLED.name()));
     }
 
     @Test
     public void giveActiveUser_unblockUser_returnUnblocked() throws Exception {
         mvc.perform(
-                post(format("%s/%s/unblock", USERS_API_PATH, TEST_USER.getUserId()))
+                post(format("%s/%s/unblock", USERS_API_PATH, TEST_USER_1.getUserId()))
                         .header(AUTHORIZATION, adminAuthorizationHeader)
                         .header(ORIGIN, ORIGIN_VAL)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value(TEST_USER.getUserId().toString()))
+                .andExpect(jsonPath("$.userId").value(TEST_USER_1.getUserId().toString()))
                 .andExpect(jsonPath("$.status").value(ACTIVE.name()));
     }
 
     private void saveAllUsers() {
         ALL_USERS.stream()
-                .filter(user -> user != TEST_ADMIN || user != TEST_USER)
+                .filter(user -> user != TEST_ADMIN || user != TEST_USER_1)
                 .forEach(user -> userRepository.save(user));
     }
 
@@ -187,28 +187,28 @@ public class UserControllerTest {
 
     private void createChats() {
         CHATS.forEach(chat -> {
-            try {
-                MvcResult result = mvc.perform(
-                        post(CHATS_API_PATH)
-                                .header(AUTHORIZATION, chat.getCreator() == TEST_ADMIN
-                                        ? adminAuthorizationHeader
-                                        : userAuthorizationHeader
-                                )
-                                .header(ORIGIN, ORIGIN_VAL)
-                                .param("userId", chat.getCreator().getUserId().toString())
-                                .param("title", chat.getTitle())
-                                .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .accept(MediaType.APPLICATION_JSON)
-                )
-                        .andExpect(status().isOk())
-                        .andReturn();
-                Object document = Configuration.defaultConfiguration().jsonProvider()
-                        .parse(result.getResponse().getContentAsString());
-                CHAT_IDS_MAP.put(chat, UUID.fromString(JsonPath.read(document, "$.chatId")));
-            } catch (Exception e) {
-                log.error(e.getLocalizedMessage(), e);
-                fail(e.getMessage());
-            }
+                    try {
+                        MvcResult result = mvc.perform(
+                                post(CHATS_API_PATH)
+                                        .header(AUTHORIZATION, chat.getCreator() == TEST_ADMIN
+                                                ? adminAuthorizationHeader
+                                                : userAuthorizationHeader
+                                        )
+                                        .header(ORIGIN, ORIGIN_VAL)
+                                        .param("userId", chat.getCreator().getUserId().toString())
+                                        .param("title", chat.getTitle())
+                                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                                        .accept(MediaType.APPLICATION_JSON)
+                        )
+                                .andExpect(status().isOk())
+                                .andReturn();
+                        Object document = Configuration.defaultConfiguration().jsonProvider()
+                                .parse(result.getResponse().getContentAsString());
+                        CHAT_IDS_MAP.put(chat, UUID.fromString(JsonPath.read(document, "$.chatId")));
+                    } catch (Exception e) {
+                        log.error(e.getLocalizedMessage(), e);
+                        fail(e.getMessage());
+                    }
                 }
         );
     }
@@ -269,11 +269,11 @@ public class UserControllerTest {
         blockChatsIfNeeded();
 
         final Set<Chat> chatsForUser = CHATS.stream()
-                .filter(chat -> chat.getUsers().contains(TEST_USER))
+                .filter(chat -> chat.getUsers().contains(TEST_USER_1))
                 .collect(Collectors.toUnmodifiableSet());
 
         mvc.perform(
-                get(format("%s/%s/chats", USERS_API_PATH, TEST_USER.getUserId()))
+                get(format("%s/%s/chats", USERS_API_PATH, TEST_USER_1.getUserId()))
                         .header(AUTHORIZATION, adminAuthorizationHeader)
                         .header(ORIGIN, ORIGIN_VAL)
                         .contentType(MediaType.MULTIPART_FORM_DATA)

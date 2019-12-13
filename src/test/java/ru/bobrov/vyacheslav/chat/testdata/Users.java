@@ -23,7 +23,7 @@ public class Users {
             .created(Timestamp.valueOf(LocalDateTime.now()))
             .updated(Timestamp.valueOf(LocalDateTime.now()))
             .build();
-    public static final User TEST_USER = User.builder()
+    public static final User TEST_USER_1 = User.builder()
             .userId(UUID.randomUUID())
             .login("user1")
             .password("useruser")
@@ -34,48 +34,56 @@ public class Users {
             .updated(Timestamp.valueOf(LocalDateTime.now()))
             .build();
 
+    public static final User TEST_USER_2 = User.builder()
+            .userId(UUID.randomUUID())
+            .login("user2")
+            .password("useruser")
+            .name("Апполинарий Иванович Бураченко")
+            .role(USER)
+            .status(ACTIVE)
+            .created(Timestamp.valueOf(LocalDateTime.now()))
+            .updated(Timestamp.valueOf(LocalDateTime.now()))
+            .build();
+
+    public static final User TEST_USER_3 = User.builder()
+            .userId(UUID.randomUUID())
+            .login("user3")
+            .password("useruser")
+            .name("Рафик Виссарионович Доброхотов")
+            .role(USER)
+            .status(ACTIVE)
+            .created(Timestamp.valueOf(LocalDateTime.now()))
+            .updated(Timestamp.valueOf(LocalDateTime.now()))
+            .build();
+
+    public static final User TEST_USER_4 = User.builder()
+            .userId(UUID.randomUUID())
+            .login("user4")
+            .password("useruser")
+            .name("Иван Павлович Рабинович")
+            .role(USER)
+            .status(DISABLED)
+            .created(Timestamp.valueOf(LocalDateTime.now()))
+            .updated(Timestamp.valueOf(LocalDateTime.now()))
+            .build();
+
+    public static final User TEST_USER_5 = User.builder()
+            .userId(UUID.randomUUID())
+            .login("user")
+            .password("useruser")
+            .name("Николай Иванович Розеншпиц")
+            .role(USER)
+            .status(DISABLED)
+            .created(Timestamp.valueOf(LocalDateTime.now()))
+            .updated(Timestamp.valueOf(LocalDateTime.now()))
+            .build();
+
     public static final Set<User> ALL_USERS = Set.of(
             TEST_ADMIN,
-            TEST_USER,
-            User.builder()
-                    .userId(UUID.randomUUID())
-                    .login("user2")
-                    .password("useruser")
-                    .name("Апполинарий Иванович Бураченко")
-                    .role(USER)
-                    .status(ACTIVE)
-                    .created(Timestamp.valueOf(LocalDateTime.now()))
-                    .updated(Timestamp.valueOf(LocalDateTime.now()))
-                    .build(),
-            User.builder()
-                    .userId(UUID.randomUUID())
-                    .login("user3")
-                    .password("useruser")
-                    .name("Рафик Виссарионович Доброхотов")
-                    .role(USER)
-                    .status(ACTIVE)
-                    .created(Timestamp.valueOf(LocalDateTime.now()))
-                    .updated(Timestamp.valueOf(LocalDateTime.now()))
-                    .build(),
-            User.builder()
-                    .userId(UUID.randomUUID())
-                    .login("user4")
-                    .password("useruser")
-                    .name("Иван Павлович Рабинович")
-                    .role(USER)
-                    .status(DISABLED)
-                    .created(Timestamp.valueOf(LocalDateTime.now()))
-                    .updated(Timestamp.valueOf(LocalDateTime.now()))
-                    .build(),
-            User.builder()
-                    .userId(UUID.randomUUID())
-                    .login("user")
-                    .password("useruser")
-                    .name("Николай Иванович Розеншпиц")
-                    .role(USER)
-                    .status(DISABLED)
-                    .created(Timestamp.valueOf(LocalDateTime.now()))
-                    .updated(Timestamp.valueOf(LocalDateTime.now()))
-                    .build()
+            TEST_USER_1,
+            TEST_USER_2,
+            TEST_USER_3,
+            TEST_USER_4,
+            TEST_USER_5
     );
 }

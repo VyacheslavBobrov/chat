@@ -17,10 +17,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import ru.bobrov.vyacheslav.chat.ChatApplication;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.ChatStatus;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus;
+import ru.bobrov.vyacheslav.chat.dataproviders.entities.*;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.ChatRepository;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.UserRepository;
 import ru.bobrov.vyacheslav.chat.services.authentication.JwtUserDetailsService;
@@ -36,6 +33,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.ORIGIN;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -46,6 +44,8 @@ import static ru.bobrov.vyacheslav.chat.dataproviders.entities.ChatStatus.ACTIVE
 import static ru.bobrov.vyacheslav.chat.dataproviders.entities.ChatStatus.DISABLED;
 import static ru.bobrov.vyacheslav.chat.services.Constants.TOKEN_PREFIX;
 import static ru.bobrov.vyacheslav.chat.testdata.Chats.*;
+import static ru.bobrov.vyacheslav.chat.testdata.Messages.MESSAGES;
+import static ru.bobrov.vyacheslav.chat.testdata.Messages.MESSAGE_UUID_MAP;
 import static ru.bobrov.vyacheslav.chat.testdata.Users.*;
 
 @SpringBootTest(classes = ChatApplication.class)
@@ -56,6 +56,7 @@ import static ru.bobrov.vyacheslav.chat.testdata.Users.*;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ChatControllerTest {
     private static final String CHATS_API_PATH = "/api/v1/chat";
+    private static final String MESSAGES_API_PATH = "/api/v1/message";
     private static final String ORIGIN_VAL = "localhost:8080";
 
     @Autowired
@@ -74,15 +75,18 @@ public class ChatControllerTest {
 
     @PostConstruct
     public void setUp() {
-        String adminToken = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(TEST_ADMIN.getLogin()));
-        adminAuthorizationHeader = format("%s %s", TOKEN_PREFIX, adminToken);
+        adminAuthorizationHeader = generateAuthorizationHeader(TEST_ADMIN);
+    }
+
+    private String generateAuthorizationHeader(User user) {
+        String token = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(user.getLogin()));
+        return format("%s %s", TOKEN_PREFIX, token);
     }
 
     @BeforeEach
     public void setUpTest() {
-        userRepository.save(TEST_USER);
-        String userToken = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(TEST_ADMIN.getLogin()));
-        userAuthorizationHeader = format("%s %s", TOKEN_PREFIX, userToken);
+        userRepository.save(TEST_USER_1);
+        userAuthorizationHeader = generateAuthorizationHeader(TEST_USER_1);
     }
 
     @Test
@@ -177,11 +181,15 @@ public class ChatControllerTest {
         return chatId;
     }
 
+    private void createAllUsers() {
+        ALL_USERS.stream()
+                .filter(user -> user != TEST_USER_1 && user != TEST_ADMIN)
+                .forEach(user -> userRepository.save(user));
+    }
+
     @Test
     public void giveChat_addUsersToChat_userAdded() throws Exception {
-        ALL_USERS.stream()
-                .filter(user -> user != TEST_USER && user != TEST_ADMIN)
-                .forEach(user -> userRepository.save(user));
+        createAllUsers();
 
         final Set<String> userIdsToAdd = TEST_FOR_ADD_USERS_CHAT.getUsers().stream()
                 .filter(user -> user != TEST_FOR_ADD_USERS_CHAT.getCreator())
@@ -210,9 +218,7 @@ public class ChatControllerTest {
 
     @Test
     public void giveChatWithUsers_getChatUsers_allUsersReturned() throws Exception {
-        ALL_USERS.stream()
-                .filter(user -> user != TEST_USER && user != TEST_ADMIN)
-                .forEach(user -> userRepository.save(user));
+        createAllUsers();
 
         final UUID chatId = createChat(TEST_FOR_GET_USERS_CHAT);
         addUsers(chatId, TEST_FOR_GET_USERS_CHAT.getUsers());
@@ -234,9 +240,7 @@ public class ChatControllerTest {
 
     @Test
     public void giveChatWithUsers_getOutOfChatUsers_allOutOfChatUsersReturned() throws Exception {
-        ALL_USERS.stream()
-                .filter(user -> user != TEST_USER && user != TEST_ADMIN)
-                .forEach(user -> userRepository.save(user));
+        createAllUsers();
 
         final UUID chatId = createChat(TEST_FOR_GET_USERS_OUT_OF_CHAT);
         addUsers(chatId, TEST_FOR_GET_USERS_OUT_OF_CHAT.getUsers());
@@ -263,15 +267,13 @@ public class ChatControllerTest {
 
     @Test
     public void giveChatWithUsers_kickUserFromChat_userKicked() throws Exception {
-        ALL_USERS.stream()
-                .filter(user -> user != TEST_USER && user != TEST_ADMIN)
-                .forEach(user -> userRepository.save(user));
+        createAllUsers();
 
         final UUID chatId = createChat(TEST_FOR_KICK_USER_OUT_OF_CHAT);
         addUsers(chatId, TEST_FOR_KICK_USER_OUT_OF_CHAT.getUsers());
 
         final Set<User> usersWithoutKicked = ALL_USERS.stream()
-                .filter(user -> user != TEST_USER).collect(Collectors.toUnmodifiableSet());
+                .filter(user -> user != TEST_USER_1).collect(Collectors.toUnmodifiableSet());
 
         mvc.perform(
                 post(format("%s/%s/kick", CHATS_API_PATH, chatId))
@@ -280,7 +282,7 @@ public class ChatControllerTest {
                                 : userAuthorizationHeader
                         )
                         .header(ORIGIN, ORIGIN_VAL)
-                        .param("userId", TEST_USER.getUserId().toString())
+                        .param("userId", TEST_USER_1.getUserId().toString())
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON)
         )
@@ -345,5 +347,92 @@ public class ChatControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.chatId").value(CHAT_IDS_MAP.get(TEST_FOR_UNBLOCK_CHAT).toString()))
                 .andExpect(jsonPath("$.status").value(ACTIVE.name()));
+    }
+
+    private void createMessage(Message message, UUID chatId) throws Exception {
+        final User user = message.getUser();
+
+        MvcResult result = mvc.perform(
+                post(MESSAGES_API_PATH)
+                        .header(AUTHORIZATION, user == TEST_ADMIN
+                                ? adminAuthorizationHeader
+                                : generateAuthorizationHeader(user)
+                        )
+                        .header(ORIGIN, ORIGIN_VAL)
+                        .param("chatId", chatId.toString())
+                        .param("userId", user.getUserId().toString())
+                        .param("message", message.getMessage())
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON)
+        )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Object document = Configuration.defaultConfiguration().jsonProvider()
+                .parse(result.getResponse().getContentAsString());
+        final UUID messageId = UUID.fromString(JsonPath.read(document, "$.messageId"));
+        MESSAGE_UUID_MAP.put(message, messageId);
+    }
+
+    private void blockMessage(UUID messageId) throws Exception {
+        mvc.perform(
+                post(format("%s/%s/block", MESSAGES_API_PATH, messageId))
+                        .header(AUTHORIZATION, adminAuthorizationHeader)
+                        .header(ORIGIN, ORIGIN_VAL)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON)
+        )
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void giveChatWithMessages_getMessages_returnAllActiveMessages() throws Exception {
+        final UUID chatId = createChat(TEST_FOR_GET_MESSAGES_CHAT);
+        addUsers(chatId, TEST_FOR_GET_MESSAGES_CHAT.getUsers());
+        MESSAGES.forEach(message -> {
+            try {
+                createMessage(message, chatId);
+            } catch (Exception e) {
+                log.error(e.getLocalizedMessage(), e);
+                fail(e);
+            }
+        });
+        createAllUsers();
+
+        final Set<Message> chatMessages = MESSAGES.stream()
+                .filter(message -> message.getStatus() == MessageStatus.ACTIVE)
+                .collect(Collectors.toUnmodifiableSet());
+
+        MESSAGES.stream().filter(message -> message.getStatus() == MessageStatus.DISABLED).forEach(message -> {
+            try {
+                blockMessage(MESSAGE_UUID_MAP.get(message));
+            } catch (Exception e) {
+                log.error(e.getLocalizedMessage(), e);
+                fail(e);
+            }
+        });
+
+        Set<String> chatMessagesIds = chatMessages.stream()
+                .map(message -> MESSAGE_UUID_MAP.get(message).toString())
+                .collect(Collectors.toUnmodifiableSet());
+
+        User user = TEST_FOR_GET_MESSAGES_CHAT.getCreator();
+        mvc.perform(
+                get(format("%s/%s/messages", CHATS_API_PATH, chatId))
+                        .header(AUTHORIZATION, user == TEST_ADMIN
+                                ? adminAuthorizationHeader
+                                : generateAuthorizationHeader(user)
+                        )
+                        .header(ORIGIN, ORIGIN_VAL)
+                        .param("page", "0")
+                        .param("size", String.valueOf(chatMessages.size()))
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON)
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page").value("0"))
+                .andExpect(jsonPath("$.pageLimit").value("1"))
+                .andExpect(jsonPath("$.totalItems").value(String.valueOf(chatMessages.size())))
+                .andExpect(jsonPath("$..messageId", containsInAnyOrder(chatMessagesIds.toArray())));
     }
 }
