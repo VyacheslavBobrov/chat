@@ -12,6 +12,7 @@ import ru.bobrov.vyacheslav.chat.services.websocket.events.ChatListEvent.Type;
 
 import java.util.UUID;
 
+import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatListEvent.CHANNEL;
@@ -47,7 +48,7 @@ public class ChatListNotifyService {
     }
 
     private void sendMessage(UUID userId, Type type, UUID uuid) {
-        log.info("Send message " + type + " for " + userId);
+        log.info(format("Send message type: %s for %s, to channel %s", type, userId, CHANNEL));
         messagingTemplate.convertAndSendToUser(
                 userId.toString(),
                 CHANNEL,

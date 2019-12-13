@@ -3,13 +3,16 @@ package ru.bobrov.vyacheslav.chat.services.websocket;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import ru.bobrov.vyacheslav.chat.services.websocket.events.ChatEvent;
 import ru.bobrov.vyacheslav.chat.services.websocket.events.UserEvent;
 import ru.bobrov.vyacheslav.chat.services.websocket.events.UserEvent.Type;
 
 import java.util.UUID;
 
+import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.services.websocket.events.UserEvent.CHANNEL;
@@ -19,6 +22,7 @@ import static ru.bobrov.vyacheslav.chat.services.websocket.events.UserEvent.Type
 @AllArgsConstructor(access = PUBLIC)
 @FieldDefaults(level = PRIVATE)
 @NonNull
+@Slf4j
 public class UserNotifyService {
     SimpMessagingTemplate messagingTemplate;
 
@@ -35,6 +39,7 @@ public class UserNotifyService {
     }
 
     private void sendMessage(Type type, UUID userId) {
+        log.info(format("Send message type: %s for %s, to channel %s", type, userId, ChatEvent.CHANNEL));
         messagingTemplate.convertAndSendToUser(userId.toString(), CHANNEL, UserEvent.builder().type(type).build());
     }
 }
