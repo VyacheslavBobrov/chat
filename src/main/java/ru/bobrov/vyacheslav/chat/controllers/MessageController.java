@@ -30,7 +30,7 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConve
 @Slf4j
 @CrossOrigin
 @NonNull
-public class MessagesController {
+public class MessageController {
     MessageService messageService;
     ChatListNotifyService chatListNotifyService;
     ChatNotifyService chatNotifyService;

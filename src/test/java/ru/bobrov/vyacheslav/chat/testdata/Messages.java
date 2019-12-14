@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import static ru.bobrov.vyacheslav.chat.dataproviders.entities.MessageStatus.ACTIVE;
 import static ru.bobrov.vyacheslav.chat.dataproviders.entities.MessageStatus.DISABLED;
+import static ru.bobrov.vyacheslav.chat.testdata.Chats.TEST_FOR_CREATE_MESSAGE_CHAT;
 import static ru.bobrov.vyacheslav.chat.testdata.Chats.TEST_FOR_GET_MESSAGES_CHAT;
 import static ru.bobrov.vyacheslav.chat.testdata.Users.*;
 
@@ -52,6 +53,12 @@ public class Messages {
                     .status(ACTIVE)
                     .build()
     );
-
     public static final Map<Message, UUID> MESSAGE_UUID_MAP = new HashMap<>();
+
+    public static Message TEST_FOR_CREATE_MESSAGE = Message.builder()
+            .user(TEST_USER_1)
+            .chat(TEST_FOR_CREATE_MESSAGE_CHAT)
+            .message("Всем привет в этом чате")
+            .status(ACTIVE)
+            .build();
 }

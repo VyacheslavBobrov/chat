@@ -82,6 +82,14 @@ public class Chats {
             .status(ACTIVE)
             .build();
 
+    public static final Chat TEST_FOR_CREATE_MESSAGE_CHAT = Chat.builder()
+            .title("Чат, c одним сообщением")
+            .creator(TEST_USER_1)
+            .users(Set.of(TEST_ADMIN, TEST_USER_1))
+            .status(ACTIVE)
+            .build();
+
+
     public static final Set<Chat> CHATS = Set.of(
             Chat.builder()
                     .title("Уютный чат")

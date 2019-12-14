@@ -70,6 +70,7 @@ public class ChatControllerTest {
 
     @Autowired
     MockMvc mvc;
+
     String adminAuthorizationHeader;
     String userAuthorizationHeader;
 
