@@ -9,9 +9,12 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.bobrov.vyacheslav.chat.services.utils.Translator;
 
 import java.util.Date;
+
+import static java.lang.String.format;
 
 @ControllerAdvice
 @Slf4j
@@ -56,6 +59,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalOperationException.class)
     public ResponseEntity<?> illegalOperation(IllegalOperationException ex, WebRequest request) {
         return createResponse(ex, request, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<?> argumentTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
+        WrongArgumentException wrongArgumentException = new WrongArgumentException(
+                translator.translate("wrong-argument-exception-title"),
+                format(translator.translate("wrong-argument-exception"), ex.getName(), ex.getValue())
+        );
+
+        return createResponse(wrongArgumentException, request, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Throwable.class)
