@@ -30,8 +30,7 @@ import static lombok.AccessLevel.PRIVATE;
 @NonNull
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     static final String[] PUBLIC = {
-            "/api/v1/authentication/registration",
-            "/api/v1/authentication",
+            "/api/v1/authentication/**",
             "/webjars/**",
             "/swagger*/**",
             "/h2-console/**",
@@ -57,16 +56,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .headers().frameOptions().sameOrigin().and()
-                .csrf().disable()
-                .authorizeRequests().antMatchers(PUBLIC).permitAll()
-                .anyRequest().authenticated().and().
-
-                exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
-
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .headers().frameOptions().sameOrigin()
+                .and().csrf().disable()
+                .authorizeRequests().antMatchers(PUBLIC).permitAll().anyRequest().authenticated()
+                .and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
