@@ -13,18 +13,12 @@ import java.util.UUID;
 @NonNull
 @ApiModel
 public class MessageApiModel {
-    @ApiModelProperty
     UUID messageId;
-    @ApiModelProperty
     ChatApiModel chat;
-    @ApiModelProperty
     UserApiModel user;
-    @ApiModelProperty
     String message;
     @ApiModelProperty(allowableValues = "ACTIVE, DISABLED")
     String status;
-    @ApiModelProperty
     Long created;
-    @ApiModelProperty
     Long updated;
 }

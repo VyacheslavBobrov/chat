@@ -13,18 +13,13 @@ import java.util.UUID;
 @NonNull
 @ApiModel
 public class UserApiModel {
-    @ApiModelProperty
     UUID userId;
-    @ApiModelProperty
     String name;
-    @ApiModelProperty
     String login;
     @ApiModelProperty(allowableValues = "ACTIVE, DISABLED")
     String status;
     @ApiModelProperty(allowableValues = "ADMIN, USER, GUEST")
     String role;
-    @ApiModelProperty
     String created;
-    @ApiModelProperty
     String updated;
 }
