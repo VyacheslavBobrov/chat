@@ -29,7 +29,7 @@ public class SwaggerConfig {
                                 (new ParameterBuilder())
                                         .name(AUTHORIZATION)
                                         .defaultValue(TOKEN_PREFIX + " <token>")
-                                        .description("Authorization header. Need in all apis exclude /common/auth/** or /mobile/auth/**")
+                                        .description("Authorization header. Need in all apis exclude /api/v1/authentication/**")
                                         .modelRef(new ModelRef("string"))
                                         .parameterType("header")
                                         .required(false)
