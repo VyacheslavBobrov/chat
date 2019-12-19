@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.FileNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.FileStorageException;
@@ -30,6 +31,7 @@ import static lombok.AccessLevel.PUBLIC;
 @RequiredArgsConstructor(access = PUBLIC)
 @FieldDefaults(level = PRIVATE)
 @Slf4j
+@Transactional
 public class FileStorageService {
     @NonNull UserService userService;
     @NonNull Translator translator;
