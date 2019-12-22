@@ -8,10 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.UserFile;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus;
+import ru.bobrov.vyacheslav.chat.dataproviders.entities.*;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.FileNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ResourceExistsException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.UserNotFoundException;
@@ -191,7 +188,9 @@ public class UserService {
      */
     public Set<Chat> getUserChats(UUID uuid) {
         User user = get(uuid);
-        return user.getChats();
+        return user.getChats().stream()
+                .filter(chat -> chat.getStatus() == ChatStatus.ACTIVE)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     /**

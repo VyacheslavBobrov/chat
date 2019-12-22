@@ -269,7 +269,7 @@ public class UserControllerTest {
         blockChatsIfNeeded();
 
         final Set<Chat> chatsForUser = CHATS.stream()
-                .filter(chat -> chat.getUsers().contains(TEST_USER_1))
+                .filter(chat -> chat.getUsers().contains(TEST_USER_1) && chat.getStatus() == ChatStatus.ACTIVE)
                 .collect(Collectors.toUnmodifiableSet());
 
         mvc.perform(
