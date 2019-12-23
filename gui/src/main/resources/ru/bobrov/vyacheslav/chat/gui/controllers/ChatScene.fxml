@@ -1,24 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.BorderPane?>
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            xmlns="http://javafx.com/javafx"
-            fx:controller="ru.bobrov.vyacheslav.chat.gui.controllers.ChatController"
-            prefHeight="400.0" prefWidth="600.0">
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="600.0"
+            xmlns="http://javafx.com/javafx/10.0.2-internal"
+            fx:controller="ru.bobrov.vyacheslav.chat.gui.controllers.ChatController">
     <top>
-        <Label>TOP</Label>
+        <AnchorPane>
+            <Label alignment="CENTER"
+                   AnchorPane.bottomAnchor="10"
+                   AnchorPane.topAnchor="10"
+                   AnchorPane.leftAnchor="10"
+                   AnchorPane.rightAnchor="10"
+            >Название чата
+            </Label>
+        </AnchorPane>
     </top>
-    <bottom>
-        <Label>BOTTOM</Label>
-    </bottom>
     <left>
-        <Label>LEFT</Label>
+        <AnchorPane>
+            <BorderPane>
+                <top>
+                    <AnchorPane>
+                        <Label alignment="CENTER"
+                               AnchorPane.bottomAnchor="10"
+                               AnchorPane.topAnchor="10"
+                               AnchorPane.leftAnchor="10"
+                               AnchorPane.rightAnchor="10"
+                        >
+                            User info
+                        </Label>
+                    </AnchorPane>
+                </top>
+                <center>
+                    <VBox>
+                        <Label>User 1</Label>
+                        <Label>User 2</Label>
+                        <Label>User 3</Label>
+                        <Label>User 4</Label>
+                        <Label>User 5</Label>
+                    </VBox>
+                </center>
+            </BorderPane>
+        </AnchorPane>
     </left>
     <right>
-        <Label>RIGHT</Label>
+        <VBox>
+            <Label>Chat user 1</Label>
+            <Label>Chat user 2</Label>
+            <Label>Chat user 3</Label>
+            <Label>Chat user 4</Label>
+            <Label>Chat user 5</Label>
+        </VBox>
     </right>
     <center>
-        <Label>CENTER</Label>
+        <BorderPane>
+            <center>
+                <Label>Messages</Label>
+            </center>
+            <bottom>
+                <AnchorPane>
+                    <Label alignment="CENTER"
+                           AnchorPane.bottomAnchor="10"
+                           AnchorPane.topAnchor="10"
+                           AnchorPane.leftAnchor="10"
+                           AnchorPane.rightAnchor="10"
+                    >Editor
+                    </Label>
+                </AnchorPane>
+            </bottom>
+        </BorderPane>
     </center>
+    <bottom>
+        <Label>State line</Label>
+    </bottom>
 </BorderPane>
