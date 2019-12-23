@@ -1,5 +1,6 @@
 create table if not exists users (
     user_id uuid primary key,
+    user_pic uuid,
     user_name varchar(255) not null,
     user_login varchar(255) unique not null,
     user_password varchar(255) not null,
@@ -39,3 +40,5 @@ create table if not exists user_files (
     user_id uuid references users(user_id),
     file_mime_type varchar(150) not null
 );
+
+alter table users add CONSTRAINT IF NOT EXISTS fk_user_pic_file_id FOREIGN KEY (user_pic) REFERENCES user_files(file_id);

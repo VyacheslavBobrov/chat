@@ -24,6 +24,9 @@ public class User implements EntityWithTimeInfo {
     @Id
     UUID userId;
 
+    @Column
+    UUID userPic;
+
     @NotNull
     @Column(name = "user_name")
     String name;

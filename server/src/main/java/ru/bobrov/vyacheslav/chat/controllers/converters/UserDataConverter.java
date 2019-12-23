@@ -14,6 +14,7 @@ public class UserDataConverter {
     static public UserApiModel toApi(User user) {
         return UserApiModel.builder()
                 .userId(user.getUserId())
+                .userPic(user.getUserPic())
                 .login(user.getLogin())
                 .name(user.getName())
                 .role(user.getRole().name())
@@ -26,6 +27,7 @@ public class UserDataConverter {
     static public UserRegistrationApiModel toApi(User user, String token) {
         return UserRegistrationApiModel.builder()
                 .userId(user.getUserId())
+                .userPic(user.getUserPic())
                 .login(user.getLogin())
                 .name(user.getName())
                 .role(user.getRole().name())

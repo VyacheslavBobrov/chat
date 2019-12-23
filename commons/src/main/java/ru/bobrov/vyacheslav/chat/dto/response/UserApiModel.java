@@ -14,6 +14,7 @@ import java.util.UUID;
 @ApiModel
 public class UserApiModel {
     UUID userId;
+    UUID userPic;
     String name;
     String login;
     @ApiModelProperty(allowableValues = "ACTIVE, DISABLED")
