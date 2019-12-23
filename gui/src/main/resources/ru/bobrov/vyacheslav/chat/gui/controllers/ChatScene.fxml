@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            xmlns="http://javafx.com/javafx"
+            fx:controller="ru.bobrov.vyacheslav.chat.gui.controllers.ChatController"
+            prefHeight="400.0" prefWidth="600.0">
+    <top>
+        <Label>TOP</Label>
+    </top>
+    <bottom>
+        <Label>BOTTOM</Label>
+    </bottom>
+    <left>
+        <Label>LEFT</Label>
+    </left>
+    <right>
+        <Label>RIGHT</Label>
+    </right>
+    <center>
+        <Label>CENTER</Label>
+    </center>
+</BorderPane>

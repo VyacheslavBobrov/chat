@@ -8,6 +8,8 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 dependencies {
+    compile project(':commons')
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -17,7 +19,6 @@ dependencies {
     compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
-    compile project(':commons')
 
     compileOnly 'org.projectlombok:lombok:1.18.10'
     annotationProcessor 'org.projectlombok:lombok:1.18.10'
