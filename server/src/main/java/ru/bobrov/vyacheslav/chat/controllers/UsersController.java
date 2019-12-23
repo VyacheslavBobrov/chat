@@ -59,13 +59,14 @@ public class UsersController {
             @ApiParam(value = "User uuid", required = true)
             @PathVariable UUID userId,
             @RequestParam(required = false) String name,
+            @RequestParam(required = false) UUID userPic,
             @RequestParam(required = false) String login,
             @RequestParam(required = false) String password,
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("POST request for update user, from %s, userId: %s, name: %s, login: %s",
                 header.getHost(), userId, name, login));
-        return toApi(userService.update(userId, name, login, password));
+        return toApi(userService.update(userId, name, userPic, login, password));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")

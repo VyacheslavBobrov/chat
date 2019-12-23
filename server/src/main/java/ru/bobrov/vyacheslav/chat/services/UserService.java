@@ -115,10 +115,10 @@ public class UserService {
      * @return {@link User} обновленный пользователь
      * @throws UserNotFoundException пользователь с указанным идентификатором отсутствует
      */
-    public User update(UUID uuid, String name, String login, String password) {
+    public User update(UUID uuid, String name, UUID userPic, String login, String password) {
         User user = get(uuid);
 
-        if (name == null && login == null && password == null)
+        if (name == null && userPic == null && login == null && password == null)
             return user;
 
         boolean needToSave = false;
@@ -126,6 +126,11 @@ public class UserService {
         if (!isBlank(name)) {
             needToSave = true;
             user.setName(name);
+        }
+
+        if (userPic != null) {
+            needToSave = true;
+            user.setUserPic(userPic);
         }
 
         if (!isBlank(login)) {
