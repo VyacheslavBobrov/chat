@@ -33,11 +33,11 @@
                 </top>
                 <center>
                     <VBox>
-                        <Label>User 1</Label>
-                        <Label>User 2</Label>
-                        <Label>User 3</Label>
-                        <Label>User 4</Label>
-                        <Label>User 5</Label>
+                        <Label>Chat 1</Label>
+                        <Label>Chat 2</Label>
+                        <Label>Chat 3</Label>
+                        <Label>Chat 4</Label>
+                        <Label>Chat 5</Label>
                     </VBox>
                 </center>
             </BorderPane>

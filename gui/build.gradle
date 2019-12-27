@@ -12,9 +12,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    //implementation 'javafx-weaver-spring-boot-starter'
     compile group: 'net.rgielen', name: 'javafx-weaver-spring-boot-starter', version: '1.3.0'
-
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9'
 
     compileOnly 'org.projectlombok:lombok:1.18.10'
     annotationProcessor 'org.projectlombok:lombok:1.18.10'

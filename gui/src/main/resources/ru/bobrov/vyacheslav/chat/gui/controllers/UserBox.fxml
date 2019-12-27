@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<HBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="150.0" prefWidth="300"
+      xmlns="http://javafx.com/javafx/10.0.2-internal"
+      fx:controller="ru.bobrov.vyacheslav.chat.gui.controllers.UserBoxController">
+    <AnchorPane>
+        <ImageView
+                AnchorPane.bottomAnchor="10"
+                AnchorPane.leftAnchor="10"
+                AnchorPane.topAnchor="10"
+        >
+            <!--            <Image url="2017-11-24_19-38-56.JPG"/>-->
+        </ImageView>
+        <VBox AnchorPane.rightAnchor="10">
+            <Label>Login</Label>
+            <Label>Name</Label>
+            <Label>Status</Label>
+        </VBox>
+    </AnchorPane>
+</HBox>
