@@ -2,13 +2,13 @@ package ru.bobrov.vyacheslav.chat.dto.response;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import lombok.*;
 
 import java.util.UUID;
 
-@Value
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 @Builder
 @NonNull
 @ApiModel

@@ -8,6 +8,5 @@ targetCompatibility = 11
 dependencies {
     compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
     annotationProcessor 'org.projectlombok:lombok:1.18.10'
-
     compileOnly 'org.projectlombok:lombok:1.18.10'
 }
