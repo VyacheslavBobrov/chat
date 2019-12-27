@@ -5,12 +5,12 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.ChatStatus;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ChatNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.IllegalOperationException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.UserNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.ChatRepository;
+import ru.bobrov.vyacheslav.chat.dto.enums.ChatStatus;
 import ru.bobrov.vyacheslav.chat.services.utils.Translator;
 
 import javax.transaction.Transactional;

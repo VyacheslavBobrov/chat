@@ -7,10 +7,10 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
-import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserRole.ADMIN;
-import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserRole.USER;
-import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus.ACTIVE;
-import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus.DISABLED;
+import static ru.bobrov.vyacheslav.chat.dto.enums.UserRole.ADMIN;
+import static ru.bobrov.vyacheslav.chat.dto.enums.UserRole.USER;
+import static ru.bobrov.vyacheslav.chat.dto.enums.UserStatus.ACTIVE;
+import static ru.bobrov.vyacheslav.chat.dto.enums.UserStatus.DISABLED;
 
 public class Users {
     public static final User TEST_ADMIN = User.builder()

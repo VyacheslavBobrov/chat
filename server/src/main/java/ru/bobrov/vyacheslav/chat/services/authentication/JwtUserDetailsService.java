@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus;
+import ru.bobrov.vyacheslav.chat.dto.enums.UserStatus;
 import ru.bobrov.vyacheslav.chat.services.UserService;
 import ru.bobrov.vyacheslav.chat.services.dto.ChatUser;
 

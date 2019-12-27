@@ -6,7 +6,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.MessageStatus;
+import ru.bobrov.vyacheslav.chat.dto.enums.MessageStatus;
 
 import java.util.UUID;
 

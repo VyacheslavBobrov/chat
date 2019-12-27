@@ -8,11 +8,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.MessageStatus;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ChatNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.MessageNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.UserNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.MessageRepository;
+import ru.bobrov.vyacheslav.chat.dto.enums.MessageStatus;
 import ru.bobrov.vyacheslav.chat.services.utils.Translator;
 
 import javax.transaction.Transactional;

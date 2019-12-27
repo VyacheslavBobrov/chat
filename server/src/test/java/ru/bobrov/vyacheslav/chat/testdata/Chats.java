@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static ru.bobrov.vyacheslav.chat.dataproviders.entities.ChatStatus.ACTIVE;
-import static ru.bobrov.vyacheslav.chat.dataproviders.entities.ChatStatus.DISABLED;
+import static ru.bobrov.vyacheslav.chat.dto.enums.ChatStatus.ACTIVE;
+import static ru.bobrov.vyacheslav.chat.dto.enums.ChatStatus.DISABLED;
 import static ru.bobrov.vyacheslav.chat.testdata.Users.*;
 
 public class Chats {

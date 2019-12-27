@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import ru.bobrov.vyacheslav.chat.dto.enums.MessageStatus;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

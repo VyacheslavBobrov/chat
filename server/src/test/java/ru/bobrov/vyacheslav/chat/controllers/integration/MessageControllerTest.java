@@ -35,8 +35,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.bobrov.vyacheslav.chat.dataproviders.entities.MessageStatus.ACTIVE;
-import static ru.bobrov.vyacheslav.chat.dataproviders.entities.MessageStatus.DISABLED;
+import static ru.bobrov.vyacheslav.chat.dto.enums.MessageStatus.ACTIVE;
+import static ru.bobrov.vyacheslav.chat.dto.enums.MessageStatus.DISABLED;
 import static ru.bobrov.vyacheslav.chat.services.Constants.TOKEN_PREFIX;
 import static ru.bobrov.vyacheslav.chat.testdata.Messages.TEST_FOR_CREATE_MESSAGE;
 import static ru.bobrov.vyacheslav.chat.testdata.Users.TEST_ADMIN;

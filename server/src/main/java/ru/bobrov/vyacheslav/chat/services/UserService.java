@@ -8,12 +8,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.*;
+import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
+import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
+import ru.bobrov.vyacheslav.chat.dataproviders.entities.UserFile;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.FileNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ResourceExistsException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.UserNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.UserFileRepository;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.UserRepository;
+import ru.bobrov.vyacheslav.chat.dto.enums.ChatStatus;
+import ru.bobrov.vyacheslav.chat.dto.enums.UserStatus;
 import ru.bobrov.vyacheslav.chat.services.utils.Translator;
 
 import javax.transaction.Transactional;
@@ -26,9 +30,9 @@ import java.util.stream.StreamSupport;
 import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
-import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserRole.USER;
-import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus.ACTIVE;
-import static ru.bobrov.vyacheslav.chat.dataproviders.entities.UserStatus.DISABLED;
+import static ru.bobrov.vyacheslav.chat.dto.enums.UserRole.USER;
+import static ru.bobrov.vyacheslav.chat.dto.enums.UserStatus.ACTIVE;
+import static ru.bobrov.vyacheslav.chat.dto.enums.UserStatus.DISABLED;
 import static ru.bobrov.vyacheslav.chat.services.utils.Utils.*;
 
 /**

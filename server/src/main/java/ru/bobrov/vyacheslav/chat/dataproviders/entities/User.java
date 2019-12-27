@@ -2,6 +2,8 @@ package ru.bobrov.vyacheslav.chat.dataproviders.entities;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.bobrov.vyacheslav.chat.dto.enums.UserRole;
+import ru.bobrov.vyacheslav.chat.dto.enums.UserStatus;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
