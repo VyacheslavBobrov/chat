@@ -16,14 +16,14 @@ import java.util.*
 
 private const val CHATS_PATH = "/api/v1/chat"
 
-private const val CHAT_USERS_PATH = "/%s/users"
-private const val GET_USERS_OUT_PATH = "/%s/users-out"
-private const val KICK_USER_PATH = "/%s/kick"
+private const val CHAT_USERS_PATH = "%s/users"
+private const val GET_USERS_OUT_PATH = "%s/users-out"
+private const val KICK_USER_PATH = "%s/kick"
 
-private const val GET_MESSAGES_PATH = "/%s/messages"
+private const val GET_MESSAGES_PATH = "%s/messages"
 
-private const val BLOCK_CHAT_PATH = "/%s/block"
-private const val UNBLOCK_CHAT_PATH = "/%s/unblock"
+private const val BLOCK_CHAT_PATH = "%s/block"
+private const val UNBLOCK_CHAT_PATH = "%s/unblock"
 
 @Service
 class ChatsService(
@@ -97,9 +97,15 @@ class ChatsService(
                     mapper.typeFactory.constructCollectionType(List::class.java, UserApiModel::class.java)
             ).map { it.toDto() }
 
-    fun getMessages(chatId: UUID): MessagePage =
+    fun getMessages(chatId: UUID, page: Int, size: Int): MessagePage =
             mapper.readValue(
-                    netService.get(URI.create(format("$chatsPath/$GET_MESSAGES_PATH", chatId))),
+                    netService.get(
+                            URI.create(format("$chatsPath/$GET_MESSAGES_PATH", chatId)),
+                            listOf(
+                                    "page" to page,
+                                    "size" to size
+                            )
+                    ),
                     MessagesPagingApiModel::class.java
             ).toDto()
 

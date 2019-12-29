@@ -16,8 +16,8 @@ private const val USERS_PATH = "/api/v1/user"
 
 private const val GET_CHATS_PATH = "%s/chats"
 
-private const val BLOCK_USER_PATH = "/%s/block"
-private const val UNBLOCK_USER_PATH = "/%s/unblock"
+private const val BLOCK_USER_PATH = "%s/block"
+private const val UNBLOCK_USER_PATH = "%s/unblock"
 
 @Service
 class UsersService(

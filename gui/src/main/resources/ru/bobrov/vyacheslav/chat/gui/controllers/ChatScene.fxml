@@ -2,17 +2,13 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="600.0"
-            xmlns="http://javafx.com/javafx/10.0.2-internal"
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="chatPane" prefHeight="400.0" prefWidth="600.0"
+            stylesheets="styles.css" xmlns="http://javafx.com/javafx/10.0.2-internal"
             fx:controller="ru.bobrov.vyacheslav.chat.gui.controllers.ChatController">
     <top>
         <AnchorPane>
-            <Label alignment="CENTER"
-                   AnchorPane.bottomAnchor="10"
-                   AnchorPane.topAnchor="10"
-                   AnchorPane.leftAnchor="10"
-                   AnchorPane.rightAnchor="10"
-            >Название чата
+            <Label fx:id="topicLabel" alignment="CENTER" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10"
+                   AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">Название чата
             </Label>
         </AnchorPane>
     </top>
@@ -21,52 +17,55 @@
             <BorderPane>
                 <top>
                     <AnchorPane>
-                        <Label alignment="CENTER"
-                               AnchorPane.bottomAnchor="10"
-                               AnchorPane.topAnchor="10"
-                               AnchorPane.leftAnchor="10"
-                               AnchorPane.rightAnchor="10"
-                        >
+                        <Label fx:id="userInfo" alignment="CENTER" AnchorPane.bottomAnchor="10"
+                               AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
                             User info
                         </Label>
                     </AnchorPane>
                 </top>
                 <center>
-                    <VBox>
+                    <ListView fx:id="chatList">
                         <Label>Chat 1</Label>
                         <Label>Chat 2</Label>
                         <Label>Chat 3</Label>
                         <Label>Chat 4</Label>
                         <Label>Chat 5</Label>
-                    </VBox>
+                    </ListView>
                 </center>
             </BorderPane>
         </AnchorPane>
     </left>
     <right>
-        <VBox>
+        <ListView fx:id="chatUsersList">
             <Label>Chat user 1</Label>
             <Label>Chat user 2</Label>
             <Label>Chat user 3</Label>
             <Label>Chat user 4</Label>
             <Label>Chat user 5</Label>
-        </VBox>
+        </ListView>
     </right>
     <center>
         <BorderPane>
             <center>
-                <Label>Messages</Label>
+                <ListView fx:id="messagesList">
+                    <AnchorPane>
+                        <Label AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">Messages</Label>
+                    </AnchorPane>
+                </ListView>
             </center>
             <bottom>
-                <AnchorPane>
-                    <Label alignment="CENTER"
-                           AnchorPane.bottomAnchor="10"
-                           AnchorPane.topAnchor="10"
-                           AnchorPane.leftAnchor="10"
-                           AnchorPane.rightAnchor="10"
-                    >Editor
-                    </Label>
-                </AnchorPane>
+                <BorderPane>
+                    <center>
+                        <TextArea fx:id="textArea" onKeyReleased="#textAreaOnTyped" onMouseClicked="#textAreaOnTyped"/>
+                    </center>
+                    <bottom>
+                        <AnchorPane>
+                            <Button fx:id="buttonSend" onAction="#onButtonSend" AnchorPane.rightAnchor="10"
+                                    AnchorPane.topAnchor="10">Отправить
+                            </Button>
+                        </AnchorPane>
+                    </bottom>
+                </BorderPane>
             </bottom>
         </BorderPane>
     </center>

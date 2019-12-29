@@ -9,6 +9,9 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets
 
+private const val AUTHORIZATION_HEADER = "Authorization"
+private const val AUTHORIZATION_PREF = "Bearer"
+
 @Service
 class NetService(
         private val authenticationService: AuthenticationService
@@ -18,7 +21,8 @@ class NetService(
                 method = POST,
                 uri = uri,
                 params = params,
-                headers = headers + listOf("Authentication" to "Bearer ${authenticationService.user.jwtToken}")
+                headers = headers
+                        + listOf(AUTHORIZATION_HEADER to "$AUTHORIZATION_PREF ${authenticationService.user.jwtToken}")
         )
     }
 
@@ -27,7 +31,8 @@ class NetService(
                 method = GET,
                 uri = uri,
                 params = params,
-                headers = headers + listOf("Authentication" to "Bearer ${authenticationService.user.jwtToken}")
+                headers = headers
+                        + listOf(AUTHORIZATION_HEADER to "$AUTHORIZATION_PREF ${authenticationService.user.jwtToken}")
         )
     }
 }
@@ -48,6 +53,8 @@ fun send(
             "User-Agent" to "ChatClient/1.0"
     )
 
+    val paramsString = params.joinToString("&") { "${it.first}=${it.second}" }
+
     val request = HttpRequest.newBuilder()
             .uri(uri)
             .apply {
@@ -57,11 +64,13 @@ fun send(
 
                 when (method) {
                     POST -> {
-                        POST(HttpRequest.BodyPublishers
-                                .ofString(params.joinToString("&") { "${it.first}=${it.second}" }))
+                        POST(HttpRequest.BodyPublishers.ofString(paramsString))
                         header("Content-Type", "application/x-www-form-urlencoded")
                     }
-                    GET -> GET()
+                    GET -> {
+                        uri(URI.create("$uri?$paramsString"))
+                        GET()
+                    }
                 }
             }
             .build()

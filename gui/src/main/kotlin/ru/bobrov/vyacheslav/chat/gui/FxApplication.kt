@@ -9,8 +9,6 @@ import net.rgielen.fxweaver.core.FxWeaver
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.context.ConfigurableApplicationContext
 import ru.bobrov.vyacheslav.chat.gui.controllers.ChatController
-import ru.bobrov.vyacheslav.chat.gui.dataproviders.AuthenticationService
-import ru.bobrov.vyacheslav.chat.gui.dto.User
 
 class FxApplication : Application() {
     private var applicationContext: ConfigurableApplicationContext? = null
@@ -20,13 +18,8 @@ class FxApplication : Application() {
         val root: Parent = fxWeaver.loadView(ChatController::class.java)
         val scene = Scene(root)
         stage.scene = scene
-        println(login())
         stage.show()
-    }
-
-    private fun login(): User {
-        val authenticationService = applicationContext!!.getBean(AuthenticationService::class.java)
-        return authenticationService.authenticate("schmul", "123456789")
+        fxWeaver.getBean(ChatController::class.java).init()
     }
 
     override fun init() {
