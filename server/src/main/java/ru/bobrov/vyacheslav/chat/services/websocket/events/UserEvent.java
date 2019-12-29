@@ -19,6 +19,7 @@ public class UserEvent {
     public enum Type {
         BLOCKED,
         UNBLOCKED,
+        UPDATED,
         TOKEN_EXPIRED
     }
 }

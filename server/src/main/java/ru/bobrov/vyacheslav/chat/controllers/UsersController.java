@@ -66,7 +66,9 @@ public class UsersController {
     ) {
         log.info(format("POST request for update user, from %s, userId: %s, name: %s, login: %s",
                 header.getHost(), userId, name, login));
-        return toApi(userService.update(userId, name, userPic, login, password));
+        UserApiModel updatedUser = toApi(userService.update(userId, name, userPic, login, password));
+        userNotifyService.updated(userId);
+        return updatedUser;
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
