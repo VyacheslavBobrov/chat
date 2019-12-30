@@ -35,7 +35,7 @@ public class UserNotifyService {
 
     public void updated(UUID userId) {
         log.info(format("Send message type: %s for %s, to channel %s", UPDATED, userId, CHANNEL));
-        messagingTemplate.convertAndSend(CHANNEL, UserEvent.builder().type(UPDATED).build());
+        messagingTemplate.convertAndSend(CHANNEL, UserEvent.builder().type(UPDATED).userId(userId).build());
     }
 
     public void tokenExpired(UUID userId) {
