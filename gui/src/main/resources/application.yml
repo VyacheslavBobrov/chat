@@ -1,2 +1,5 @@
 chatserver:
   host: http://localhost:8080
+
+file-storage:
+  upload-dir: /home/vyacheslav/chat_gui_storage/
