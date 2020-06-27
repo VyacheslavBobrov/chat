@@ -15,11 +15,14 @@ import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.services.websocket.events.UserEvent.CHANNEL;
-import static ru.bobrov.vyacheslav.chat.services.websocket.events.UserEvent.Type.*;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.UserEvent.Type.BLOCKED;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.UserEvent.Type.TOKEN_EXPIRED;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.UserEvent.Type.UNBLOCKED;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.UserEvent.Type.UPDATED;
 
 @Service
 @AllArgsConstructor(access = PUBLIC)
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @NonNull
 @Slf4j
 public class UserNotifyService {

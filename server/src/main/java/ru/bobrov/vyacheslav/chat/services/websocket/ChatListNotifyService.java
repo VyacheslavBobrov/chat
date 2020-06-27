@@ -16,11 +16,15 @@ import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatListEvent.CHANNEL;
-import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatListEvent.Type.*;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatListEvent.Type.BLOCKED_CHAT;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatListEvent.Type.NEW_CHAT;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatListEvent.Type.NEW_MESSAGE;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatListEvent.Type.RENAMED_CHAT;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatListEvent.Type.UNBLOCKED_CHAT;
 
 @Service
 @AllArgsConstructor(access = PUBLIC)
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @NonNull
 @Slf4j
 public class ChatListNotifyService {

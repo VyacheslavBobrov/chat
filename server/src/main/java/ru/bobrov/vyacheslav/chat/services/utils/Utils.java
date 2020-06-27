@@ -48,6 +48,7 @@ public class Utils {
         entity.setUpdated(new Timestamp(new Date().getTime()));
     }
 
+    @SuppressWarnings("unused")
     static public <T> T toDo() {
         return toDo(
                 translator.translate("method-not-implemented-title"),

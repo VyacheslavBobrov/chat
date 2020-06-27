@@ -21,11 +21,15 @@ import java.util.UUID;
 import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
-import static ru.bobrov.vyacheslav.chat.services.utils.Utils.*;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.assertNotBlank;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.assertNotNull;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.checkTimeInfo;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.initTime;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.updateTime;
 
 @Service
 @AllArgsConstructor(access = PUBLIC)
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @Transactional
 @NonNull
 public class MessageService {

@@ -13,7 +13,7 @@ import java.util.UUID;
 import static lombok.AccessLevel.PRIVATE;
 
 @AllArgsConstructor(access = PRIVATE)
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 public class ChatUser implements UserDetails {
     @Getter
     UUID id;
@@ -58,7 +58,7 @@ public class ChatUser implements UserDetails {
         return user.isEnabled();
     }
 
-    @FieldDefaults(level = PRIVATE)
+    @FieldDefaults(level = PRIVATE, makeFinal = true)
     @AllArgsConstructor(access = PRIVATE)
     public static class Builder {
         UUID userUUID;

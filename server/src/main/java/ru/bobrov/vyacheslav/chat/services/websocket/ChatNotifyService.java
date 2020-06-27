@@ -15,11 +15,18 @@ import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatEvent.CHANNEL;
-import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatEvent.Type.*;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatEvent.Type.ADD_USER;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatEvent.Type.BLOCKED;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatEvent.Type.DROP_MESSAGE;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatEvent.Type.EDIT_MESSAGE;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatEvent.Type.KICK_USER;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatEvent.Type.NAME_CHANGED;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatEvent.Type.NEW_MESSAGE;
+import static ru.bobrov.vyacheslav.chat.services.websocket.events.ChatEvent.Type.UNBLOCKED;
 
 @Service
 @AllArgsConstructor(access = PUBLIC)
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @NonNull
 @Slf4j
 public class ChatNotifyService {

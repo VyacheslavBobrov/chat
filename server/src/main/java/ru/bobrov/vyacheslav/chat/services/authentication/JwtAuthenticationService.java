@@ -26,7 +26,7 @@ import static ru.bobrov.vyacheslav.chat.services.Constants.TOKEN_PREFIX;
 
 @Service
 @AllArgsConstructor(access = PUBLIC)
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @NonNull
 @Slf4j
 public class JwtAuthenticationService {

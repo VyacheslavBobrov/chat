@@ -23,7 +23,7 @@ import static java.util.Objects.nonNull;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @NonNull
 @Component
 @Slf4j
@@ -31,7 +31,8 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
     JwtAuthenticationService authenticationService;
 
     @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
+    public Message<?> preSend(@org.springframework.lang.NonNull Message<?> message,
+                              @org.springframework.lang.NonNull MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         if (isNull(accessor)) {
             log.info("Accessor is null");

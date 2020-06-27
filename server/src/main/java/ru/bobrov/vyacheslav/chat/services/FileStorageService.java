@@ -29,7 +29,7 @@ import static lombok.AccessLevel.PUBLIC;
  */
 @Service
 @RequiredArgsConstructor(access = PUBLIC)
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @Slf4j
 @Transactional
 public class FileStorageService {

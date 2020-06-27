@@ -22,10 +22,13 @@ import static lombok.AccessLevel.PUBLIC;
 @FieldDefaults(level = PRIVATE)
 @Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
-    @NonNull JwtAuthenticationService authenticationService;
+    @NonNull
+    final JwtAuthenticationService authenticationService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(@org.springframework.lang.NonNull HttpServletRequest request,
+                                    @org.springframework.lang.NonNull HttpServletResponse response,
+                                    FilterChain chain)
             throws ServletException, IOException {
         authenticationService.authenticate(request);
         chain.doFilter(request, response);

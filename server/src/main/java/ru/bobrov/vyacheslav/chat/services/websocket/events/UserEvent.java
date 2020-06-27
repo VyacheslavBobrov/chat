@@ -16,7 +16,7 @@ public class UserEvent {
     Date timestamp = new Date();
     UUID userId;
 
-    final String name = "UserEvent";
+    String name = "UserEvent";
 
     public enum Type {
         BLOCKED,

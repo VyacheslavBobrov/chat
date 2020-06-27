@@ -10,7 +10,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
 import ru.bobrov.vyacheslav.chat.dto.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.dto.response.UserRegistrationApiModel;
@@ -29,7 +34,7 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter
 @CrossOrigin
 @AllArgsConstructor(access = PUBLIC)
 @RequestMapping("/api/v1/authentication")
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @Slf4j
 @NonNull
 public class JwtAuthenticationController {

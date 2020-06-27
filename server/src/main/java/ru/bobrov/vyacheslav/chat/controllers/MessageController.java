@@ -9,7 +9,14 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.bobrov.vyacheslav.chat.dto.response.MessageApiModel;
 import ru.bobrov.vyacheslav.chat.services.MessageService;
 import ru.bobrov.vyacheslav.chat.services.websocket.ChatListNotifyService;
@@ -26,7 +33,7 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConve
 @RestController
 @AllArgsConstructor(access = PUBLIC)
 @RequestMapping("/api/v1/message")
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @Slf4j
 @CrossOrigin
 @NonNull

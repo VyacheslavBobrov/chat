@@ -24,7 +24,7 @@ import static ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConve
 
 @Controller
 @AllArgsConstructor(access = PUBLIC)
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @Slf4j
 @NonNull
 public class WebSocketController {

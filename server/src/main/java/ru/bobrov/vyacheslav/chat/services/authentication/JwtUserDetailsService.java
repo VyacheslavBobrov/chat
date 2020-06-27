@@ -17,7 +17,7 @@ import static lombok.AccessLevel.PUBLIC;
 
 @Service
 @AllArgsConstructor(access = PUBLIC)
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 public class JwtUserDetailsService implements UserDetailsService {
     @NonNull UserService userService;
 

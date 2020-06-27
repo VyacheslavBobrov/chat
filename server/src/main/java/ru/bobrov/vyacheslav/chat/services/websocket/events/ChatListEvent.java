@@ -16,7 +16,7 @@ public class ChatListEvent {
     Type type;
     Date timestamp = new Date();
 
-    final String name = "ChatListEvent";
+    String name = "ChatListEvent";
 
     public enum Type {
         NEW_CHAT,

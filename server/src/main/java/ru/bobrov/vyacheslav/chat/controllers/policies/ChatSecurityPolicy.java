@@ -18,7 +18,7 @@ import static ru.bobrov.vyacheslav.chat.controllers.policies.Util.isCurrentUserI
 
 @Component
 @AllArgsConstructor(access = PUBLIC)
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @NonNull
 @SuppressWarnings("unused")
 public class ChatSecurityPolicy {

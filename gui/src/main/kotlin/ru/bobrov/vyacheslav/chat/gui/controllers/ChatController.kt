@@ -12,7 +12,6 @@ import ru.bobrov.vyacheslav.chat.gui.dataproviders.MessageService
 import ru.bobrov.vyacheslav.chat.gui.dataproviders.UsersService
 import java.util.*
 
-
 private const val MESSAGES_PAGE_SIZE = 50
 
 @Component

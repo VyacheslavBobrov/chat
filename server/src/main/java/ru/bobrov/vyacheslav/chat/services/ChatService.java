@@ -14,20 +14,28 @@ import ru.bobrov.vyacheslav.chat.dto.enums.ChatStatus;
 import ru.bobrov.vyacheslav.chat.services.utils.Translator;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
-import static ru.bobrov.vyacheslav.chat.services.utils.Utils.*;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.assertNotBlank;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.assertNotNull;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.checkTimeInfo;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.initTime;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.updateTime;
 
 /**
  * Сервис для работы с сущностью Chat
  */
 @Service
 @AllArgsConstructor(access = PUBLIC)
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @Transactional
 @NonNull
 public class ChatService {

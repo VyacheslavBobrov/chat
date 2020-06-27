@@ -33,14 +33,19 @@ import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.dto.enums.UserRole.USER;
 import static ru.bobrov.vyacheslav.chat.dto.enums.UserStatus.ACTIVE;
 import static ru.bobrov.vyacheslav.chat.dto.enums.UserStatus.DISABLED;
-import static ru.bobrov.vyacheslav.chat.services.utils.Utils.*;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.assertNotBlank;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.assertNotNull;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.checkTimeInfo;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.initTime;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.isBlank;
+import static ru.bobrov.vyacheslav.chat.services.utils.Utils.updateTime;
 
 /**
  * Сервис для работы с пользователями чатов
  */
 @Service
 @AllArgsConstructor(access = PUBLIC)
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @Transactional
 @NonNull
 public class UserService {

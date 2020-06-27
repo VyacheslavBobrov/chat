@@ -12,7 +12,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Component
 @AllArgsConstructor
 @Service
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 public class Translator {
     ResourceBundleMessageSource messageSource;
 
