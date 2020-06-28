@@ -29,12 +29,14 @@ import static lombok.AccessLevel.PUBLIC;
  */
 @Service
 @RequiredArgsConstructor(access = PUBLIC)
-@FieldDefaults(level = PRIVATE, makeFinal = true)
+@FieldDefaults(level = PRIVATE)
 @Slf4j
 @Transactional
 public class FileStorageService {
-    @NonNull UserService userService;
-    @NonNull Translator translator;
+    @NonNull
+    final UserService userService;
+    @NonNull
+    final Translator translator;
 
     @Value("${file-storage.upload-dir}")
     String uploadDir;

@@ -21,12 +21,14 @@ import static lombok.AccessLevel.PUBLIC;
 
 @Service
 @RequiredArgsConstructor(access = PUBLIC)
-@FieldDefaults(level = PRIVATE, makeFinal = true)
+@FieldDefaults(level = PRIVATE)
 @Slf4j
 public class UserScheduledNotifier {
-    @NonNull UserNotifyService userNotifyService;
-    @NonNull ScheduledExecutorService scheduledExecutorService;
-    Map<UUID, ScheduledFuture<?>> userNotifiers = new HashMap<>();
+    @NonNull
+    final UserNotifyService userNotifyService;
+    @NonNull
+    final ScheduledExecutorService scheduledExecutorService;
+    final Map<UUID, ScheduledFuture<?>> userNotifiers = new HashMap<>();
 
     @Value("${jwt.jwtTokenValidity}")
     long jwtTokenValidity;
