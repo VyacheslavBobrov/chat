@@ -26,7 +26,7 @@ import static lombok.AccessLevel.PRIVATE;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
-@FieldDefaults(level = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @NonNull
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     static final String[] PUBLIC = {

@@ -19,7 +19,7 @@ import ru.bobrov.vyacheslav.chat.services.websocket.WebSocketChannelInterceptor;
 @EnableWebSocket
 @EnableWebSocketMessageBroker
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @NonNull
 @Controller
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
