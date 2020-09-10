@@ -24,9 +24,9 @@ class UsersService(
         @Value("\${chatserver.host}")
         private val host: String,
         private val authenticationService: AuthenticationService,
-        private val netService: NetService
+        private val netService: NetService,
+        private val mapper: ObjectMapper
 ) {
-    private val mapper = ObjectMapper()
     private val usersPath = "$host$USERS_PATH"
 
     fun getChats(): List<Chat> =

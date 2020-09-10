@@ -13,10 +13,10 @@ private const val AUTHENTICATE_PATH = "/api/v1/authentication"
 @Service
 class AuthenticationService(
         @Value("\${chatserver.host}")
-        val host: String
+        private val host: String,
+        private val mapper: ObjectMapper
 ) {
     private val loggedUser = ThreadLocal<User>()
-    private val mapper = ObjectMapper()
 
     fun authenticate(login: String, password: String): User = mapper.readValue(
             send(

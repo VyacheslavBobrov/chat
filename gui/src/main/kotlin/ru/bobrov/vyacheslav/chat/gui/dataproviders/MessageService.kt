@@ -20,9 +20,9 @@ class MessageService(
         @Value("\${chatserver.host}")
         private val host: String,
         private val authenticationService: AuthenticationService,
-        private val netService: NetService
+        private val netService: NetService,
+        private val mapper: ObjectMapper
 ) {
-    private val mapper = ObjectMapper()
     private val messagesPath = "$host$MESSAGES_PATH"
 
     fun get(messageId: UUID): Message =
