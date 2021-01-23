@@ -5,6 +5,7 @@ import com.jayway.jsonpath.JsonPath;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,9 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import ru.bobrov.vyacheslav.chat.ChatApplication;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
 import ru.bobrov.vyacheslav.chat.dataproviders.repositories.UserRepository;
 import ru.bobrov.vyacheslav.chat.dto.enums.ChatStatus;
 import ru.bobrov.vyacheslav.chat.services.authentication.JwtUserDetailsService;
@@ -25,8 +24,6 @@ import ru.bobrov.vyacheslav.chat.services.utils.JwtTokenUtil;
 import ru.bobrov.vyacheslav.chat.utils.DateUtils;
 
 import javax.annotation.PostConstruct;
-import java.sql.Timestamp;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -45,7 +42,9 @@ import static ru.bobrov.vyacheslav.chat.dto.enums.UserStatus.DISABLED;
 import static ru.bobrov.vyacheslav.chat.services.Constants.TOKEN_PREFIX;
 import static ru.bobrov.vyacheslav.chat.testdata.Chats.CHATS;
 import static ru.bobrov.vyacheslav.chat.testdata.Chats.CHAT_IDS_MAP;
-import static ru.bobrov.vyacheslav.chat.testdata.Users.*;
+import static ru.bobrov.vyacheslav.chat.testdata.Users.ALL_USERS;
+import static ru.bobrov.vyacheslav.chat.testdata.Users.TEST_ADMIN;
+import static ru.bobrov.vyacheslav.chat.testdata.Users.TEST_USER_1;
 
 @SpringBootTest(classes = ChatApplication.class)
 @AutoConfigureMockMvc
@@ -71,14 +70,14 @@ public class UserControllerTest {
 
     @PostConstruct
     public void setUp() {
-        String adminToken = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(TEST_ADMIN.getLogin()));
+        val adminToken = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(TEST_ADMIN.getLogin()));
         adminAuthorizationHeader = format("%s %s", TOKEN_PREFIX, adminToken);
     }
 
     @BeforeEach
     public void setUpTest() {
         userRepository.save(TEST_USER_1);
-        String userToken = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(TEST_USER_1.getLogin()));
+        val userToken = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(TEST_USER_1.getLogin()));
         userAuthorizationHeader = format("%s %s", TOKEN_PREFIX, userToken);
     }
 
@@ -103,7 +102,7 @@ public class UserControllerTest {
 
     @Test
     public void giveUser_postUpdateUser_returnUpdated() throws Exception {
-        MvcResult result = mvc.perform(
+        val result = mvc.perform(
                 post(USERS_API_PATH + "/" + TEST_USER_1.getUserId())
                         .header(AUTHORIZATION, adminAuthorizationHeader)
                         .header(ORIGIN, ORIGIN_VAL)
@@ -121,9 +120,9 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.created").value(TEST_USER_1.getCreated().toLocalDateTime().toString()))
                 .andReturn();
 
-        Object document = Configuration.defaultConfiguration().jsonProvider()
+        val document = Configuration.defaultConfiguration().jsonProvider()
                 .parse(result.getResponse().getContentAsString());
-        Timestamp updated = DateUtils.parse(JsonPath.read(document, "$.updated"));
+        val updated = DateUtils.parse(JsonPath.read(document, "$.updated"));
         Assertions.assertTrue(updated.after(TEST_USER_1.getUpdated()));
     }
 
@@ -164,7 +163,7 @@ public class UserControllerTest {
     @Test
     public void giveUsers_getAllUsers_returnAllActiveUsers() throws Exception {
         saveAllUsers();
-        final Set<String> activeUserIds = ALL_USERS.stream()
+        val activeUserIds = ALL_USERS.stream()
                 .filter(user -> user.getStatus() == ACTIVE)
                 .map(user -> user.getUserId().toString())
                 .collect(Collectors.toUnmodifiableSet());
@@ -188,7 +187,7 @@ public class UserControllerTest {
     private void createChats() {
         CHATS.forEach(chat -> {
                     try {
-                        MvcResult result = mvc.perform(
+                        val result = mvc.perform(
                                 post(CHATS_API_PATH)
                                         .header(AUTHORIZATION, chat.getCreator() == TEST_ADMIN
                                                 ? adminAuthorizationHeader
@@ -202,7 +201,7 @@ public class UserControllerTest {
                         )
                                 .andExpect(status().isOk())
                                 .andReturn();
-                        Object document = Configuration.defaultConfiguration().jsonProvider()
+                        val document = Configuration.defaultConfiguration().jsonProvider()
                                 .parse(result.getResponse().getContentAsString());
                         CHAT_IDS_MAP.put(chat, UUID.fromString(JsonPath.read(document, "$.chatId")));
                     } catch (Exception e) {
@@ -215,7 +214,7 @@ public class UserControllerTest {
 
     private void addUsersToChats() {
         CHATS.forEach(chat -> {
-            final Set<String> userIdsToAdd = chat.getUsers().stream()
+            val userIdsToAdd = chat.getUsers().stream()
                     .filter(user -> user != chat.getCreator())
                     .map(user -> user.getUserId().toString())
                     .collect(Collectors.toUnmodifiableSet());
@@ -268,7 +267,7 @@ public class UserControllerTest {
         addUsersToChats();
         blockChatsIfNeeded();
 
-        final Set<Chat> chatsForUser = CHATS.stream()
+        val chatsForUser = CHATS.stream()
                 .filter(chat -> chat.getUsers().contains(TEST_USER_1) && chat.getStatus() == ChatStatus.ACTIVE)
                 .collect(Collectors.toUnmodifiableSet());
 

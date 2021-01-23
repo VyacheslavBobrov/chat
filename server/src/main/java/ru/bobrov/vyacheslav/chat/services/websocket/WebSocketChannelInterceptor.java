@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -33,27 +34,27 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(@org.springframework.lang.NonNull Message<?> message,
                               @org.springframework.lang.NonNull MessageChannel channel) {
-        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        val accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         if (isNull(accessor)) {
             log.info("Accessor is null");
             return null;
         }
 
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-            String authHeader = accessor.getFirstNativeHeader(AUTHORIZATION);
+            val authHeader = accessor.getFirstNativeHeader(AUTHORIZATION);
             log.info("Header auth token: " + authHeader);
             if (isNull(authHeader)) {
                 log.info("Token is null");
                 return null;
             }
-            Principal principal = extractPrincipalFromHeader(authHeader);
+            val principal = extractPrincipalFromHeader(authHeader);
 
             if (isNull(principal))
                 return null;
 
             accessor.setUser(principal);
         } else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
-            Principal user = accessor.getUser();
+            val user = accessor.getUser();
 
             if (nonNull(user))
                 log.info("Disconnected Auth : " + user.getName());

@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -22,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.UserFile;
 import ru.bobrov.vyacheslav.chat.dto.response.UploadFileApiModel;
 import ru.bobrov.vyacheslav.chat.services.FileStorageService;
 import ru.bobrov.vyacheslav.chat.services.UserService;
@@ -61,7 +60,7 @@ public class FileController {
         log.info(format("POST file from %s, userId: %s, size: %d, type: %s",
                 header.getHost(), userId, file.getSize(), file.getContentType()));
 
-        UUID fileId = fileStorageService.storeFile(userId, file);
+        val fileId = fileStorageService.storeFile(userId, file);
 
         return UploadFileApiModel.builder()
                 .fileUUID(fileId)
@@ -97,8 +96,8 @@ public class FileController {
     ) {
         log.info(format("GET file from %s, fileId: %s", request.getRemoteHost(), fileId));
 
-        Resource resource = fileStorageService.loadFile(fileId);
-        UserFile userFile = userService.findFileById(fileId);
+        val resource = fileStorageService.loadFile(fileId);
+        val userFile = userService.findFileById(fileId);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(userFile.getFileMimeType()))
@@ -125,7 +124,7 @@ public class FileController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("DEL file from %s, fileId: %s", header.getHost(), fileId));
-        User user = userService.findUserByFileId(fileId);
+        val user = userService.findUserByFileId(fileId);
         fileStorageService.dropFile(fileId);
 
         return userService.getFilesIdsForUser(user.getUserId());

@@ -3,9 +3,9 @@ package ru.bobrov.vyacheslav.chat.controllers.policies;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
+import lombok.val;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
 import ru.bobrov.vyacheslav.chat.services.UserService;
 
 import java.util.UUID;
@@ -34,7 +34,7 @@ public class UserFilesSecurityPolicy {
     }
 
     public boolean canDropFile(@NonNull UserDetails principal, @NonNull UUID fileId) {
-        User user = userService.findUserByFileId(fileId);
+        val user = userService.findUserByFileId(fileId);
         //Можно удалять только свои файлы, админ может удалить любой файл
         return isCurrentUserId(principal, user.getUserId()) || isAdmin(principal);
     }

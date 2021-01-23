@@ -3,10 +3,10 @@ package ru.bobrov.vyacheslav.chat.services;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
+import lombok.val;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.ChatNotFoundException;
 import ru.bobrov.vyacheslav.chat.dataproviders.exceptions.MessageNotFoundException;
@@ -67,7 +67,7 @@ public class MessageService {
             UUID userId,
             String text
     ) {
-        Message message = Message.builder()
+        val message = Message.builder()
                 .messageId(UUID.randomUUID())
                 .chat(chatService.get(chatId))
                 .user(userService.get(userId))
@@ -89,7 +89,7 @@ public class MessageService {
      * @throws MessageNotFoundException сообщение с указанным идентификатором не найдено
      */
     public Message update(UUID messageId, String text) {
-        Message message = get(messageId);
+        val message = get(messageId);
         message.setMessage(text);
         updateTime(message);
         validate(message);
@@ -128,7 +128,7 @@ public class MessageService {
      * @throws ChatNotFoundException чат с указанным идентификатором не найден
      */
     public Page<Message> getChatMessages(UUID chatId, int page, int size) {
-        Chat chat = chatService.get(chatId);
+        val chat = chatService.get(chatId);
         return repository.findAllByChatAndStatusOrderByCreatedDesc(chat, MessageStatus.ACTIVE, PageRequest.of(page, size));
     }
 

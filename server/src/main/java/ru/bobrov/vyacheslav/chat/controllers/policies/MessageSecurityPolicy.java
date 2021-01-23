@@ -3,9 +3,9 @@ package ru.bobrov.vyacheslav.chat.controllers.policies;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
+import lombok.val;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.services.ChatService;
 import ru.bobrov.vyacheslav.chat.services.MessageService;
 
@@ -37,7 +37,7 @@ public class MessageSecurityPolicy {
     }
 
     public boolean canReadMessage(@NonNull UserDetails principal, @NonNull UUID messageId) {
-        Message message = messageService.get(messageId);
+        val message = messageService.get(messageId);
         //Сообщение может читать админ, и пользователь чата, которому принадлежит сообщение
         return isAdmin(principal) || userInChat(principal, message.getChat().getChatId());
     }
@@ -47,7 +47,7 @@ public class MessageSecurityPolicy {
     }
 
     private boolean isMessageCreator(UserDetails principal, UUID messageId) {
-        Message message = messageService.get(messageId);
+        val message = messageService.get(messageId);
         return isCurrentUserId(principal, message.getUser().getUserId());
     }
 }

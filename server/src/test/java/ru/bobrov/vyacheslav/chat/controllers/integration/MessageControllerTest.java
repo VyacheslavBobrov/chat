@@ -5,6 +5,7 @@ import com.jayway.jsonpath.JsonPath;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import ru.bobrov.vyacheslav.chat.ChatApplication;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
@@ -74,7 +74,7 @@ public class MessageControllerTest {
     }
 
     private String generateAuthorizationHeader(User user) {
-        String token = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(user.getLogin()));
+        val token = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(user.getLogin()));
         return format("%s %s", TOKEN_PREFIX, token);
     }
 
@@ -85,7 +85,7 @@ public class MessageControllerTest {
     }
 
     private UUID createChat(Chat chat) throws Exception {
-        MvcResult result = mvc.perform(
+        val result = mvc.perform(
                 post(CHATS_API_PATH)
                         .header(AUTHORIZATION, chat.getCreator() == TEST_ADMIN
                                 ? adminAuthorizationHeader
@@ -99,9 +99,9 @@ public class MessageControllerTest {
         )
                 .andExpect(status().isOk())
                 .andReturn();
-        Object document = Configuration.defaultConfiguration().jsonProvider()
+        val document = Configuration.defaultConfiguration().jsonProvider()
                 .parse(result.getResponse().getContentAsString());
-        final UUID chatId = UUID.fromString(JsonPath.read(document, "$.chatId"));
+        val chatId = UUID.fromString(JsonPath.read(document, "$.chatId"));
 
         mvc.perform(
                 post(format("%s/%s/users", CHATS_API_PATH, chatId))
@@ -123,9 +123,9 @@ public class MessageControllerTest {
 
     @Test
     public void giveChat_createMessage_returnCreatedMessage() throws Exception {
-        final UUID chatId = createChat(TEST_FOR_CREATE_MESSAGE.getChat());
-        final UUID userId = TEST_FOR_CREATE_MESSAGE.getUser().getUserId();
-        final String message = TEST_FOR_CREATE_MESSAGE.getMessage();
+        val chatId = createChat(TEST_FOR_CREATE_MESSAGE.getChat());
+        val userId = TEST_FOR_CREATE_MESSAGE.getUser().getUserId();
+        val message = TEST_FOR_CREATE_MESSAGE.getMessage();
 
         mvc.perform(
                 post(MESSAGES_API_PATH)
@@ -151,9 +151,9 @@ public class MessageControllerTest {
     }
 
     private UUID createMessage(Message message, UUID chatId) throws Exception {
-        final User user = message.getUser();
+        val user = message.getUser();
 
-        MvcResult result = mvc.perform(
+        val result = mvc.perform(
                 post(MESSAGES_API_PATH)
                         .header(AUTHORIZATION, user == TEST_ADMIN
                                 ? adminAuthorizationHeader
@@ -169,17 +169,17 @@ public class MessageControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Object document = Configuration.defaultConfiguration().jsonProvider()
+        val document = Configuration.defaultConfiguration().jsonProvider()
                 .parse(result.getResponse().getContentAsString());
         return UUID.fromString(JsonPath.read(document, "$.messageId"));
     }
 
     @Test
     public void giveMessage_getMessage_returnMessage() throws Exception {
-        final UUID chatId = createChat(TEST_FOR_CREATE_MESSAGE.getChat());
-        final UUID messageId = createMessage(TEST_FOR_CREATE_MESSAGE, chatId);
-        final UUID userId = TEST_FOR_CREATE_MESSAGE.getUser().getUserId();
-        final String message = TEST_FOR_CREATE_MESSAGE.getMessage();
+        val chatId = createChat(TEST_FOR_CREATE_MESSAGE.getChat());
+        val messageId = createMessage(TEST_FOR_CREATE_MESSAGE, chatId);
+        val userId = TEST_FOR_CREATE_MESSAGE.getUser().getUserId();
+        val message = TEST_FOR_CREATE_MESSAGE.getMessage();
 
         mvc.perform(
                 get(format("%s/%s", MESSAGES_API_PATH, messageId.toString()))
@@ -203,8 +203,8 @@ public class MessageControllerTest {
 
     @Test
     public void giveActiveMessage_setBlocked_returnBlockedMessage() throws Exception {
-        final UUID chatId = createChat(TEST_FOR_CREATE_MESSAGE.getChat());
-        final UUID messageId = createMessage(TEST_FOR_CREATE_MESSAGE, chatId);
+        val chatId = createChat(TEST_FOR_CREATE_MESSAGE.getChat());
+        val messageId = createMessage(TEST_FOR_CREATE_MESSAGE, chatId);
 
         mvc.perform(
                 post(format("%s/%s/block", MESSAGES_API_PATH, messageId))
@@ -223,8 +223,8 @@ public class MessageControllerTest {
 
     @Test
     public void giveActiveMessage_setUnblocked_returnUnblockedMessage() throws Exception {
-        final UUID chatId = createChat(TEST_FOR_CREATE_MESSAGE.getChat());
-        final UUID messageId = createMessage(TEST_FOR_CREATE_MESSAGE, chatId);
+        val chatId = createChat(TEST_FOR_CREATE_MESSAGE.getChat());
+        val messageId = createMessage(TEST_FOR_CREATE_MESSAGE, chatId);
 
         mvc.perform(
                 post(format("%s/%s/unblock", MESSAGES_API_PATH, messageId))

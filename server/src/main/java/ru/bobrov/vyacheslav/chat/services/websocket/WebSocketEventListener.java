@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
@@ -27,8 +28,8 @@ public class WebSocketEventListener {
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String username = Objects.requireNonNull(headerAccessor.getUser()).getName();
+        val headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+        val username = Objects.requireNonNull(headerAccessor.getUser()).getName();
         log.info("User: " + username + " disconnected");
     }
 

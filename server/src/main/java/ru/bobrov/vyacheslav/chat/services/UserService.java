@@ -3,6 +3,7 @@ package ru.bobrov.vyacheslav.chat.services;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
+import lombok.val;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -93,7 +94,7 @@ public class UserService {
      * @throws IllegalArgumentException одно из переданных полей нулевое или пустое
      */
     public User create(String name, String login, String password) {
-        User user = User.builder()
+        val user = User.builder()
                 .userId(UUID.randomUUID())
                 .name(name)
                 .login(login)
@@ -125,7 +126,7 @@ public class UserService {
      * @throws UserNotFoundException пользователь с указанным идентификатором отсутствует
      */
     public User update(UUID uuid, String name, UUID userPic, String login, String password) {
-        User user = get(uuid);
+        val user = get(uuid);
 
         if (name == null && userPic == null && login == null && password == null)
             return user;
@@ -185,7 +186,7 @@ public class UserService {
     }
 
     private User setUserStatus(UUID uuid, UserStatus status) {
-        User user = get(uuid);
+        val user = get(uuid);
         user.setStatus(status);
         updateTime(user);
         repository.save(user);
@@ -201,7 +202,7 @@ public class UserService {
      * @throws UserNotFoundException пользователь с указанным идентификатором отсутствует
      */
     public Set<Chat> getUserChats(UUID uuid) {
-        User user = get(uuid);
+        val user = get(uuid);
         return user.getChats().stream()
                 .filter(chat -> chat.getStatus() == ChatStatus.ACTIVE)
                 .collect(Collectors.toUnmodifiableSet());
@@ -255,7 +256,7 @@ public class UserService {
      * @return {@link User} найденный пользователь
      */
     public User getUserByLogin(String username) {
-        List<User> users = repository.findAllByLogin(username);
+        val users = repository.findAllByLogin(username);
         return users.isEmpty() ? null : users.get(0);
     }
 
@@ -266,7 +267,7 @@ public class UserService {
      * @return {@link List<UUID>} список идентификаторов файлов
      */
     public List<UUID> getFilesIdsForUser(UUID userId) {
-        User user = get(userId);
+        val user = get(userId);
         return user.getUserFiles().stream().map(UserFile::getFileId).collect(Collectors.toUnmodifiableList());
     }
 
@@ -287,10 +288,10 @@ public class UserService {
      * @return {@link UUID} идентификатор созданного файла
      */
     public UUID addFileToUser(UUID userId, String contentType) {
-        User user = get(userId);
+        val user = get(userId);
 
-        UUID fileId = UUID.randomUUID();
-        UserFile userFile = UserFile.builder().fileId(fileId).user(user).fileMimeType(contentType).build();
+        val fileId = UUID.randomUUID();
+        val userFile = UserFile.builder().fileId(fileId).user(user).fileMimeType(contentType).build();
         user.getUserFiles().add(userFile);
         repository.save(user);
 

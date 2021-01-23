@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.experimental.FieldDefaults;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -33,7 +34,7 @@ public class JwtTokenUtil {
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = getAllClaimsFromToken(token);
+        val claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
@@ -42,7 +43,7 @@ public class JwtTokenUtil {
     }
 
     public Boolean isTokenExpired(String token) {
-        final Date expiration = getExpirationDateFromToken(token);
+        val expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
@@ -66,7 +67,7 @@ public class JwtTokenUtil {
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
+        val username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 }

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -65,7 +66,7 @@ public class MessageController {
     ) {
         log.info(format("POST message update request from %s, messageId:%s, message: %s ",
                 header.getHost(), messageId, message));
-        MessageApiModel updatedMessage = toApi(messageService.update(messageId, message));
+        val updatedMessage = toApi(messageService.update(messageId, message));
         chatNotifyService.editMessage(updatedMessage.getChat().getChatId());
         return updatedMessage;
     }
@@ -79,7 +80,7 @@ public class MessageController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT block message request from %s, messageId:%s ", header.getHost(), messageId));
-        MessageApiModel blockedMessage = toApi(messageService.block(messageId));
+        val blockedMessage = toApi(messageService.block(messageId));
         chatNotifyService.dropMessage(blockedMessage.getChat().getChatId());
         return blockedMessage;
     }
@@ -93,7 +94,7 @@ public class MessageController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT unblock message request from %s, messageId:%s ", header.getHost(), messageId));
-        MessageApiModel unblockedMessage = toApi(messageService.unblock(messageId));
+        val unblockedMessage = toApi(messageService.unblock(messageId));
         chatNotifyService.editMessage(unblockedMessage.getChat().getChatId());
         return unblockedMessage;
     }
@@ -109,7 +110,7 @@ public class MessageController {
     ) {
         log.info(format("POST create message request from %s, chatId: %s, userId: %s, message: %s ",
                 header.getHost(), chatId, userId, message));
-        MessageApiModel createdMessage = toApi(messageService.create(chatId, userId, message));
+        val createdMessage = toApi(messageService.create(chatId, userId, message));
         chatListNotifyService.newMessageInChat(chatId);
         chatNotifyService.newMessage(chatId);
         return createdMessage;

@@ -4,6 +4,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -43,8 +44,8 @@ public class FileStorageService {
 
     public UUID storeFile(UUID userId, MultipartFile file) {
         try {
-            UUID fileId = userService.addFileToUser(userId, file.getContentType());
-            Path fileLocation = getStorageLocation().resolve(fileId.toString());
+            val fileId = userService.addFileToUser(userId, file.getContentType());
+            val fileLocation = getStorageLocation().resolve(fileId.toString());
             Files.copy(file.getInputStream(), fileLocation, StandardCopyOption.REPLACE_EXISTING);
             return fileId;
         } catch (Exception ex) {
@@ -58,8 +59,8 @@ public class FileStorageService {
 
     public Resource loadFile(UUID fileId) {
         try {
-            Path fileLocation = getStorageLocation().resolve(fileId.toString()).normalize();
-            Resource resource = new UrlResource(fileLocation.toUri());
+            val fileLocation = getStorageLocation().resolve(fileId.toString()).normalize();
+            val resource = new UrlResource(fileLocation.toUri());
             if (resource.exists())
                 return resource;
             throw new FileNotFoundException(
@@ -78,7 +79,7 @@ public class FileStorageService {
     public void dropFile(UUID fileId) {
         try {
             userService.deleteFile(fileId);
-            Path fileLocation = getStorageLocation().resolve(fileId.toString()).normalize();
+            val fileLocation = getStorageLocation().resolve(fileId.toString()).normalize();
             if (!Files.exists(fileLocation))
                 return;
             Files.delete(fileLocation);
@@ -93,7 +94,7 @@ public class FileStorageService {
 
     private Path getStorageLocation() {
         try {
-            Path storageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
+            val storageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
             Files.createDirectories(storageLocation);
             return storageLocation;
         } catch (Exception ex) {

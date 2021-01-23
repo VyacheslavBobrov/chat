@@ -1,6 +1,7 @@
 package ru.bobrov.vyacheslav.chat.services.websocket;
 
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 @Component
@@ -25,8 +25,8 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
         log.info("Call before Handshake");
 
         if (request instanceof ServletServerHttpRequest) {
-            ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
-            HttpSession session = servletRequest.getServletRequest().getSession();
+            val servletRequest = (ServletServerHttpRequest) request;
+            val session = servletRequest.getServletRequest().getSession();
             attributes.put("sessionId", session.getId());
         }
         return true;

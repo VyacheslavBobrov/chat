@@ -4,6 +4,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -34,13 +35,13 @@ public class UserScheduledNotifier {
     long jwtTokenValidity;
 
     public void tokenExpired(UUID userId) {
-        final long jwtTokenValidityMs = TimeUnit.MINUTES.toMillis(jwtTokenValidity);
+        val jwtTokenValidityMs = TimeUnit.MINUTES.toMillis(jwtTokenValidity);
 
-        ScheduledFuture<?> oldFuture = userNotifiers.get(userId);
+        val oldFuture = userNotifiers.get(userId);
         if (Objects.nonNull(oldFuture))
             oldFuture.cancel(false);
 
-        ScheduledFuture<?> future = scheduledExecutorService.schedule(() -> {
+        val future = scheduledExecutorService.schedule(() -> {
             userNotifyService.tokenExpired(userId);
             log.info(format("Token for userId %s expired", userId));
         }, jwtTokenValidityMs - jwtTokenValidityMs * 10 / 100, TimeUnit.MILLISECONDS);

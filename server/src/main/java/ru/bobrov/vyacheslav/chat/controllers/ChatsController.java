@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
+import lombok.val;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.bobrov.vyacheslav.chat.controllers.converters.MessagesDataConverter;
 import ru.bobrov.vyacheslav.chat.controllers.converters.UserDataConverter;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
 import ru.bobrov.vyacheslav.chat.dto.response.ChatApiModel;
 import ru.bobrov.vyacheslav.chat.dto.response.MessagesPagingApiModel;
@@ -79,7 +78,7 @@ public class ChatsController {
         log.info(format("POST update chat request from %s, chatId:%s, name: %s ",
                 header.getHost(), chatId, title));
 
-        ChatApiModel renamedChat = toApi(chatService.update(chatId, title));
+        val renamedChat = toApi(chatService.update(chatId, title));
         chatListNotifyService.nameChanged(chatId);
         chatNotifyService.nameChanged(chatId);
         return renamedChat;
@@ -94,7 +93,7 @@ public class ChatsController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT block chat request from %s, chatId:%s ", header.getHost(), chatId));
-        ChatApiModel blockedChat = toApi(chatService.block(chatId));
+        val blockedChat = toApi(chatService.block(chatId));
         chatListNotifyService.chatBlocked(chatId);
         chatNotifyService.blocked(chatId);
         return blockedChat;
@@ -109,7 +108,7 @@ public class ChatsController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT unblock chat request from %s, chatId:%s ", header.getHost(), chatId));
-        ChatApiModel unblockedChat = toApi(chatService.unblock(chatId));
+        val unblockedChat = toApi(chatService.unblock(chatId));
         chatListNotifyService.chatUnblocked(chatId);
         chatNotifyService.unblocked(chatId);
         return unblockedChat;
@@ -124,7 +123,7 @@ public class ChatsController {
     ) {
         log.info(format("POST create chat request from %s, title: %s, userId: %s ",
                 header.getHost(), title, userId));
-        Chat chat = chatService.create(title, userId);
+        val chat = chatService.create(title, userId);
         return toApi(chat);
     }
 
@@ -163,7 +162,7 @@ public class ChatsController {
     ) {
         log.info(format("POST chat users request from %s, chatId:%s,  userUUIDs: {%s}",
                 header.getHost(), chatId, userUUIDs.stream().map(UUID::toString).collect(Collectors.joining())));
-        List<UserApiModel> updatedChatUsersList = UserDataConverter.toApi(chatService.addUsers(chatId, userUUIDs));
+        val updatedChatUsersList = UserDataConverter.toApi(chatService.addUsers(chatId, userUUIDs));
         chatListNotifyService.newChatUser(chatId);
         chatNotifyService.addUser(chatId);
         return updatedChatUsersList;
@@ -180,7 +179,7 @@ public class ChatsController {
     ) {
         log.info(format("POST kick user chat user request from %s, chatId:%s,  userId: {%s}",
                 header.getHost(), chatId, userId));
-        List<UserApiModel> updatedChatUsersList = UserDataConverter.toApi(chatService.kickUser(chatId, userId));
+        val updatedChatUsersList = UserDataConverter.toApi(chatService.kickUser(chatId, userId));
         chatNotifyService.kickUser(chatId);
         return updatedChatUsersList;
     }
@@ -197,7 +196,7 @@ public class ChatsController {
     ) {
         log.info(format("GET chat messages request from %s, chatId:%s ", header.getHost(), chatId));
 
-        Page<Message> messagePage = messageService.getChatMessages(chatId, page, size);
+        val messagePage = messageService.getChatMessages(chatId, page, size);
 
         return MessagesPagingApiModel.builder()
                 .messages(

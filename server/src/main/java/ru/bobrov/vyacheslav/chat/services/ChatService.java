@@ -3,6 +3,7 @@ package ru.bobrov.vyacheslav.chat.services;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
+import lombok.val;
 import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
@@ -68,9 +69,9 @@ public class ChatService {
             String title,
             UUID creator
     ) {
-        User user = userService.get(creator);
+        val user = userService.get(creator);
 
-        Chat chat = Chat.builder()
+        val chat = Chat.builder()
                 .chatId(UUID.randomUUID())
                 .title(title)
                 .status(ChatStatus.ACTIVE)
@@ -93,7 +94,7 @@ public class ChatService {
      * @throws ChatNotFoundException чат с указанным идентификатором отсутствует
      */
     public Chat update(UUID chatId, String title) {
-        Chat chat = get(chatId);
+        val chat = get(chatId);
         chat.setTitle(title);
         updateTime(chat);
         validate(chat);
@@ -110,7 +111,7 @@ public class ChatService {
      * @throws UserNotFoundException пользователь с переданным идентификатором, отсутствует
      */
     public Set<User> addUsers(UUID chatId, Collection<UUID> userUUIDs) {
-        Chat chat = get(chatId);
+        val chat = get(chatId);
         chat.getUsers().addAll(userService.get(userUUIDs));
         repository.save(chat);
         return chat.getUsers();
@@ -139,7 +140,7 @@ public class ChatService {
     }
 
     private Chat setChatStatus(UUID uuid, ChatStatus status) {
-        Chat chat = get(uuid);
+        val chat = get(uuid);
         chat.setStatus(status);
         updateTime(chat);
         repository.save(chat);
@@ -175,7 +176,7 @@ public class ChatService {
      * @return {@link Set<User>} новый список пользователей
      */
     public Set<User> kickUser(UUID chatId, UUID userId) {
-        Chat chat = get(chatId);
+        val chat = get(chatId);
         if (chat.getCreator().getUserId().equals(userId))
             throw new IllegalOperationException(
                     translator.translate("wrong-kick-operation-title"),
@@ -185,8 +186,8 @@ public class ChatService {
                     )
             );
 
-        Set<User> users = chat.getUsers();
-        User userToKick = users.stream().filter(user -> user.getUserId().equals(userId)).findFirst().orElse(null);
+        val users = chat.getUsers();
+        val userToKick = users.stream().filter(user -> user.getUserId().equals(userId)).findFirst().orElse(null);
         if (userToKick == null)
             return users;
 

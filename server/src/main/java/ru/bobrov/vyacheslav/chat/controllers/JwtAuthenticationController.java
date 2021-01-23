@@ -6,17 +6,16 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
 import ru.bobrov.vyacheslav.chat.dto.response.UserApiModel;
 import ru.bobrov.vyacheslav.chat.dto.response.UserRegistrationApiModel;
 import ru.bobrov.vyacheslav.chat.services.UserService;
@@ -53,9 +52,9 @@ public class JwtAuthenticationController {
     ) {
         log.info(format("POST authentication request, from: %s, for login: %s", header.getHost(), login));
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
-        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(login);
-        String token = jwtTokenUtil.generateToken(userDetails);
-        User user = userService.getUserByLogin(login);
+        val userDetails = jwtUserDetailsService.loadUserByUsername(login);
+        val token = jwtTokenUtil.generateToken(userDetails);
+        val user = userService.getUserByLogin(login);
         userScheduledNotifier.tokenExpired(user.getUserId());
         return toApi(user, token);
     }

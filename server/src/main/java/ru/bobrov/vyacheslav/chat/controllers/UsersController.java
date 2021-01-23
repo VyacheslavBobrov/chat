@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
+import lombok.val;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -73,7 +73,7 @@ public class UsersController {
     ) {
         log.info(format("POST request for update user, from %s, userId: %s, name: %s, login: %s",
                 header.getHost(), userId, name, login));
-        UserApiModel updatedUser = toApi(userService.update(userId, name, userPic, login, password));
+        val updatedUser = toApi(userService.update(userId, name, userPic, login, password));
         userNotifyService.updated(userId);
         return updatedUser;
     }
@@ -87,7 +87,7 @@ public class UsersController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT request to block user, from %s, userId: %s", header.getHost(), userId));
-        UserApiModel blockedUser = toApi(userService.block(userId));
+        val blockedUser = toApi(userService.block(userId));
         userNotifyService.blocked(userId);
         return blockedUser;
     }
@@ -101,7 +101,7 @@ public class UsersController {
             @RequestHeader HttpHeaders header
     ) {
         log.info(format("PUT request to unblock user, from %s, userId: %s", header.getHost(), userId));
-        UserApiModel unblockedUser = toApi(userService.unblock(userId));
+        val unblockedUser = toApi(userService.unblock(userId));
         userNotifyService.unblocked(userId);
         return unblockedUser;
     }
@@ -118,7 +118,7 @@ public class UsersController {
         log.info(format("GET request to get all users, from: %s, page: %d, size: %d",
                 header.getHost(), page, size));
 
-        Page<User> userPage = userService.getAllActiveUsers(page, size);
+        val userPage = userService.getAllActiveUsers(page, size);
 
         return UsersPagingApiModel.builder()
                 .ids(userPage.get().map(User::getUserId).collect(Collectors.toUnmodifiableList()))

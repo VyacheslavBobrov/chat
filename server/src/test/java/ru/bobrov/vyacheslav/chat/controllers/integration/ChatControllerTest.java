@@ -5,6 +5,7 @@ import com.jayway.jsonpath.JsonPath;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import ru.bobrov.vyacheslav.chat.ChatApplication;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
 import ru.bobrov.vyacheslav.chat.dataproviders.entities.Message;
@@ -48,10 +48,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.bobrov.vyacheslav.chat.dto.enums.ChatStatus.ACTIVE;
 import static ru.bobrov.vyacheslav.chat.dto.enums.ChatStatus.DISABLED;
 import static ru.bobrov.vyacheslav.chat.services.Constants.TOKEN_PREFIX;
-import static ru.bobrov.vyacheslav.chat.testdata.Chats.*;
+import static ru.bobrov.vyacheslav.chat.testdata.Chats.CHAT_IDS_MAP;
+import static ru.bobrov.vyacheslav.chat.testdata.Chats.TEST_FOR_ADD_USERS_CHAT;
+import static ru.bobrov.vyacheslav.chat.testdata.Chats.TEST_FOR_BLOCK_CHAT;
+import static ru.bobrov.vyacheslav.chat.testdata.Chats.TEST_FOR_CREATE_CHAT;
+import static ru.bobrov.vyacheslav.chat.testdata.Chats.TEST_FOR_GET_CHAT;
+import static ru.bobrov.vyacheslav.chat.testdata.Chats.TEST_FOR_GET_MESSAGES_CHAT;
+import static ru.bobrov.vyacheslav.chat.testdata.Chats.TEST_FOR_GET_USERS_CHAT;
+import static ru.bobrov.vyacheslav.chat.testdata.Chats.TEST_FOR_GET_USERS_OUT_OF_CHAT;
+import static ru.bobrov.vyacheslav.chat.testdata.Chats.TEST_FOR_KICK_USER_OUT_OF_CHAT;
+import static ru.bobrov.vyacheslav.chat.testdata.Chats.TEST_FOR_UNBLOCK_CHAT;
+import static ru.bobrov.vyacheslav.chat.testdata.Chats.TEST_FOR_UPDATE_CHAT;
 import static ru.bobrov.vyacheslav.chat.testdata.Messages.MESSAGES;
 import static ru.bobrov.vyacheslav.chat.testdata.Messages.MESSAGE_UUID_MAP;
-import static ru.bobrov.vyacheslav.chat.testdata.Users.*;
+import static ru.bobrov.vyacheslav.chat.testdata.Users.ALL_USERS;
+import static ru.bobrov.vyacheslav.chat.testdata.Users.TEST_ADMIN;
+import static ru.bobrov.vyacheslav.chat.testdata.Users.TEST_USER_1;
 
 @SpringBootTest(classes = ChatApplication.class)
 @AutoConfigureMockMvc
@@ -85,7 +97,7 @@ public class ChatControllerTest {
     }
 
     private String generateAuthorizationHeader(User user) {
-        String token = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(user.getLogin()));
+        val token = jwtTokenUtil.generateToken(jwtUserDetailsService.loadUserByUsername(user.getLogin()));
         return format("%s %s", TOKEN_PREFIX, token);
     }
 
@@ -118,7 +130,7 @@ public class ChatControllerTest {
 
     @Test
     public void giveChat_getChat_returnChat() throws Exception {
-        final UUID chatId = createChat(TEST_FOR_GET_CHAT);
+        val chatId = createChat(TEST_FOR_GET_CHAT);
 
         mvc.perform(
                 get(format("%s/%s", CHATS_API_PATH, chatId))
@@ -139,12 +151,12 @@ public class ChatControllerTest {
 
     @Test
     public void giveChat_updateChat_returnUpdatedChat() throws Exception {
-        final UUID chatId = createChat(TEST_FOR_UPDATE_CHAT);
-        final Timestamp createdTime = Timestamp.valueOf(LocalDateTime.now());
+        val chatId = createChat(TEST_FOR_UPDATE_CHAT);
+        val createdTime = Timestamp.valueOf(LocalDateTime.now());
 
-        final String newTitle = "Очень удачное название чата";
+        val newTitle = "Очень удачное название чата";
 
-        MvcResult result = mvc.perform(
+        val result = mvc.perform(
                 post(format("%s/%s", CHATS_API_PATH, chatId))
                         .header(AUTHORIZATION, TEST_FOR_UPDATE_CHAT.getCreator() == TEST_ADMIN
                                 ? adminAuthorizationHeader
@@ -159,14 +171,14 @@ public class ChatControllerTest {
                 .andExpect(jsonPath("$.title").value(newTitle))
                 .andReturn();
 
-        Object document = Configuration.defaultConfiguration().jsonProvider()
+        val document = Configuration.defaultConfiguration().jsonProvider()
                 .parse(result.getResponse().getContentAsString());
-        Timestamp updated = DateUtils.parse(JsonPath.read(document, "$.updated"));
+        val updated = DateUtils.parse(JsonPath.read(document, "$.updated"));
         Assertions.assertTrue(updated.after(createdTime));
     }
 
     private UUID createChat(final Chat chat) throws Exception {
-        MvcResult result = mvc.perform(
+        val result = mvc.perform(
                 post(CHATS_API_PATH)
                         .header(AUTHORIZATION, chat.getCreator() == TEST_ADMIN
                                 ? adminAuthorizationHeader
@@ -180,9 +192,9 @@ public class ChatControllerTest {
         )
                 .andExpect(status().isOk())
                 .andReturn();
-        Object document = Configuration.defaultConfiguration().jsonProvider()
+        val document = Configuration.defaultConfiguration().jsonProvider()
                 .parse(result.getResponse().getContentAsString());
-        final UUID chatId = UUID.fromString(JsonPath.read(document, "$.chatId"));
+        val chatId = UUID.fromString(JsonPath.read(document, "$.chatId"));
         CHAT_IDS_MAP.put(chat, chatId);
         return chatId;
     }
@@ -197,12 +209,12 @@ public class ChatControllerTest {
     public void giveChat_addUsersToChat_userAdded() throws Exception {
         createAllUsers();
 
-        final Set<String> userIdsToAdd = TEST_FOR_ADD_USERS_CHAT.getUsers().stream()
+        val userIdsToAdd = TEST_FOR_ADD_USERS_CHAT.getUsers().stream()
                 .filter(user -> user != TEST_FOR_ADD_USERS_CHAT.getCreator())
                 .map(user -> user.getUserId().toString())
                 .collect(Collectors.toUnmodifiableSet());
 
-        final UUID chatId = createChat(TEST_FOR_ADD_USERS_CHAT);
+        val chatId = createChat(TEST_FOR_ADD_USERS_CHAT);
 
         mvc.perform(
                 post(format("%s/%s/users", CHATS_API_PATH, chatId))
@@ -226,7 +238,7 @@ public class ChatControllerTest {
     public void giveChatWithUsers_getChatUsers_allUsersReturned() throws Exception {
         createAllUsers();
 
-        final UUID chatId = createChat(TEST_FOR_GET_USERS_CHAT);
+        val chatId = createChat(TEST_FOR_GET_USERS_CHAT);
         addUsers(chatId, TEST_FOR_GET_USERS_CHAT.getUsers());
         mvc.perform(
                 get(format("%s/%s/users", CHATS_API_PATH, chatId))
@@ -248,10 +260,10 @@ public class ChatControllerTest {
     public void giveChatWithUsers_getOutOfChatUsers_allOutOfChatUsersReturned() throws Exception {
         createAllUsers();
 
-        final UUID chatId = createChat(TEST_FOR_GET_USERS_OUT_OF_CHAT);
+        val chatId = createChat(TEST_FOR_GET_USERS_OUT_OF_CHAT);
         addUsers(chatId, TEST_FOR_GET_USERS_OUT_OF_CHAT.getUsers());
 
-        final Set<User> usersOutOfChat = ALL_USERS.stream()
+        val usersOutOfChat = ALL_USERS.stream()
                 .filter(user -> !TEST_FOR_GET_USERS_OUT_OF_CHAT.getUsers().contains(user)
                         && user.getStatus() == UserStatus.ACTIVE)
                 .collect(Collectors.toUnmodifiableSet());
@@ -275,10 +287,10 @@ public class ChatControllerTest {
     public void giveChatWithUsers_kickUserFromChat_userKicked() throws Exception {
         createAllUsers();
 
-        final UUID chatId = createChat(TEST_FOR_KICK_USER_OUT_OF_CHAT);
+        val chatId = createChat(TEST_FOR_KICK_USER_OUT_OF_CHAT);
         addUsers(chatId, TEST_FOR_KICK_USER_OUT_OF_CHAT.getUsers());
 
-        final Set<User> usersWithoutKicked = ALL_USERS.stream()
+        val usersWithoutKicked = ALL_USERS.stream()
                 .filter(user -> user != TEST_USER_1).collect(Collectors.toUnmodifiableSet());
 
         mvc.perform(
@@ -316,7 +328,7 @@ public class ChatControllerTest {
 
     @Test
     public void giveActiveChat_blockChat_chatBlocked() throws Exception {
-        final UUID chatId = createChat(TEST_FOR_BLOCK_CHAT);
+        val chatId = createChat(TEST_FOR_BLOCK_CHAT);
 
         mvc.perform(
                 post(format("%s/%s/block", CHATS_API_PATH, chatId))
@@ -335,8 +347,8 @@ public class ChatControllerTest {
 
     @Test
     public void giveBlockedChat_unblockChat_chatUnblocked() throws Exception {
-        final UUID chatId = createChat(TEST_FOR_UNBLOCK_CHAT);
-        final Chat chat = chatRepository.findById(chatId).orElseThrow();
+        val chatId = createChat(TEST_FOR_UNBLOCK_CHAT);
+        val chat = chatRepository.findById(chatId).orElseThrow();
         chat.setStatus(DISABLED);
         chatRepository.save(chat);
 
@@ -356,9 +368,9 @@ public class ChatControllerTest {
     }
 
     private void createMessage(Message message, UUID chatId) throws Exception {
-        final User user = message.getUser();
+        val user = message.getUser();
 
-        MvcResult result = mvc.perform(
+        val result = mvc.perform(
                 post(MESSAGES_API_PATH)
                         .header(AUTHORIZATION, user == TEST_ADMIN
                                 ? adminAuthorizationHeader
@@ -374,9 +386,9 @@ public class ChatControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Object document = Configuration.defaultConfiguration().jsonProvider()
+        val document = Configuration.defaultConfiguration().jsonProvider()
                 .parse(result.getResponse().getContentAsString());
-        final UUID messageId = UUID.fromString(JsonPath.read(document, "$.messageId"));
+        val messageId = UUID.fromString(JsonPath.read(document, "$.messageId"));
         MESSAGE_UUID_MAP.put(message, messageId);
     }
 
@@ -393,7 +405,7 @@ public class ChatControllerTest {
 
     @Test
     public void giveChatWithMessages_getMessages_returnAllActiveMessages() throws Exception {
-        final UUID chatId = createChat(TEST_FOR_GET_MESSAGES_CHAT);
+        val chatId = createChat(TEST_FOR_GET_MESSAGES_CHAT);
         addUsers(chatId, TEST_FOR_GET_MESSAGES_CHAT.getUsers());
         MESSAGES.forEach(message -> {
             try {
@@ -405,7 +417,7 @@ public class ChatControllerTest {
         });
         createAllUsers();
 
-        final Set<Message> chatMessages = MESSAGES.stream()
+        val chatMessages = MESSAGES.stream()
                 .filter(message -> message.getStatus() == MessageStatus.ACTIVE)
                 .collect(Collectors.toUnmodifiableSet());
 
@@ -418,11 +430,11 @@ public class ChatControllerTest {
             }
         });
 
-        Set<String> chatMessagesIds = chatMessages.stream()
+        val chatMessagesIds = chatMessages.stream()
                 .map(message -> MESSAGE_UUID_MAP.get(message).toString())
                 .collect(Collectors.toUnmodifiableSet());
 
-        User user = TEST_FOR_GET_MESSAGES_CHAT.getCreator();
+        val user = TEST_FOR_GET_MESSAGES_CHAT.getCreator();
         mvc.perform(
                 get(format("%s/%s/messages", CHATS_API_PATH, chatId))
                         .header(AUTHORIZATION, user == TEST_ADMIN

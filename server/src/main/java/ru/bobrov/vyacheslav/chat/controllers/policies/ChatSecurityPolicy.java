@@ -3,9 +3,9 @@ package ru.bobrov.vyacheslav.chat.controllers.policies;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
+import lombok.val;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.Chat;
 import ru.bobrov.vyacheslav.chat.dto.enums.UserRole;
 import ru.bobrov.vyacheslav.chat.services.ChatService;
 import ru.bobrov.vyacheslav.chat.services.UserService;
@@ -50,7 +50,7 @@ public class ChatSecurityPolicy {
     }
 
     public boolean isChatCreator(UserDetails principal, UUID chatId) {
-        Chat chat = chatService.get(chatId);
+        val chat = chatService.get(chatId);
         return isCurrentUserId(principal, chat.getCreator().getUserId());
     }
 

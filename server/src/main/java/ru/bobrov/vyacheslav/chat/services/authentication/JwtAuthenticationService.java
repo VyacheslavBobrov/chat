@@ -5,16 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import ru.bobrov.vyacheslav.chat.services.utils.JwtTokenUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
@@ -36,7 +35,7 @@ public class JwtAuthenticationService {
     JwtTokenUtil jwtTokenUtil;
 
     public void authenticate(HttpServletRequest request) {
-        final String tokenHeader = request.getHeader(AUTHORIZATION);
+        val tokenHeader = request.getHeader(AUTHORIZATION);
         try {
             if (isNull(tokenHeader)) {
                 log.error("Token header not find in request");
@@ -44,7 +43,7 @@ public class JwtAuthenticationService {
             }
 
 
-            final String token = extractTokenFromHeader(tokenHeader);
+            val token = extractTokenFromHeader(tokenHeader);
             setContext(request, token);
         } catch (IllegalArgumentException e) {
             log.error("Unable to set security context", e);
@@ -55,11 +54,11 @@ public class JwtAuthenticationService {
     }
 
     public Principal createPrincipalFromToken(String token) {
-        final String username = jwtTokenUtil.getUsernameFromToken(token);
+        val username = jwtTokenUtil.getUsernameFromToken(token);
         if (isNull(username))
             throw new IllegalArgumentException(format("User for token: %s not found!", token));
 
-        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
+        val userDetails = jwtUserDetailsService.loadUserByUsername(username);
         if (!jwtTokenUtil.validateToken(token, userDetails))
             throw new IllegalArgumentException("Invalid token: " + token);
 
@@ -71,16 +70,15 @@ public class JwtAuthenticationService {
     }
 
     private void setContext(final HttpServletRequest request, final String token) {
-        final UsernamePasswordAuthenticationToken authenticationToken
-                = (UsernamePasswordAuthenticationToken) createPrincipalFromToken(token);
+        val authenticationToken = (UsernamePasswordAuthenticationToken) createPrincipalFromToken(token);
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         log.info(format("User: %s - authenticated, token: %s", authenticationToken.getName(), token));
     }
 
     public String extractTokenFromHeader(String header) {
-        Matcher matcher = TOKEN_PATTERN.matcher(header);
-        String token = matcher.find() && matcher.groupCount() == 1 ? matcher.group(1) : null;
+        val matcher = TOKEN_PATTERN.matcher(header);
+        val token = matcher.find() && matcher.groupCount() == 1 ? matcher.group(1) : null;
         if (isNull(token)) {
             throw new IllegalArgumentException("Illegal JWT Token header: " + header);
         }

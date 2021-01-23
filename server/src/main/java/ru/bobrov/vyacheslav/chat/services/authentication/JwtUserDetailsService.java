@@ -3,11 +3,11 @@ package ru.bobrov.vyacheslav.chat.services.authentication;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
+import lombok.val;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.bobrov.vyacheslav.chat.dataproviders.entities.User;
 import ru.bobrov.vyacheslav.chat.dto.enums.UserStatus;
 import ru.bobrov.vyacheslav.chat.services.UserService;
 import ru.bobrov.vyacheslav.chat.services.dto.ChatUser;
@@ -23,7 +23,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userService.getUserByLogin(username);
+        val user = userService.getUserByLogin(username);
         if (user == null)
             throw new UsernameNotFoundException("User not found with username: " + username);
 
