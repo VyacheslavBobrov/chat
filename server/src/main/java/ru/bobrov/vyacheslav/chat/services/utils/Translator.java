@@ -19,4 +19,8 @@ public class Translator {
     public String translate(String messageCode) {
         return messageSource.getMessage(messageCode, null, LocaleContextHolder.getLocale());
     }
+
+    public String translate(String messageCode, Object... args) {
+        return messageSource.getMessage(messageCode, args, LocaleContextHolder.getLocale());
+    }
 }

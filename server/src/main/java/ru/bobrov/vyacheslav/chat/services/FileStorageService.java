@@ -65,13 +65,13 @@ public class FileStorageService {
                 return resource;
             throw new FileNotFoundException(
                     translator.translate("file-not-found-title"),
-                    format(translator.translate("file-not-found"), fileId)
+                    translator.translate("file-not-found", fileId)
             );
         } catch (Exception ex) {
             log.error(format("File load error, uploadDir: %s, fileId: %s", uploadDir, fileId), ex);
             throw new FileNotFoundException(
                     translator.translate("file-not-found-title"),
-                    format(translator.translate("file-not-found"), fileId)
+                    translator.translate("file-not-found", fileId)
             );
         }
     }

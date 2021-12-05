@@ -28,7 +28,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.dto.enums.UserRole.USER;
@@ -66,7 +65,7 @@ public class UserService {
     public User get(UUID uuid) {
         return repository.findById(uuid).orElseThrow(() -> new UserNotFoundException(
                 translator.translate("user-not-found-title"),
-                format(translator.translate("user-not-found"), uuid)
+                translator.translate("user-not-found", uuid)
         ));
     }
 
@@ -109,7 +108,7 @@ public class UserService {
         if (exists(login))
             throw new ResourceExistsException(
                     translator.translate("user-login-exists-title"),
-                    format(translator.translate("user-login-exists"), login)
+                    translator.translate("user-login-exists", login)
             );
 
         return repository.save(user);
@@ -307,7 +306,7 @@ public class UserService {
     public User findUserByFileId(UUID fileId) {
         return userFileRepository.findById(fileId).orElseThrow(() -> new FileNotFoundException(
                 translator.translate("file-not-found-title"),
-                format(translator.translate("file-not-found"), fileId)
+                translator.translate("file-not-found", fileId)
         )).getUser();
     }
 
@@ -320,7 +319,7 @@ public class UserService {
     public UserFile findFileById(UUID fileId) {
         return userFileRepository.findById(fileId).orElseThrow(() -> new FileNotFoundException(
                 translator.translate("file-not-found-title"),
-                format(translator.translate("file-not-found"), fileId)
+                translator.translate("file-not-found", fileId)
         ));
     }
 }

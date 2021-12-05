@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.services.utils.Utils.assertNotBlank;
@@ -54,7 +53,7 @@ public class ChatService {
     public Chat get(UUID uuid) {
         return repository.findById(uuid).orElseThrow(() -> new ChatNotFoundException(
                 translator.translate("chat-not-found-title"),
-                format(translator.translate("chat-not-found"), uuid)
+                translator.translate("chat-not-found", uuid)
         ));
     }
 
@@ -180,7 +179,7 @@ public class ChatService {
         if (chat.getCreator().getUserId().equals(userId))
             throw new IllegalOperationException(
                     translator.translate("wrong-kick-operation-title"),
-                    format(translator.translate("wrong-kick-operation"),
+                    translator.translate("wrong-kick-operation",
                             chat.getCreator().getLogin(),
                             chat.getTitle()
                     )

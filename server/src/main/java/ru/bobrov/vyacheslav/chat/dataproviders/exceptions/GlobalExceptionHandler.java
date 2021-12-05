@@ -14,8 +14,6 @@ import ru.bobrov.vyacheslav.chat.services.utils.Translator;
 
 import java.util.Date;
 
-import static java.lang.String.format;
-
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
@@ -65,7 +63,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> argumentTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
         WrongArgumentException wrongArgumentException = new WrongArgumentException(
                 translator.translate("wrong-argument-exception-title"),
-                format(translator.translate("wrong-argument-exception"), ex.getName(), ex.getValue())
+                translator.translate("wrong-argument-exception", ex.getName(), ex.getValue())
         );
 
         return createResponse(wrongArgumentException, request, HttpStatus.BAD_REQUEST);

@@ -18,7 +18,6 @@ import ru.bobrov.vyacheslav.chat.services.utils.Translator;
 import javax.transaction.Transactional;
 import java.util.UUID;
 
-import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PUBLIC;
 import static ru.bobrov.vyacheslav.chat.services.utils.Utils.assertNotBlank;
@@ -48,7 +47,7 @@ public class MessageService {
     public Message get(UUID uuid) {
         return repository.findById(uuid).orElseThrow(() -> new MessageNotFoundException(
                 translator.translate("message-not-found-title"),
-                format(translator.translate("message-not-found"), uuid)
+                translator.translate("message-not-found", uuid)
         ));
     }
 
