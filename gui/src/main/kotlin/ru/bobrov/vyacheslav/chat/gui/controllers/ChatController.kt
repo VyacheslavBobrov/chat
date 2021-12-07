@@ -4,6 +4,7 @@ import javafx.fxml.FXML
 import javafx.geometry.Orientation
 import javafx.scene.control.*
 import javafx.scene.layout.AnchorPane
+import javafx.scene.layout.BorderPane
 import net.rgielen.fxweaver.core.FxmlView
 import org.springframework.stereotype.Component
 import ru.bobrov.vyacheslav.chat.gui.dataproviders.AuthenticationService
@@ -22,6 +23,9 @@ class ChatController(
         private val chatsService: ChatsService,
         private val messageService: MessageService
 ) {
+    @FXML
+    lateinit var chatPane: BorderPane
+
     @FXML
     private lateinit var userInfo: Label
 
